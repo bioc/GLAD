@@ -6,13 +6,14 @@
 This function detects MAD outliers.
 }
 \usage{
-detectOutliers.profileChr(profileChr, region="Region", alpha=0.001, ...)
+detectOutliers.profileChr(profileChr, region="Region", alpha=0.001, verbose=FALSE, ...)
 }
 
 \arguments{
   \item{profileChr}{Object of class \code{profileChr}.}
   \item{region}{Label which indicated where outliers are detected.}
   \item{alpha}{Risk alpha.}
+  \item{verbose}{If \code{TRUE} some information are printed}
   \item{...}{}
 }
 

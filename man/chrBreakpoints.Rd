@@ -5,7 +5,7 @@
 \description{
 The function \code{chrBreakpoints.profileCGH} find breakpoints corresponding to an abrupt change of the DNA amount along the chromosome.}
 \usage{
-chrBreakpoints.profileCGH (profileCGH, smoothfunc="aws", base=TRUE, sigma, bandwidth=10, round=2, ...)
+chrBreakpoints.profileCGH(profileCGH, smoothfunc="aws", base=TRUE, sigma, bandwidth=10, round=2, verbose=FALSE, ...)
 }
 
 \arguments{
@@ -30,6 +30,8 @@ chrBreakpoints.profileCGH (profileCGH, smoothfunc="aws", base=TRUE, sigma, bandw
      or \code{\link[aws]{laws}} function are rounded or not depending on
      the \code{round} argument. The \code{round} value is passed to the
      argument \code{digits} of the \code{\link[base]{round}} function.}
+
+   \item{verbose}{If \code{TRUE} some information are printed}
    
    \item{...}{Parameters to be passed to \code{\link[aws]{aws}} or
      \code{\link[aws]{laws}} function. Typical parameters are

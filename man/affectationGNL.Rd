@@ -7,7 +7,7 @@
   normal or lost) to each BAC.
 }  
 \usage{
-affectationGNL.profileCGH(profileCGH, alpha=0.001, region="Region", ...)
+affectationGNL.profileCGH(profileCGH, alpha=0.001, region="Region", verbose=FALSE, ...)
 }
 
 \arguments{
@@ -19,6 +19,7 @@ affectationGNL.profileCGH(profileCGH, alpha=0.001, region="Region", ...)
   
   \item{region}{Specifies the name of the variable which has been used
     during the MSHR clustering by chromosome step.}
+  \item{verbose}{If \code{TRUE} some information are printed}
   \item{...}{ }
  
    

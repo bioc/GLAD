@@ -1,8 +1,6 @@
 # Copyright (C) 2003 Institut Curie
 # Author(s): Philippe Hupé (Institut Curie) 2003
-# Contact: bioinfo-staff@curie.fr
-# It is strictly forbidden to transfer, use or re-use this code 
-# or part of it without explicit written authorization from Institut Curie.
+# Contact: glad@curie.fr
 
 
 
@@ -14,27 +12,32 @@ glad <- function(...)
 }
 
 
-glad.profileCGH <- function(profileCGH, smoothfunc="aws", base=FALSE, sigma, bandwidth=10, round=2, lambdabreak=8, lambdacluster=8, lambdaclusterGen=40, type="tricubic", param=c(d=6), alpha=0.001, method="centroid", nmax=8, ...)
+glad.profileCGH <- function(profileCGH, smoothfunc="aws", base=FALSE, sigma, bandwidth=10, round=2, lambdabreak=8, lambdacluster=8, lambdaclusterGen=40, type="tricubic", param=c(d=6), alpha=0.001, method="centroid", nmax=8, verbose=FALSE, ...)
   {
  
 	
-
+    if (verbose)
+      {
+        print("GLAD: starting function")
+        call <- match.call()
+        print(paste("Call function:", call))
+      }
     #profileCGH <- list(profileValues=data)	
     #class(profileCGH) <- "profileCGH"	
 	
     # Breakpoints detection
     #profileCGH <- chrBreakpoints(profileCGH, smoothfunc="laws", lkern="Triangle", model="Gaussian", qlambda=0.999, base=FALSE, bandwidth=1, ...)		
     
-    profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, ...)
+    profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, verbose=verbose, ...)
     
     # LogRatio are median-centered	
     median <- median(na.omit(profileCGH$profileValues$LogRatio)) 
     profileCGH$profileValues$LogRatio <- profileCGH$profileValues$LogRatio - median	
     profileCGH$profileValues$Smoothing <- profileCGH$profileValues$Smoothing - median	
 	
-	
+    
     profileAux <- NULL	
-    # profile by chromosome	
+                                        # profile by chromosome	
     nbzonetot <- 0 #total number of zones that have been previously identify	
 
     labelChr <- sort(unique(profileCGH$profileValues$Chromosome))	
@@ -46,8 +49,8 @@ glad.profileCGH <- function(profileCGH, smoothfunc="aws", base=FALSE, sigma, ban
         profileChr <- list(profileValues=subset)	
         class(profileChr) <- "profileChr"	
 	
-        profileChr <- removeBreakpoints(profileChr, lambda=lambdabreak, alpha=alpha, type=type, param=param)	
-        profileChr <- detectOutliers(profileChr, region="Region", alpha=alpha)	
+        profileChr <- removeBreakpoints(profileChr, lambda=lambdabreak, alpha=alpha, type=type, param=param, verbose=verbose)	
+        profileChr <- detectOutliers(profileChr, region="Region", alpha=alpha, verbose=verbose)	
 	
 	# ça ne doit pas servir : à vérifier
         nmin <- 1	
@@ -56,7 +59,7 @@ glad.profileCGH <- function(profileCGH, smoothfunc="aws", base=FALSE, sigma, ban
             nmin <- 2
           }
 
-        profileChr <- findCluster(profileChr, method=method, genome=FALSE, lambda=lambdacluster, nmin=1, nmax=nmax,type=type, param=param)
+        profileChr <- findCluster(profileChr, method=method, genome=FALSE, lambda=lambdacluster, nmin=1, nmax=nmax,type=type, param=param, verbose=verbose)
         profileChr <- detectOutliers(profileChr, region="ZoneChr", alpha=alpha)	
  	
         nbzone <- length(unique((profileChr$profileValues$ZoneChr[which(profileChr$profileValues$ZoneChr!=0)])))	
@@ -70,13 +73,28 @@ glad.profileCGH <- function(profileCGH, smoothfunc="aws", base=FALSE, sigma, ban
 	
     profileCGH$profileValues <- profileAux	
 	
-    class(profileCGH) <- "profileChr"	
+    class(profileCGH) <- "profileChr"
 
-    profileCGH <- findCluster(profileCGH, region="ZoneChr", method=method, genome=TRUE, lambda=lambdaclusterGen, nmin=1, nmax=nmax, type=type, param=param)	
+    
+
+    if (verbose) print("GLAD: starting clustering for whole genome")
+    profileCGH <- findCluster(profileCGH, region="ZoneChr", method=method, genome=TRUE, lambda=lambdaclusterGen, nmin=1, nmax=nmax, type=type, param=param, verbose=verbose)
+    if (verbose)
+      {
+        print("GLAD: ending clustering for whole genome")
+        print("GLAD: starting affectationGNL")      
+      }
+
     class(profileCGH) <- "profileCGH"
-    profileCGH <- affectationGNL(profileCGH)
+    profileCGH <- affectationGNL(profileCGH, verbose=verbose)
 
+    if (verbose)
+      {
+        print("GLAD: ending affectationGNL")
+        print("GLAD: ending function")
+      }
 
+    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
     return(profileCGH)
 
 
@@ -84,3 +102,8 @@ glad.profileCGH <- function(profileCGH, smoothfunc="aws", base=FALSE, sigma, ban
 
 
 }
+
+
+
+
+

@@ -2,10 +2,7 @@
 
 # Copyright (C) 2003 Institut Curie
 # Author(s): Philippe Hupé (Institut Curie) 2003
-
-# Contact: bioinfo-staff@curie.fr
-# It is strictly forbidden to transfer, use or re-use this code 
-# or part of it without explicit written authorization from Institut Curie.
+# Contact: glad@curie.fr
 
 
 chrBreakpoints <- function(...)
@@ -18,11 +15,17 @@ chrBreakpoints <- function(...)
 
 
 
-chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="aws", base=TRUE, sigma, bandwidth=10, round=2, ...)
+chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="aws", base=TRUE, sigma, bandwidth=10, round=2, verbose=FALSE, ...)
 {
 
   # ce n'est plus la peine, c'est vérifier au chargement du package
   #if (!require("aws")) stop("Could not load required package aws")
+  if (verbose)
+    {
+      print("chrBreakpoints: starting function")
+      call <- match.call()
+      print(paste("Call function:", call))
+    }
 
   if (smoothfunc!="laws" && smoothfunc!="aws")stop("Choose either aws or laws for smoothfunc")
 
@@ -72,8 +75,11 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="aws", base=TRUE, s
 
   for (i in 1:length(labelChr))
     {
+      if (verbose) print(paste("chrBreakpoints: starting chromosome", labelChr[i]))
+
 #location  of data related to each chromosome
       indexChr <- which(data$Chromosome==labelChr[i])
+
 
       if (length(indexChr)>1)
         {                 
@@ -281,6 +287,9 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="aws", base=TRUE, s
           Level[indexChr] <- -1
           Breakpoints[indexChr] <- 0
         }
+      
+      if (verbose) print(paste("chrBreakpoints: ending chromosome", labelChr[i]))
+
     }
 
 
@@ -299,6 +308,8 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="aws", base=TRUE, s
 #data$Smoothing[which(data$Smoothing==99999)] <- NA
   profileCGH$profileValues <- data
   
+  if (verbose) print("chrBreakpoints: ending function")
+
   return(profileCGH)
 
 }
@@ -311,9 +322,18 @@ removeBreakpoints <- function(...)
 
 
 
-removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic", param=c(d=6), ...)
+removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic", param=c(d=6), verbose=FALSE, ...)
 {
+
+  if (verbose)
+    {
+      print("removeBreakpoints: starting function")
+      call <- match.call()
+      print(paste("Call function:", call))
+    }
+  
   CGH <- profileChr$profileValues
+  CGH$LikeliRatio <- rep(0,length(CGH[,1]))
 
 ###########################################################################
 #
@@ -346,7 +366,7 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
 
 #########################################################################################
 #
-#  la fonction IQR permet d'estimer l'écart-type qui sera utiliser dans la fonction kernelpen
+#  la fonction IQR permet d'estimer l'écart-type qui sera utilisé dans la fonction kernelpen
 #
 ##########################################################################################
 
@@ -364,12 +384,18 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
       
       while (stop!=1)
 	{
-	  subset <- detectOutliers(subset, region="Region", ...)
+	  subset <- detectOutliers(subset, region="Region", verbose=verbose, ...)
 	  indexOutliersTot <- which(subset$profileValues$OutliersTot==0)
           profileValues <- subset$profileValues[indexOutliersTot,]
 	  aggregation <- aggregate(profileValues["LogRatio"],list(Region=profileValues$Region),mean)
 	  aggregation <- aggregation[order(aggregation$Region),]
 	  deltaoversigma <- abs(diff(aggregation$LogRatio)/sigma)
+
+          
+          if (verbose)
+            {
+              print("")
+            }
 
           
 	  labelRegion <- sort(unique(profileValues$Region))
@@ -381,23 +407,50 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
 	      for (i in 1:length(labelRegion))
                 {
 		  indexRegion <- which(profileValues$Region==labelRegion[i])
+
+                  
                   
 		  if (length(indexRegion)>1)
                     {
-		      logsigma <- logsigma + length(indexRegion)*log(var(profileValues$LogRatio[indexRegion])*((length(indexRegion)-1)/length(indexRegion)), exp(1))
+                      logsigmaregion <- length(indexRegion)*log(var(profileValues$LogRatio[indexRegion])*((length(indexRegion)-1)/length(indexRegion)), exp(1))
+		      logsigma <- logsigma + logsigmaregion
+
+                      if (verbose)
+                        {
+                          print(paste("removeBreakpoints: logsigma of region", labelRegion[i], "=",logsigmaregion, "(Nb Obs = ",length(indexRegion), ")"))
+                        }
+                    }
+
+                  else
+                    {
+                      
+                      if (verbose)
+                        {
+                          print(paste("removeBreakpoints: logsigma of region", labelRegion[i], "= 0", "( Nb Obs = ",length(indexRegion),")"))
+                        }
                     }
                 }
-              
+
+             
               
               
               
 #likelihoodGLOBAL <- logsigma + lambda*(length(labelRegion)-1)*log(length(profileValues$LogRatio),exp(1))
               likelihoodGLOBAL <- logsigma + lambda*sum(kernelpen(deltaoversigma,type=type,param=param))*log(length(profileValues$LogRatio),exp(1))
+              if (verbose)
+                {
+                  print(paste("removeBreakpoints: likelihood for the profile = ", logsigma))
+                  print(paste("removeBreakpoints: penalised likelihood for the profile = ", likelihoodGLOBAL))
+                }
 
               likelihood <- rep(NULL, length(labelRegion)-1)
               
               for (i in 1:(length(labelRegion)-1))
                 {
+                  if (verbose)
+                    {
+                      print(paste("removeBreakpoints: suppression of region", labelRegion[i+1]))
+                    }
                   RegionAux <- profileValues$Region
                   indexRegion <- which(profileValues$Region==labelRegion[i+1])
                   RegionAux[indexRegion] <- labelRegion[i]
@@ -409,7 +462,7 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
                   
                   logsigma <-0
                   labelRegionAux <- unique(RegionAux)
-                  
+                   
                   
                   for (j in 1:length(labelRegionAux))
                     {
@@ -417,11 +470,35 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
                       
                       if (length(indexRegionAux)>1)
                         {
-                          logsigma <- logsigma + length(indexRegionAux)*log(var(profileValues$LogRatio[indexRegionAux])*((length(indexRegionAux)-1)/length(indexRegionAux)), exp(1))
+
+                          logsigmaregion <- length(indexRegionAux)*log(var(profileValues$LogRatio[indexRegionAux])*((length(indexRegionAux)-1)/length(indexRegionAux)), exp(1))
+                          logsigma <- logsigma + logsigmaregion
+
+                          if (verbose)
+                            {
+                              print(paste("removeBreakpoints: logsigma of region", labelRegionAux[j], "=",logsigmaregion, "( Nb Obs =",length(indexRegionAux), ")"))
+                            }
+                          
+                        }
+
+                      else
+                        {
+                          
+                          if (verbose)
+                            {
+                              print(paste("removeBreakpoints: logsigma of region", labelRegionAux[j], "= 0", "( Nb Obs = ",length(indexRegionAux), ")"))
+                            }
+                          
                         }
                     }
                   
                   likelihood[i] <- logsigma + lambda*sum(kernelpen(deltaoversigma,type=type,param=param))*log(length(profileValues$LogRatio),exp(1))
+
+                  if (verbose)
+                    {
+                       print(paste("removeBreakpoints: likelihood for the profile = ", logsigma))
+                  print(paste("removeBreakpoints: penalised likelihood for the profile = ", likelihood[i]))
+                    }
                 }
               
               
@@ -430,7 +507,16 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
                 {
                   regionRemoved <- which(likelihood==min(likelihood))[1]  #au cas ou il y ait plus d'une région
                   subset$profileValues$Breakpoints[which(subset$profileValues$Region==labelRegion[regionRemoved]&subset$profileValues$Breakpoints==1)] <- -1
+
+                  if (verbose)
+                    {
+                      print("The following breakpoint has been removed:")
+                      print(CGH[which(CGH$Region==labelRegion[regionRemoved]&CGH$Breakpoints==1),])
+                      print(paste("Global -LogLibelihood:", likelihoodGLOBAL))
+                      print(paste("-LogLikelihood without the breakpoint:", min(likelihood))[1])
+                    }
                   CGH$Breakpoints[which(CGH$Region==labelRegion[regionRemoved]&CGH$Breakpoints==1)] <- -1
+                  
                   indexRegionRemoved <- which(subset$profileValues$Region==labelRegion[regionRemoved+1])
                   subset$profileValues$Region[indexRegionRemoved] <- labelRegion[regionRemoved]
                   indexRegionRemoved <- which(CGH$Region==labelRegion[regionRemoved+1])
@@ -440,6 +526,23 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
               else
                 {
                   stop <- 1
+                  LikeliRatio <- likelihood/likelihoodGLOBAL
+                  infoBP <- data.frame(Region=labelRegion[1:(length(labelRegion)-1)], LikeliRatioAux=LikeliRatio)
+
+                  if (length(LikeliRatio) >=1)
+                    {
+                      indexBP <- which(CGH$Breakpoints==1)
+                      CGHBP <- CGH[indexBP,]
+                      CGHWBP <- CGH[-indexBP,]
+                      CGHBP <- merge(CGHBP,infoBP)
+                      CGHBP$LikeliRatio <- CGHBP$LikeliRatioAux
+                      indexcol <- which(names(CGHBP)=="LikeliRatioAux")
+                      CGHBP <- CGHBP[,-indexcol]
+                      CGH <- rbind(CGHBP,CGHWBP)
+                      
+                    }
+                  
+                  
                 }
             }
           
@@ -449,8 +552,10 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
               stop <- 1
             }
         }
-      
+
+      indexLikeliRatio <- which(names(CGH)=="LikeliRatio")      
       CGH <- rbind(CGH, CGHna)
+      CGH <- CGH[,-indexLikeliRatio] 
       profileChr$profileValues <- CGH
       return(profileChr)
     }
@@ -458,7 +563,9 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
     {
       return(profileChr)
     }
-  
+
+  if (verbose) print("removeBreakpoints: ending function")
+
 }
 
 

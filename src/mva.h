@@ -52,4 +52,3 @@ int hcluster(double *x, int *nr, int *nc, int *diag, int *method, int *iopt ,int
 
 int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *crit,double *membr,double *diss, int *result);
 
-

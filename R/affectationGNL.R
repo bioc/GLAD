@@ -1,8 +1,6 @@
 # Copyright (C) 2003 Institut Curie
 # Author(s): Philippe Hupé (Institut Curie) 2003
-# Contact: bioinfo-staff@curie.fr
-# It is strictly forbidden to transfer, use or re-use this code 
-# or part of it without explicit written authorization from Institut Curie.
+# Contact: glad@curie.fr
 
 affectationGNL <- function(...)
 {
@@ -10,12 +8,16 @@ affectationGNL <- function(...)
 }
 
 
-affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, region="Region", ...)
+affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, region="Region", verbose=FALSE, ...)
 {
+  if (verbose) print("affectationGNL: starting function")
   CGH <- profileCGH$profileValues
   indexna <- attr(na.omit(CGH[,c("Chromosome","LogRatio","PosOrder","ZoneGen")]),"na.action")
-  CGHna <- CGH[indexna,]
-  CGH <- CGH[-indexna,]
+  if (!is.null(indexna))
+    {
+      CGHna <- CGH[indexna,]
+      CGH <- CGH[-indexna,]
+    }
 
   
   labelZone <- unique(CGH$ZoneGen)
@@ -223,11 +225,13 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, region="Region", 
             }
         }
     }
-  
-  CGHna <- data.frame(CGHna,ZoneGNL=rep(NA,length(CGHna$LogRatio)))
-  CGH <- rbind(CGH, CGHna)
+  if (!is.null(indexna))
+    {
+      CGHna <- data.frame(CGHna,ZoneGNL=rep(NA,length(CGHna$LogRatio)))
+      CGH <- rbind(CGH, CGHna)
+    }
   profileCGH$profileValues <- CGH
-
+  if (verbose) print("affectationGNL: ending function")
   return(profileCGH)
   
 }

@@ -391,7 +391,3 @@ void hcass2( int *n, int *ia,  int *ib,int *iorder, int *iia, int *iib)
 	 }     
      }
 }
-
-
-
-

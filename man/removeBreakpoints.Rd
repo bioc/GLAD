@@ -8,7 +8,7 @@
 This function optimizes the number of breakpoints.
 }
 \usage{
-removeBreakpoints.profileChr(profileChr, lambda=10, type="tricubic", param=c(d=6), ...)
+removeBreakpoints.profileChr(profileChr, lambda=10, type="tricubic", param=c(d=6), verbose=FALSE, ...)
 removeLevel.profileChr <- function(profileChr, lambda=10, ...)
 
 }
@@ -20,7 +20,9 @@ removeLevel.profileChr <- function(profileChr, lambda=10, ...)
     "Optimization of the number of breakpoints" step.}
   
     \item{type}{Type of kernel used in the penalty term.}
-  \item{param}{Parameter for the kernel used in the penalty term.}
+    \item{param}{Parameter for the kernel used in the penalty term.}
+
+    \item{verbose}{If \code{TRUE} some information are printed}
   \item{...}{Argument to be passed to \code{\link{detectOutliers}}, typically \code{alpha}.}
 }
 

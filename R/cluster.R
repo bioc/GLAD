@@ -1,8 +1,6 @@
 # Copyright (C) 2003 Institut Curie
 # Author(s): Philippe Hupé (Institut Curie) 2003
-# Contact: bioinfo-staff@curie.fr
-# It is strictly forbidden to transfer, use or re-use this code 
-# or part of it without explicit written authorization from Institut Curie.
+# Contact: glad@curie.fr
 
 
 cluster <- function(...)

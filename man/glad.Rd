@@ -11,7 +11,7 @@
 glad.profileCGH(profileCGH, smoothfunc="aws", base=FALSE, sigma,
                    bandwidth=10, round=2, lambdabreak=8, lambdacluster=8,
                    lambdaclusterGen=40, type="tricubic",
-                   param=c(d=6),alpha=0.001, method="centroid", nmax=8, ...)
+                   param=c(d=6),alpha=0.001, method="centroid", nmax=8, verbose=FALSE, ...)
 }
 
 \arguments{
@@ -66,6 +66,8 @@ glad.profileCGH(profileCGH, smoothfunc="aws", base=FALSE, sigma,
     the the "MSHR
     clustering by chromosome" and the "HCSR
     clustering throughout the genome" clustering steps.}
+
+  \item{verbose}{If \code{TRUE} some information are printed}  
     
   \item{...}{parameters to be passed to \code{\link{chrBreakpoints}}
     function. Typically, you will have to specify the following

@@ -1,0 +1,12 @@
+##################################
+### release 1.0.1 (22-10-2004) ###
+##################################
+Bug fixed in affectationGNL function (the function now works in case of no NA values in the data)
+
+A verbose mode allows to retrieve information on the analysis processing
+
+
+################################
+### release 1.0 (01-04-2004) ###
+################################
+First version of the GLAD package

@@ -7,7 +7,8 @@ The function \code{findCluster} allows the clustering of regions.
 }
 \usage{
 findCluster.profileChr(profileChr, region="Region", genome=TRUE,
-                       lambda=10, nmin=1, nmax=10, type="tricubic", param=c(d=6), ...)
+                       lambda=10, nmin=1, nmax=10, type="tricubic",
+                       param=c(d=6), verbose=FALSE, ...)
 
 
 }
@@ -24,7 +25,8 @@ findCluster.profileChr(profileChr, region="Region", genome=TRUE,
   \item{type}{Type of kernel to use in the penalty term (this arguments is passed to the
   \code{\link{kernelpen}} function).}
   \item{param}{Parameters of the kernel (this arguments is passed to the
-  \code{\link{kernelpen}} function).}
+    \code{\link{kernelpen}} function).}
+  \item{verbose}{If \code{TRUE} some information are printed}
   \item{...}{Risk alpha used in \code{\link{detectOutliers}}.}
 }
 
