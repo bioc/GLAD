@@ -1,0 +1,18 @@
+affectationGNL          Label Assignment
+array1                  Bladder cancer CGH data
+arrayCGH                Object of Class arrayCGH
+arrayPersp              Perspective image of microarray spots
+                        statistic
+arrayPlot               Spatial image of microarray spots statistic
+chrBreakpoints          Chromosomal breakpoints detection
+cluster                 Optimal number of cluster
+ColorBar                Calibration bar for color images
+detectOutliers          Outliers detection
+findCluster             Clustering of genomic regions
+glad                    Analysis of array CGH data
+gm00143                 Public CGH data of Snijders
+hclustglad              Hierarchical Clustering
+kernelpen               Kernelpen function
+myPalette               Microarray color palette
+profileCGH              Objects of Class profileCGH and profileChr
+removeBreakpoints       Remove breakpoints

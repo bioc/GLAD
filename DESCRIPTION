@@ -1,0 +1,10 @@
+Package: GLAD
+Version: 1.0
+Date: 2004-04-01
+Title: Gain and Loss Analysis of DNA
+Depends: R (>= 1.8.0), aws
+Author: Philippe Hupé and Emmanuel Barillot
+Maintainer: Philippe Hupé, <Philippe.Hupe@Curie.fr>
+Description: Analysis of array CGH data : detection of breakpoints in genomic profiles and assignment of a status (gain, normal or lost) to each chromosomal regions identified.
+License: See COPYRIGHT.
+Packaged: Mon Oct  4 16:39:55 2004; phupe

@@ -1,0 +1,197 @@
+%\VignetteIndexEntry{GLAD}
+%\VignetteDepends{}
+%\VignetteKeywords{CGH Analysis}
+%\VignettePackage{GLAD}
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage[authoryear,round]{natbib}
+\usepackage{hyperref}
+
+
+\usepackage{/usr/lib/R/share/texmf/Sweave}
+\begin{document}
+
+\title{\bf GLAD package : Gain and Loss Analysis of DNA}
+
+\author{Philippe Hupe$^{1,2}$ and Emmanuel Barillot$^{2}$}
+
+\maketitle
+
+\begin{center}
+
+1. UMR 144 CNRS/Institut Curie, Institut Curie, 26, rue d'Ulm, Paris, 75248 cedex 05, France
+
+2. Service Bioinformatique, Institut Curie, 26, rue d'Ulm, Paris, 75248 cedex 05, France
+
+{\tt glad@curie.fr}
+\end{center}
+
+
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+
+This document presents an overview of the {\tt GLAD} package (Gain and Loss Analysis of DNA). This package is devoted to the analysis of  Array Comparative Genomic Hybridization (array CGH) \citep{pinkel98, snijders01, solinas97,ishkanian04} .  The methodology for detecting the breakpoints delimiting altered regions in genomic patterns and assigning a status (normal, gained or lost) to each chromosomal region described in the paper \cite{hupe04} is implemented in this package. Some graphical functions are provided as well.
+
+
+\section{Data}
+
+\subsection{Public data set}
+
+We used the public data set described in \cite{snijders01}. The data correspond to 15 human cell strains with known karyotypes (12 fibroblast cell strains, 2 chorionic villus cell strains, 1 lymploblast cell strain) from the NIGMS Human Genetics Cell Repository ({\tt http://locus.umdnj.edu/nigms}). Each cell strain has been hybridized with an array CGH of 2276 BAC's, spotted in triplicate.
+
+\subsection{Bladder cancer data}
+
+Bladder cancer data from tumors collected at Henri Mondor Hospital (Créteil, France) \citep{billerey01} have been hybridized on arrays CGH composed of 2464 BACs (Radvanyi, Pinkel et al., unpublished results). In this data, only the log-ratios are provided and no information about clones is available since the data are not yet published. These data allow only some graphical functionnalities to be shown and will be used as a support to illustrate some functions for array nomrlization (not yes available in the current version of the package).
+
+
+\section{GLAD classes}
+
+\subsection{arrayCGH}
+
+This class stores raw values after images analysis. The object arrayCGH is a list with at least a data.frame named arrayValues and a vector named arrayDesign. The data.frame arrayValues must contain the following fields:
+
+\begin{description}
+\item[Col] Vector of columns coordinates.
+\item[Row] Vector of rows coordinates.
+\item[...] Other elements can be added.
+\end{description}
+
+
+\noindent The vector arrayDesign is composed of 4 values : c(arrayCol, arrayRow, SpotCol, SpotRow). The array CGH is represented by arrayRow*arrayCol blocs and each bloc is composed of Row*Col spots.
+N.B. : Col takes the values in 1:arrayRow*SpotRow and Row takes the values in 1:arrayCol*SpotCol
+
+\subsection{profileCGH and profileChr}
+
+This class stores synthetic values related to each clone available onto the arrayCGH. The object profileChr corresponds to data of only one chromosome. Objects profileCGH and profileChr are composed of a list with the first element profileValues which is a data.frame with the following columns names:
+
+\begin{description}
+\item[LogRatio] Test over Reference log-ratio.
+\item[PosOrder] The rank position of each BAC on the genome.
+\item[PosBase] The base position of each BAC on the genome.
+\item[Chromosome] Chromosome name.
+\item[BAC] The name of the corresponding BAC.
+\item[...] Other elements can be added.
+\end{description}
+
+LogRatio, Chromosome and PosOrder are compulsory.
+
+
+\section{Graphical functions}
+
+
+\begin{Schunk}
+\begin{Sinput}
+> require(GLAD)
+\end{Sinput}
+\begin{Soutput}
+Loading required package: GLAD 
+Loading required package: aws 
+[1] "Have fun with GLAD"
+[1] TRUE
+\end{Soutput}
+\end{Schunk}
+
+
+\begin{Schunk}
+\begin{Sinput}
+> data(arrayCGH)
+> array <- list(arrayValues = array2, arrayDesign = c(4, 4, 21, 
++     22))
+> class(array) <- "arrayCGH"
+\end{Sinput}
+\end{Schunk}
+
+
+
+
+\begin{figure}[!h]
+\begin{center}
+\begin{Schunk}
+\begin{Sinput}
+> arrayPlot(array, "Log2Rat", bar = FALSE)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{GLAD-003}
+\end{center}
+\caption{Spatial image of array CGH}
+\end{figure}
+
+
+
+\begin{figure}[!h]
+\begin{center}
+\begin{Schunk}
+\begin{Sinput}
+> arrayPersp(array, "Log2Rat", box = FALSE, theta = 110, phi = 40, 
++     bar = FALSE)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{GLAD-004}
+\end{center}
+\caption{Perspective image of array CGH}
+\end{figure}
+
+
+\section{Analysis of array CGH profile}
+
+A result of the GLAD methodology on cell line gm13330 \citep{snijders01} is presented in \textbf{Figure \ref{Figure:gm13330}}.
+
+\begin{Schunk}
+\begin{Sinput}
+> data(snijders)
+> profileCGH <- list(profileValues = gm13330)
+> class(profileCGH) <- "profileCGH"
+> res <- glad(profileCGH, smoothfunc = "laws", base = FALSE, bandwidth = 10, 
++     round = 2, lambdabreak = 8, lambdacluster = 8, lambdaclusterGen = 40, 
++     alpha = 0.001, method = "centroid", nmax = 8, lkern = "exponential", 
++     model = "Gaussian", qlambda = 0.999)
+\end{Sinput}
+\begin{Soutput}
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+Triangle kernel is used as default
+\end{Soutput}
+\end{Schunk}
+
+
+
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics{GLAD-006}
+\end{center}
+\caption{\label{Figure:gm13330}Results of glad on cell line gm13330}
+\end{figure}
+
+
+
+
+\newpage
+\bibliographystyle{apalike}
+\bibliography{biblio}
+
+\end{document}
