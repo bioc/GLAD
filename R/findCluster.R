@@ -3,112 +3,84 @@
 # Contact: glad@curie.fr
 
 findCluster <- function(...)
-{
-  UseMethod("findCluster")
-}
+  {
+
+    UseMethod("findCluster")
+  }
+
 
 findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lambda=10, nmin=1, nmax=10, type="tricubic", param=c(d=6), verbose=FALSE, ...)
-{
+  {
 
 
-  
-  if (verbose) print("findCluster: starting function")
-  CGH <- profileChr$profileValues
-                                        #CGHna <- CGH[attr(na.omit(CGH),"na.action"),]
+    
+    if (verbose) print("findCluster: starting function")
+    CGH <- profileChr$profileValues
 
 
-  indexNA <- attr(na.omit(CGH),"na.action")
-  if (length(indexNA)<length(CGH[,1]))
-    {
-      CGHna <- CGH[indexNA,]
-      if (!is.null(indexNA))CGH <- CGH[-indexNA,]
 
-      
+    subset <- CGH[which(CGH$OutliersTot==0),]
 
-      subset <- CGH[which(CGH$OutliersTot==0),]
-      
-      j <- 1	
-      labelRegion <- unique(subset[,region])	
-      freq <- rep(0, length(labelRegion))	
-      std <- freq	
-      reg <- mean <- freq	
-      
-      for (j in 1:length(labelRegion))	
-	{	
-          indexRegion <- which(subset[,region]==labelRegion[j])	
-          freq[j] <- length(indexRegion)	
-          if (length(indexRegion)>1)	
-            {	
-              std[j] <- var(subset$LogRatio[indexRegion])^0.5	
-            }	
-          reg[j] <- labelRegion[j]	
-          mean[j] <- mean(subset$LogRatio[indexRegion])	
-	}	
-      
-      clusterRegion <- data.frame(reg, freq, std, mean)
-      class(clusterRegion) <- "Cluster"
-      zone <- rep(1, length(CGH$PosOrder))
-      
-      if (length(labelRegion)==1) 	
-	{	
-          nbclasses <- 1	
-	}	
-      
-      else	
-	{	
-          dist <- dist(clusterRegion$mean)	
-          cluster <- hclustglad(dist, members=clusterRegion$freq, ...)
-                                        #if(genome==TRUE)
-                                        #	plclust(cluster,  labels=clusterRegion$reg, hang=-1, main=paste("Genome clustering on",region))	
-          
-                                        #subset <- data.frame.CGH(subset)
-          nbclasses <- cluster(subset, cluster, region, clusterRegion$reg, lambda, nmin, nmax, type, param)	
-          
-          classes <- cutree(cluster, k=nbclasses)
+    
+### vérifier le comportement pour les clusters de cardinalité 1
 
-          j <- 1	
-          for (j in 1:length(classes))	
-            {	
-              zone[which(CGH[,region]==clusterRegion$reg[j])] <- classes[j]	
-            }	
-	}	
+    sagg <- split(subset$LogRatio,subset[,region])
+    Mean <- sapply(sagg,mean)
+    Card <- sapply(sagg,NROW)
+    Var <- sapply(sagg,var)
+    Region <- as.numeric(as.character(names(Card)))
+    clusterRegion <- data.frame(Region, Card, Var, Mean)
+    clusterRegion$Var <- clusterRegion$Var*((clusterRegion$Card-1)/clusterRegion$Card)
+    clusterRegion$VarLike <- clusterRegion$Var
+    indexSingle <- which(clusterRegion$Card==1)
+    clusterRegion$Var[indexSingle] <- 0
+    clusterRegion$VarLike[indexSingle] <- 1
+    
+    
+    
+    
+    zone <- rep(1, length(CGH$PosOrder))
 
-      if (genome==FALSE)
-	{
-          CGH$ZoneChr <- zone
-          CGHna$ZoneChr <- rep(NA,length(CGHna$PosOrder))
-	}
-      else
-	{
-          CGH$ZoneGen <- zone
-          CGHna$ZoneGen <- rep(NA,length(CGHna$PosOrder))
 
-	}
-      
-      
-      CGH <- rbind(CGH, CGHna)
-      profileChr$profileValues <- CGH
-      if (verbose) print("findCluster: ending function")
-      return(profileChr)
-    }
+    if (length(clusterRegion[,1])==1) 	
+      {	
+        nbclasses <- 1
+        CGH$zone <- zone
+      }	
+    
+    else	
+      {
 
-  else
-    {
 
-      if (genome==FALSE)
-	{
-          CGH$ZoneChr <- rep(NA,length(CGH$PosOrder))
-	}
-      else
-	{
-          CGH$ZoneGen <- rep(NA,length(CGH$PosOrder))
+        sigma <- profileChr$findClusterSigma
+        dist <- dist(clusterRegion$Mean)
+        cluster <- hclustglad(dist, members=clusterRegion$Card, ...)
+        nbclasses <- cluster(cluster, region, clusterRegion, lambda, nmin, nmax, sigma, type, param)
+        classes <- cutree(cluster, k=nbclasses)
+        profileChr$NbClusterOpt <- nbclasses
+        clusterRegion <- data.frame(clusterRegion, zone=classes)
+        CGH <- merge(CGH, clusterRegion[,c("Region","zone")], by.x=region, by.y="Region")          
+        
+      }	
 
-	}
-      
-      profileChr$profileValues <- CGH
-      if (verbose) print("findCluster: ending function")
-      return(profileChr)
-      
-    }
-  
-}
+    
+    if (genome==FALSE)
+      {
+        CGH$ZoneChr <- CGH$zone
+        CGH <- subset(CGH, select=-zone)
+      }
+    else
+      {
+        CGH$ZoneGen <- CGH$zone
+        CGH <- subset(CGH, select=-zone)
+
+      }
+
+    
+    profileChr$profileValues <- CGH
+    if (verbose) print("findCluster: ending function")
+    return(profileChr)
+
+  }
+
+

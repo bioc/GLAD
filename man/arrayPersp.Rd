@@ -51,7 +51,10 @@ arrayPersp.arrayCGH(arrayCGH, variable,
 
 \value{An image is created on the current graphics device.}
 
-\author{Philippe Hupé, \email{Philippe.Hupe@curie.fr}.}
+\note{People interested in tools dealing with array CGH analysis can
+  visit our web-page \url{http://bioinfo.curie.fr}.}
+
+\author{Philippe Hupé, \email{glad@curie.fr}.}
 
 \seealso{\code{\link[base]{persp}}, \code{\link{arrayPlot}}, \code{\link{myPalette}}.}
 

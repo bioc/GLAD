@@ -1,7 +1,7 @@
 \name{kernelpen}
 \title{Kernelpen function}
 \alias{kernelpen}
-\description{Krenel function used in the penalty term.}
+\description{Kernel function used in the penalty term.}
 \usage{
 kernelpen(x, type="tricubic", param)
 
@@ -17,6 +17,9 @@ kernelpen(x, type="tricubic", param)
   the values \eqn{(1 - (x/d)^3)^3}. The value of d is given by
   \code{param=c(d=6)} for example.}
 
-\author{Philippe Hupé, \email{Philippe.Hupe@curie.fr}}
+\note{People interested in tools dealing with array CGH analysis can
+  visit our web-page \url{http://bioinfo.curie.fr}.}
+
+\author{Philippe Hupé, \email{glad@curie.fr}}
 
 \keyword{}

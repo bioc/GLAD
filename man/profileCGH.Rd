@@ -15,10 +15,10 @@ last object corresponds to data of only one chromosome.
   \code{profileValues} which is a \code{data.frame} with the following columns
   names:
   \item{LogRatio}{Test over Reference log-ratio.}
-  \item{PosOrder}{The rank position of each BAC on the genome.}
-  \item{PosBase}{The base position of each BAC on the genome.}
+  \item{PosOrder}{The rank position of each clone on the genome.}
+  \item{PosBase}{The base position of each clone on the genome.}
   \item{Chromosome}{Chromosome name.}
-  \item{BAC}{The name of the corresponding BAC.}
+  \item{clone}{The name of the corresponding clone.}
   \item{...}{Other elements can be added.}
 
   
@@ -26,19 +26,22 @@ last object corresponds to data of only one chromosome.
 
   \details{\code{LogRatio, Chromosome} and \code{PosOrder} are compulsory.}
   
-\author{Philippe Hupé, \email{Philippe.Hupe@curie.fr}.}
+\note{People interested in tools dealing with array CGH analysis can
+  visit our web-page \url{http://bioinfo.curie.fr}.}
 
-\seealso{\code{\link{glad}}.}
+\author{Philippe Hupé, \email{glad@curie.fr}.}
+
+\seealso{\code{\link{glad}}, \code{\link{as.profileCGH}}.}
 
 \keyword{}
 
 \examples{
   
 data(snijders)
-profileCGH <- list(profileValues=gm13330)
+profileCGH <- as.profileCGH(gm13330)
 class(profileCGH) <- "profileCGH"
 
-profileChr <- list(profileValues=gm13330[which(gm13330$Chromosome==1),])
+profileChr <- as.profileCGH(gm13330[which(gm13330$Chromosome==1),])
 class(profileChr) <- "profileChr"
 
 

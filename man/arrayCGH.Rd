@@ -20,7 +20,7 @@ Description of the object \code{arrayCGH}.
 
   The vector \code{arrayDesign} is composed of 4 values :  c(arrayCol,
   arrayRow, SpotCol, SpotRow). The array CGH is represented by arrayRow*arrayCol
-  blocs and each bloc is composed of Row*Col spots.
+  blocs and each bloc is composed of SpotRow*SpotCol spots.
 
   N.B. : Col takes the values in 1:arrayRow*SpotRow and Row takes the
   values in 1:arrayCol*SpotCol
@@ -28,7 +28,12 @@ Description of the object \code{arrayCGH}.
   
   }
 
-\author{Philippe Hupé, \email{Philippe.Hupe@curie.fr}.}
+\note{People interested in tools dealing with array CGH analysis can
+  visit our web-page \url{http://bioinfo.curie.fr}.}
+
+  
+\author{Philippe Hupé, \email{glad@curie.fr}.}
+
 
 \seealso{\code{\link{glad}}.}
 

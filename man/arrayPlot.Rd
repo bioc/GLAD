@@ -7,21 +7,20 @@
 The function \code{arrayPlot} creates spatial images of shades of gray or colors that correspond to the values of a statistic for each spot on the array. The statistic can be the intensity log-ratio, a spot quality measure (e.g. spot size or shape), or a test statistic. This function can be used to explore whether there are any spatial effects in the data, for example, print-tip or cover-slip effects.
 }
 \usage{
-
-arrayPlot.default(Statistic, Col, Row,
+arrayPlot.default <- function(Statistic, Col, Row,
                   ArrCol, ArrRow, SpotCol, SpotRow,
-		  mediancenter=FALSE,
-	          col=myPalette("green","red","yellow"),
+                  mediancenter=FALSE,
+                  col=myPalette("green", "red", "yellow"),
                   contour=FALSE, nlevels=5,
-		  zlim=zlim, bar=TRUE, ...)
+                  zlim=NULL, bar=c("none", "horizontal", "vertical"),
+                  layout=TRUE, ...) 
 
-
-arrayPlot.arrayCGH(arrayCGH, variable,
-	           mediancenter=FALSE,
-		   col=myPalette("green","red","yellow"),
-		   contour=FALSE, nlevels=5,
-		   zlim=zlim, bar=TRUE, ...)
-
+arrayPlot.arrayCGH <- function(arrayCGH, variable,
+                   mediancenter=FALSE,
+                   col=myPalette("green", "red", "yellow"),
+                   contour=FALSE, nlevels=5,
+                   zlim=NULL, bar=c("none", "horizontal", "vertical"),
+                   layout=TRUE, ...)
 }
 
 \arguments{
@@ -45,7 +44,11 @@ arrayPlot.arrayCGH(arrayCGH, variable,
     \code{\link{myPalette}}. By default \code{zlim} is the range of
     \code{z}.  Any values of \code{z} outside
     the interval \code{zlim} will be truncated to the relevant limit.}
-  \item{bar}{If \code{bar=TRUE}, a calibration color bar is shown to the right of the image.}
+  \item{bar}{If \code{bar=='horizontal'} (resp. \code{'vertical'}), an
+    horizontal (resp. vertical) calibration color bar is shown to the
+    right of the image.}
+  \item{layout}{If \code{layout==TRUE} plot layout is automatically set
+    when a color bar is asked for}
   \item{...}{Graphical parameters can be given as arguments to function
     \code{\link[base]{image}}.}
 
@@ -55,12 +58,16 @@ arrayPlot.arrayCGH(arrayCGH, variable,
   }
 
 
-\details{This function is very similar to the \code{\link[marrayPlots]{maImage}} written by Sandrine Dudoit with added options \code{zlim} and
-  \code{mediancenter}.}
+\details{This function is very similar to the
+  \code{\link[marrayPlots]{maImage}} written by Sandrine Dudoit with
+  added options \code{zlim}, \code{mediancenter} and \code{layout}.}
 
 \value{An image is created on the current graphics device.}
 
-\author{Philippe Hupé, \url{http://www.curie.fr}.}
+\note{People interested in tools dealing with array CGH analysis can
+  visit our web-page \url{http://bioinfo.curie.fr}.}
+
+\author{Philippe Hupé, \email{glad@curie.fr}.}
 
 \seealso{\code{\link[base]{image}}, \code{\link[base]{contour}}, \code{\link{arrayPersp}}, \code{\link{myPalette}}.}
 
@@ -80,9 +87,6 @@ array <- list(arrayValues=array2, arrayDesign=c(4,4,21,22))
 class(array) <- "arrayCGH"
 
 arrayPlot(array,"Log2Rat", main="Spatial Image of array CGH")
-
-
-
 
 }
 

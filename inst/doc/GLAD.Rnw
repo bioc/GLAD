@@ -8,6 +8,8 @@
 \usepackage{amsmath}
 \usepackage[authoryear,round]{natbib}
 \usepackage{hyperref}
+\usepackage{geometry}
+\geometry{verbose,letterpaper,tmargin=20mm,bmargin=20mm,lmargin=2.5cm,rmargin=2.5cm}
 \SweaveOpts{echo=FALSE}
 
 \begin{document}
@@ -25,6 +27,7 @@
 2. Service Bioinformatique, Institut Curie, 26, rue d'Ulm, Paris, 75248 cedex 05, France
 
 {\tt glad@curie.fr}
+{\tt http://bioinfo.curie.fr}
 \end{center}
 
 
@@ -78,13 +81,55 @@ This class stores synthetic values related to each clone available onto the arra
 
 LogRatio, Chromosome and PosOrder are compulsory.
 
+To create those objects you can use the function \emph{as.profileCGH}.
 
-\section{Graphical functions}
+
+\clearpage
+\section{Analysis of array CGH profile}
+
+A result of the GLAD methodology on cell line gm13330 \citep{snijders01} is presented in \textbf{Figure \ref{Figure:gm13330}}.
+
+<<echo=FALSE,print=FALSE>>=
+require(GLAD)
+@
 
 
 <<echo=TRUE,print=FALSE>>=
-require(GLAD)
+data(snijders)
+
+profileCGH <- as.profileCGH(gm13330)
+
+
+res <- glad(profileCGH, mediancenter=FALSE,
+                smoothfunc="lawsglad", bandwidth=10, round=2,
+                model="Gaussian", lkern="Exponential", qlambda=0.999,
+                base=FALSE,
+                lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
+                type="tricubic", param=c(d=6),
+                alpha=0.001, msize=5,
+                method="centroid", nmax=8,
+                verbose=FALSE)
+
 @
+
+
+
+
+\begin{figure}[!h]
+\begin{center}
+<<fig=TRUE,echo=FALSE,width=17,height=12>>=
+plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, plotband=FALSE)
+@
+\end{center}
+\caption{\label{Figure:gm13330}Results of glad on cell line gm13330}
+\end{figure}
+
+
+\clearpage
+\section{Graphical functions}
+
+\subsection{Plot of raw array data}
+
 
 
 <<echo=TRUE,print=FALSE>>=
@@ -102,7 +147,7 @@ class(array) <- "arrayCGH"
 \begin{figure}[!h]
 \begin{center}
 <<fig=TRUE,echo=TRUE>>=
-arrayPlot(array,"Log2Rat", bar=FALSE)
+arrayPlot(array,"Log2Rat", bar="none")
 @
 \end{center}
 \caption{Spatial image of array CGH}
@@ -119,63 +164,74 @@ arrayPersp(array,"Log2Rat", box=FALSE, theta=110, phi=40, bar=FALSE)
 \caption{Perspective image of array CGH}
 \end{figure}
 
+\clearpage
+\subsection{Plot of genomic profile}
 
-\section{Analysis of array CGH profile}
-
-A result of the GLAD methodology on cell line gm13330 \citep{snijders01} is presented in \textbf{Figure \ref{Figure:gm13330}}.
-
-<<echo=TRUE,print=FALSE>>=
+<<echo=FALSE,print=FALSE>>=
 data(snijders)
-profileCGH <- list(profileValues=gm13330)
-class(profileCGH) <- "profileCGH"
 
-res <- glad(profileCGH, smoothfunc="laws", base=FALSE,
-               bandwidth=10, round=2, lambdabreak=8, lambdacluster=8,
-               lambdaclusterGen=40, alpha=0.001, method="centroid",
-               nmax=8, lkern="exponential", model="Gaussian",
-               qlambda=0.999)
+profileCGH <- as.profileCGH(gm13330)
+
+
+res <- glad(profileCGH, mediancenter=FALSE,
+                smoothfunc="lawsglad", bandwidth=10, round=2,
+                model="Gaussian", lkern="Exponential", qlambda=0.999,
+                base=FALSE,
+                lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
+                type="tricubic", param=c(d=6),
+                alpha=0.001, msize=5,
+                method="centroid", nmax=8,
+                verbose=FALSE)
+
 @
-
 
 
 
 \begin{figure}[!h]
 \begin{center}
-<<fig=TRUE,echo=FALSE,width=9,height=6>>=
-# color code for region status
-
-col <- rep("yellow",length(res$profileValues$PosOrder))
-col[which(res$profileValues$ZoneGNL==-1)] <- "green"
-col[which(res$profileValues$ZoneGNL==1)] <- "red"
-
-# outliers
-
-outliers <- rep(20,length(res$profileValues$PosOrder))
-outliers[which(res$profileValues$OutliersTot!=0)] <- 13
-
-plot(LogRatio ~ PosOrder, data=res$profileValues, col=col, pch=outliers)
-
-# Limit between chromosomes
-
-LimitChr <- unique(res$profileValues$LimitChr)+0.5
-abline(v=LimitChr, col="grey", lty=2)
-
-lines(res$profileValues$Smoothing ~ res$profileValues$PosOrder, col="black")
-
-# Breakpoints identified
-
-indexBP <- which(res$profileValues$Breakpoints==1)
-BP <- res$profileValues$PosOrder[indexBP]+0.5
-abline(v=BP, col="red", lty=2)
+<<fig=TRUE,echo=TRUE,width=17,height=12>>=
+plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing", plotband=FALSE)
 @
 \end{center}
-\caption{\label{Figure:gm13330}Results of glad on cell line gm13330}
+\caption{Genomic profile on the whole genome}
+\end{figure}
+
+
+\begin{figure}[!h]
+\begin{center}
+<<fig=TRUE,echo=TRUE,width=17,height=12>>=
+plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing")
+@
+\end{center}
+\caption{Genomic profile on the whole genome and cytogenetic banding}
+\end{figure}
+
+\begin{figure}[!h]
+\begin{center}
+<<fig=TRUE,echo=TRUE,width=17,height=12>>=
+text <- list(x=c(90000,200000),y=c(0.15,0.3),labels=c("NORMAL","GAIN"), cex=2)
+plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1,
+Smoothing="Smoothing", plotband=FALSE, text=text)
+@
+\end{center}
+\caption{Genomic profile for chromosome 1}
+\end{figure}
+
+\begin{figure}[!h]
+\begin{center}
+<<fig=TRUE,echo=TRUE,width=17,height=12>>=
+text <- list(x=c(90000,200000),y=c(0.15,0.3),labels=c("NORMAL","GAIN"), cex=2)
+plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1,
+Smoothing="Smoothing", text=text, main="Chromosome 1")
+@
+\end{center}
+\caption{Genomic profile for chromosome 1 and cytogenetic banding with labels}
 \end{figure}
 
 
 
+\clearpage
 
-\newpage
 \bibliographystyle{apalike}
 \bibliography{biblio}
 

@@ -18,7 +18,7 @@ A data frame composed of the following elements :
 \item{Col}{Column location on the array.}
 \item{Row}{Row location on the array.}
 }
-\source{Institut Curie, \email{Philippe.Hupe@curie.fr}.}
+\source{Institut Curie, \email{glad@curie.fr}.}
 \examples{
 data(arrayCGH)
 data <- array1 #array1 to array3

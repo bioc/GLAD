@@ -1,3 +1,35 @@
+
+##################################
+### release 1.0.2 (21-03-2005) ###
+##################################
+New functions:
+	- as.profileCGH: creation of "profileCGH" object.
+	- ChrNumeric: convert chromosome into numeric values.
+	- plotProfile: plot genomic profile with breakpoints, outliers, smoothing line and cytogenetic banding.
+
+
+In arrayPlot function:
+	- an option for layout has been added. zlim and bar option have been modified to ensure consistency between them.
+
+
+In glad function:
+	- output contains fields in the same order as the input data plus the specific fields created by glad
+	- the outliers MAD are calculated on region with at least a minimal cardinality of msize (msize parameter)
+	- there are new attributes for the object profileCGH:
+
+		* SigmaC is a data.frame (with Chromosome and Value fields)
+		giving the estimation of the standard deviation for each chromosome
+		(based on the Inter Quartile Range estimation).
+
+		* BkpInfo is a data.frame giving the list of breakpoints.
+
+	- lawsglad: you can use smoothfunc="lawsglad" which gives the same results as "laws" bur it runs faster.
+	- the parameter mediancenter: if 'TRUE', LogRatio are center on their median. The default behavior in the previous
+	GLAD release was to automatically center the LogRatio on their median.
+	- The smoothing values correspond to the median of each MSHR (i.e. 'Region'). In the previous release,
+	the output of the smoothing function was given.
+
+
 ##################################
 ### release 1.0.1 (22-10-2004) ###
 ##################################
