@@ -160,9 +160,12 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
     profileCGH$profileValues <- profileCGH$profileValues[, fieldorder]
 
     indexBkp <- which(profileCGH$profileValues$Breakpoints==1)
-    nomchamp <- c("PosOrder","PosBase","Clone","Chromosome")
-    BkpInfo <- profileCGH$profileValues[indexBkp,intersect(nomchamp,names(profileCGH$profileValues))]
-    profileCGH$BkpInfo <- BkpInfo
+    if (length(indexBkp)>0)
+      {
+        nomchamp <- c("PosOrder","PosBase","Clone","Chromosome")
+        BkpInfo <- profileCGH$profileValues[indexBkp,intersect(nomchamp,names(profileCGH$profileValues))]
+        profileCGH$BkpInfo <- BkpInfo
+      }
 
     nomliste <- names(profileCGH)
     nomliste[which(nomliste=="Sigma")] <- "SigmaC"
