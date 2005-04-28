@@ -1,3 +1,8 @@
+##################################
+### release 1.0.3 (28-04-2005) ###
+##################################
+In glad function:
+	- if there is no breakpoints, no object BkpInfo is returned (otherwise there was error when usinf plotProfile)
 
 ##################################
 ### release 1.0.2 (21-03-2005) ###
