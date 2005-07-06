@@ -7,10 +7,13 @@
 The function \code{arrayPersp} creates perspective images of shades of gray or colors that correspond to the values of a statistic for each spot on the array. The statistic can be the intensity log-ratio, a spot quality measure (e.g. spot size or shape), or a test statistic. This function can be used to explore whether there are any spatial effects in the data, for example, print-tip or cover-slip effects.
 }
 \usage{
+
 arrayPersp.default(Statistic, Col, Row,
                    ArrCol, ArrRow, SpotCol, SpotRow,
-	           mediancenter=FALSE,
-		   col=myPalette("green","red","yellow"),
+                   mediancenter=FALSE,
+                   col=myPalette("green","red","yellow"),
+                   zlim=zlim, bar=TRUE, ...)
+
 
 arrayPersp.arrayCGH(arrayCGH, variable,
    	            mediancenter=FALSE,
