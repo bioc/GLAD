@@ -140,14 +140,37 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
     profileCGH$profileValues$NewPosBase <- profileCGH$profileValues$PosBase + profileCGH$profileValues$Length
 
     def.par <- par(no.readonly = TRUE)
+
+ ##    if (plotband)
+##       {
+##         layout(c(1,2), heights=c(4,1))
+##         par(mar=c(0,4,5,2))
+##       }
+
+
     if (plotband)
       {
-        layout(c(1,2), heights=c(4,1))
+### Cytobandes
 
-### Profile CGH
-    par(mar=c(0,4,5,2))
+        layout(c(1,2), heights=c(1,4))
+
+        par(mar=c(0,4,4,2))
+
+        plot(0, type="n", xlim=c(0, max(cytobandNew$End)), ylim=c(-1.5,1.5), xaxt="n", yaxt="n", ylab="", xlab="")
+        
+        LabelChrCyto <- unique(cytobandNew$Chromosome)
+
+        
+        for (i in 1:NbChr)
+          {
+            plotCytoBand(cytobandNew, Chromosome=LabelChrCyto[i], labels=labels, y=0, height=2, colCytoBand=colCytoBand, colCentro=colCentro)
+          }
+
+
+        par(mar=c(1,4,0,2))
+
       }
-
+    
     ### graphe des segments
 
 
@@ -156,7 +179,6 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$Chromosome,profileCGH$profileValues$PosBase),]
         NbPos <- length(profileCGH$profileValues[,1])
         PosMax <- max(profileCGH$profileValues$NewPosBase) + 1
-        #Pos <- c(profileCGH$profileValues$NewPosBase, PosMax)
         Pos <- profileCGH$profileValues$NewPosBase[1:(NbPos-1)]
         PosNext <- profileCGH$profileValues$NewPosBase[2:NbPos]
         InterPos <- Pos + (PosNext-Pos)/2
@@ -171,11 +193,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         Smt2 <- profileCGH$profileValues[,Smoothing][2:NbPos]
         Smt2 <- c(SmtStart, Smt2, SmtEnd)
         
-        #Pos <- c(profileCGH$profileValues$NewPosBase,max(profileCGH$profileValues$NewPosBase)+1)[2:(NbPos+1)]
-        #Pos <- profileCGH$profileValues$NewPosBase + (Pos - profileCGH$profileValues$NewPosBase)/2
-        #Pos <- c(0,Pos)    
-        #Smt1 <- c(profileCGH$profileValues[,Smoothing][1],profileCGH$profileValues[,Smoothing])
-        #Smt2 <- c(profileCGH$profileValues[,Smoothing],profileCGH$profileValues[,Smoothing][NbPos])
+
         datasmt <- data.frame(PosBase=c(InterPos,InterPos),Smoothing=c(Smt1,Smt2))
         datasmt <- unique(datasmt)
         datasmt <- datasmt[order(datasmt$PosBase),]
@@ -195,7 +213,8 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         outliers <- rep(20,length(profileCGH$profileValues$PosOrder))
         outliers[which(profileCGH$profileValues$OutliersTot!=0)] <- 13
 
-        plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues, pch=outliers, col=col, xaxt="n", xlab="", ylab=variable, ...)
+        plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
+        pch=outliers, col=col, xaxt="n", xlab="", ylab=variable, ...)
 
 
         if (!is.null(Smoothing))
@@ -218,7 +237,6 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
     else
       {
         plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues, pch=20, xaxt="n", xlab="", ylab=variable, ...)
-
         if (Bkp)          
           {
             if (is.data.frame(profileCGH$BkpInfo))
@@ -242,24 +260,9 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         text(text$x, text$y, labels=text$labels, cex=text$cex)
       }
 
-    if (plotband)
-      {
-### Cytobandes
-    par(mar=c(5,4,0,2))
-
-    plot(0, type="n", xlim=c(0, max(cytobandNew$End)), ylim=c(-1.5,1.5), xaxt="n", yaxt="n", ylab="", xlab="")
-  
-    LabelChr <- unique(cytobandNew$Chromosome)
-
-    
-    for (i in 1:NbChr)
-      {
-        plotCytoBand(cytobandNew, Chromosome=LabelChr[i], labels=labels, y=0, height=2, colCytoBand=colCytoBand, colCentro=colCentro)
-      }
-
-  }
 
 
-    par(def.par)
+
+    #par(def.par)
 
   }

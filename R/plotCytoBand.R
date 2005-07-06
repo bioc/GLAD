@@ -43,7 +43,7 @@ plotCytoBand.default <- function(cytoband, y=-1, Chromosome=1, labels=TRUE, heig
 
     if (labels)
       {
-        axis(side=1, at=CytoPos, labels=as.character(dataChr$Band), las=2)
+        axis(side=3, at=CytoPos, labels=as.character(dataChr$Band), las=2)
       }
 
     
