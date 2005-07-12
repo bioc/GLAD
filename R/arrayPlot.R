@@ -228,7 +228,7 @@ arrayPersp.arrayCGH<-function(arrayCGH, variable,
   nrow <- arrayCGH$arrayDesign[2]*arrayCGH$arrayDesign[4]
   z <- matrix(z, ncol, nrow, byrow=TRUE)
 
-  par(mar=c(4,4,4,4))
+  par(mar=c(1, 1, 4, 1))
 
   if(bar)
     {
