@@ -11,17 +11,17 @@ myPalette(low = "white", high = c("green", "red"), mid=NULL, k =50)
 }
 %- maybe also `usage' for other objects documented here.
 \arguments{
-  \item{low}{Color for the lower end of the color palette, specified using any of the three kinds of R colors, i.e., either a color name (an element of \code{\link[grDevices]{colors}}), a hexadecimal string of the form \code{"#rrggbb"}, or an integer \code{i} meaning \code{palette()[i]}.}
+  \item{low}{Color for the lower end of the color palette, specified using any of the three kinds of R colors, i.e., either a color name (an element of \code{\link{colors}}), a hexadecimal string of the form \code{"#rrggbb"}, or an integer \code{i} meaning \code{palette()[i]}.}
   \item{high}{Color for the upper end of the color palette, specified
   using any of the three kinds of R colors, i.e., either a color name
-  (an element of \code{\link[grDevices]{colors}}), a hexadecimal string of the form
+  (an element of \code{\link{colors}}), a hexadecimal string of the form
   \code{"#rrggbb"}, or an integer \code{i} meaning \code{palette()[i]}.}
- \item{mid}{Color for the middle portion of the color palette, specified using any of the three kinds of R colors, i.e., either a color name (an element of \code{\link[grDevices]{colors}}), a hexadecimal string of the form \code{"#rrggbb"}, or an integer \code{i} meaning \code{palette()[i]}.}
+ \item{mid}{Color for the middle portion of the color palette, specified using any of the three kinds of R colors, i.e., either a color name (an element of \code{\link{colors}}), a hexadecimal string of the form \code{"#rrggbb"}, or an integer \code{i} meaning \code{palette()[i]}.}
   \item{k}{Number of colors in the palette.}
 }
 
 \value{
-  A "character" vector of color names. This can be used to create a user-defined color palette for subsequent graphics by \code{\link[grDevices]{palette}}, in a \code{col=} specification in graphics functions, or in \code{\link{par}}.
+  A "character" vector of color names. This can be used to create a user-defined color palette for subsequent graphics by \code{\link{palette}}, in a \code{col=} specification in graphics functions, or in \code{\link{par}}.
 }
 
 
@@ -30,8 +30,8 @@ myPalette(low = "white", high = c("green", "red"), mid=NULL, k =50)
 
 \keyword{}
 
-\seealso{\code{\link[grDevices]{palette}}, \code{\link[grDevices]{rgb}},
-\code{\link[grDevices]{colors}}, \code{\link[grDevices]{col2rgb}}, \code{\link{image}}, \code{\link{ColorBar}}, \code{\link{arrayPlot}}.}
+\seealso{\code{\link{palette}}, \code{\link{rgb}},
+\code{\link{colors}}, \code{\link{col2rgb}}, \code{\link{image}}, \code{\link{ColorBar}}, \code{\link{arrayPlot}}.}
 
 \examples{
 

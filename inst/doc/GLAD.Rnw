@@ -43,11 +43,11 @@ This document presents an overview of the {\tt GLAD} package (Gain and Loss Anal
 
 \subsection{Public data set}
 
-We used the public data set described in \cite{snijders01}. The data correspond to 15 human cell strains with known karyotypes (12 fibroblast cell strains, 2 chorionic villus cell strains, 1 lymploblast cell strain) from the NIGMS Human Genetics Cell Repository ({\tt http://locus.umdnj.edu/nigms}). Each cell strain has been hybridized with an array CGH of 2276 BAC's, spotted in triplicate.
+We used the public data set described in \cite{snijders01}. The data correspond to 15 human cell strains with known karyotypes (12 fibroblast cell strains, 2 chorionic villus cell strains, 1 lymploblast cell strain) from the NIGMS Human Genetics Cell Repository ({\tt http://locus.umdnj.edu/nigms}). Each cell strain has been hybridized with an array CGH of 2276 BAC's, spotted in triplicate. Two array CGH profiles from the data obtained by \cite{veltman03} are available.
 
 \subsection{Bladder cancer data}
 
-Bladder cancer data from tumors collected at Henri Mondor Hospital (Créteil, France) \citep{billerey01} have been hybridized on arrays CGH composed of 2464 BACs (Radvanyi, Pinkel et al., unpublished results). In this data, only the log-ratios are provided and no information about clones is available since the data are not yet published. These data allow only some graphical functionnalities to be shown and will be used as a support to illustrate some functions for array nomrlization (not yes available in the current version of the package).
+Bladder cancer data from tumors collected at Henri Mondor Hospital (Créteil, France) \citep{billerey01} have been hybridized on arrays CGH composed of 2464 BACs (Radvanyi, Pinkel et al., unpublished results). In this data, only the log-ratios are provided and no information about clones is available since the data are not yet published. These data allow only some graphical functionalities to be shown and will be used as a support to illustrate some functions for array normalization (not yes available in the current version of the package).
 
 
 \section{GLAD classes}
@@ -63,7 +63,7 @@ This class stores raw values after images analysis. The object arrayCGH is a lis
 \end{description}
 
 
-\noindent The vector arrayDesign is composed of 4 values : c(arrayCol, arrayRow, SpotCol, SpotRow). The array CGH is represented by arrayRow*arrayCol blocs and each bloc is composed of Row*Col spots.
+\noindent The vector arrayDesign is composed of 4 values : c(arrayCol, arrayRow, SpotCol, SpotRow). The array CGH is represented by arrayRow*arrayCol blocs and each bloc is composed of SpotRow*SpotCol spots.
 N.B. : Col takes the values in 1:arrayRow*SpotRow and Row takes the values in 1:arrayCol*SpotCol
 
 \subsection{profileCGH and profileChr}
@@ -72,10 +72,10 @@ This class stores synthetic values related to each clone available onto the arra
 
 \begin{description}
 \item[LogRatio] Test over Reference log-ratio.
-\item[PosOrder] The rank position of each BAC on the genome.
-\item[PosBase] The base position of each BAC on the genome.
+\item[PosOrder] The rank position of each clone on the genome.
+\item[PosBase] The base position of each clone on the genome.
 \item[Chromosome] Chromosome name.
-\item[BAC] The name of the corresponding BAC.
+\item[Clone] The name of the corresponding clone.
 \item[...] Other elements can be added.
 \end{description}
 
@@ -86,6 +86,9 @@ To create those objects you can use the function \emph{as.profileCGH}.
 
 \clearpage
 \section{Analysis of array CGH profile}
+
+
+\subsection{The \emph{glad} function}
 
 A result of the GLAD methodology on cell line gm13330 \citep{snijders01} is presented in \textbf{Figure \ref{Figure:gm13330}}.
 
@@ -101,7 +104,7 @@ profileCGH <- as.profileCGH(gm13330)
 
 
 res <- glad(profileCGH, mediancenter=FALSE,
-                smoothfunc="lawsglad", bandwidth=10, round=2,
+                smoothfunc="lawsglad", bandwidth=10, round=1.5,
                 model="Gaussian", lkern="Exponential", qlambda=0.999,
                 base=FALSE,
                 lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
@@ -118,11 +121,90 @@ res <- glad(profileCGH, mediancenter=FALSE,
 \begin{figure}[!h]
 \begin{center}
 <<fig=TRUE,echo=FALSE,width=17,height=12>>=
-plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, plotband=FALSE)
+plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, plotband=FALSE, Smoothing="Smoothing")
 @
 \end{center}
-\caption{\label{Figure:gm13330}Results of glad on cell line gm13330}
+\caption{\label{Figure:gm13330}Results of glad on cell line gm13330 (Snijders data).}
 \end{figure}
+
+\clearpage
+\subsection{The \emph{daglad} function}
+
+
+The algorithm implemented in this function is a slightly modified version of the GLAD algorithm.
+
+<<echo=TRUE,print=FALSE>>=
+data(veltman)
+
+profileCGH <- as.profileCGH(P9)
+
+profileCGH <- daglad(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
+                     smoothfunc="lawsglad", lkern="Exponential", model="Gaussian",
+                     qlambda=0.999,  bandwidth=10, base=FALSE, round=1.5,
+                     lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
+                     method="centroid", nmin=1, nmax=8,
+                     amplicon=1, deletion=-5, deltaN=0.2,  forceGL=c(-0.3,0.3), nbsigma=3,
+                     MinBkpWeight=0.35, CheckBkpPos=TRUE)
+
+
+@ 
+
+
+\begin{figure}[!h]
+\begin{center}
+<<fig=TRUE,echo=FALSE,width=17,height=12>>=
+plotProfile(profileCGH, Smoothing="Smoothing", Bkp=TRUE, plotband=FALSE)
+abline(h=c(-0.3,-0.2,0.2,0.3),col=c("green","black","black","red"))
+axis(2,at=c(-0.3,-0.2,0.2,0.3), labels=c("forceGL[1]","-deltaN","+deltaN","forceGL[2]"), las=2)
+@
+\end{center}
+\caption{\label{Figure:P9-1}Results of daglad on the patient P9 (Veltman data).}
+\end{figure}
+
+
+
+The \emph{daglad} function allows to choose some threshold to help the algorithm to identify the status of the genomic regions. The thresholds are given in the following parameters:
+\begin{itemize}
+\item deltaN
+\item forceGL
+\item deletion
+\item amplicon
+\end{itemize}
+
+
+Comparing \textbf{Figure \ref{Figure:P9-1}} and \textbf{Figure \ref{Figure:P9-2}} shows the influence of two different sets of parameters.
+
+<<echo=TRUE,print=FALSE>>=
+data(veltman)
+
+profileCGH <- as.profileCGH(P9)
+
+profileCGH <- daglad(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
+                     smoothfunc="lawsglad", lkern="Exponential", model="Gaussian",
+                     qlambda=0.999,  bandwidth=10, base=FALSE, round=1.5,
+                     lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
+                     method="centroid", nmin=1, nmax=8,
+                     amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
+                     MinBkpWeight=0.35, CheckBkpPos=TRUE)
+
+
+@ 
+
+
+\begin{figure}[!h]
+\begin{center}
+<<fig=TRUE,echo=FALSE,width=17,height=12>>=
+plotProfile(profileCGH, Smoothing="Smoothing", Bkp=TRUE, plotband=FALSE)
+abline(h=c(-0.15,-0.1,0.1,0.15),col=c("green","black","black","red"))
+axis(2,at=c(-0.15,-0.1,0.1,0.15), labels=c("forceGL[1]","-deltaN","+deltaN","forceGL[2]"), las=2)
+@
+\end{center}
+\caption{\label{Figure:P9-2}Results of daglad on the patient P9 (Veltman data) - Influence of the thresholds.}
+\end{figure}
+
+
+The \emph{daglad} function allows a smoothing step over the whole genome (if \emph{genomestep=TRUE}) where all the chromosomes are concatenated together. During this step, the cluster which corresponds to the Normal DNA level is identified: the thresholds used in the function (deltaN, forceGL, amplicon, deletion) are then compared to the median of this cluster.
+
 
 
 \clearpage

@@ -9,10 +9,12 @@ as.profileCGH           Create an object of class profileCGH
 ChrNumeric              Convert chromosome into numeric values
 ColorBar                Calibration bar for color images
 cytoband                Cytogenetic banding
+daglad                  Analysis of array CGH data
 glad                    Analysis of array CGH data
 gm00143                 Public CGH data of Snijders
 hclustglad              Hierarchical Clustering
 kernelpen               Kernelpen function
 myPalette               Microarray color palette
+P9                      Public CGH data of Veltman
 plotProfile             Plot genomic profile and cytogenetic banding
 profileCGH              Objects of Class profileCGH and profileChr

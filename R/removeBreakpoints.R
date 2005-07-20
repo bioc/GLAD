@@ -12,7 +12,7 @@ removeBreakpoints <- function(...)
 
 
 
-removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic", param=c(d=6), verbose=FALSE, ...)
+removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic", param=c(d=6), verbose=FALSE, msize=5, alpha=0.001,...)
   {
 
 
@@ -23,27 +23,16 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
         print(paste("Call function:", call))
       }
     
-    CGH <- profileChr$profileValues
-
-
-    subset <- profileChr
-        class(subset) <- "profileChr"
-        
-
-#########################################################################################
-###
-###  la fonction IQR permet d'estimer l'écart-type qui sera utilisé dans la fonction kernelpen
-###
-##########################################################################################
+    
 
     sigma <- profileChr$findClusterSigma
 
 
 ### Appel de la fonction loopRemove
-        CGH <- loopRemove(subset, CGH, sigma, lambda=lambda, type=type, param=param, verbose=verbose, ...)
+        profileChr <- loopRemove(profileChr, sigma, lambda=lambda,
+                                  type=type, param=param, verbose=verbose, msize=msize, alpha=alpha)
 
 
-        profileChr$profileValues <- CGH
         return(profileChr)
 
 

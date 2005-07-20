@@ -18,7 +18,7 @@ last object corresponds to data of only one chromosome.
   \item{PosOrder}{The rank position of each clone on the genome.}
   \item{PosBase}{The base position of each clone on the genome.}
   \item{Chromosome}{Chromosome name.}
-  \item{clone}{The name of the corresponding clone.}
+  \item{Clone}{The name of the corresponding clone.}
   \item{...}{Other elements can be added.}
 
   
@@ -38,6 +38,7 @@ last object corresponds to data of only one chromosome.
 \examples{
   
 data(snijders)
+gm13330$Clone <- gm13330$BAC
 profileCGH <- as.profileCGH(gm13330)
 class(profileCGH) <- "profileCGH"
 

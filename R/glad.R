@@ -1,6 +1,7 @@
-# Copyright (C) 2003 Institut Curie
-# Author(s): Philippe Hupé (Institut Curie) 2003
-# Contact: glad@curie.fr
+### Copyright (C) 2003 Institut Curie
+### Author(s): Philippe Hupé (Institut Curie) 2003
+### Contact: glad@curie.fr
+### http://bioinfo.curie.fr
 
 
 
@@ -11,7 +12,7 @@ glad <- function(...)
 
 
 glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
-                            smoothfunc="lawsglad", bandwidth=10, round=2,
+                            smoothfunc="lawsglad", bandwidth=10, round=1.5,
                             model="Gaussian", lkern="Exponential", qlambda=0.999,
                             base=FALSE, sigma=NULL,
                             lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
@@ -45,7 +46,8 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         print(paste("You have chosen smoothfunc=", smoothfunc))
         print(paste("Choose smoothfunc=lawsglad if you want the process runs faster"))
       }
-    
+
+    ### Méthode d'estimation du sigma
 
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, verbose=verbose, model=model, lkern=lkern, qlambda=qlambda)
 ### LogRatio are median-centered
@@ -56,8 +58,6 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         profileCGH$profileValues$Smoothing <- profileCGH$profileValues$Smoothing - med
       }
     
-
-
     
     
 ### profile by chromosome	
@@ -72,7 +72,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
     Init <- indice
     Init <- 0
 
-    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio=Init, BeforePosOrder=Init, NextPosOrder=Init, OutliersMad=Init, OutliersTot=Init, ZoneChr=Init)
+    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio=Init, OutliersMad=Init, OutliersTot=Init, ZoneChr=Init)
     FieldOrder <- names(profileCGH$profileValues)
     
     for (i in 1:NbChr)
@@ -85,8 +85,10 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
         profileChr$findClusterSigma <- profileCGH$Sigma$Value[i]
 
-        profileChr <- removeBreakpoints(profileChr, lambda=lambdabreak, alpha=alpha, msize=msize, type=type, param=param, verbose=verbose)	
-        profileChr <- detectOutliers(profileChr, region="Region", alpha=alpha, msize=msize, verbose=verbose)	
+        profileChr <- removeBreakpoints(profileChr, lambda=lambdabreak, alpha=alpha, msize=msize,
+                                        type=type, param=param, verbose=verbose)
+        
+        #profileChr <- detectOutliers(profileChr, region="Region", alpha=alpha, msize=msize, verbose=verbose)	
 	
 ### ça ne doit pas servir : à vérifier
         nmin <- 1	
@@ -96,7 +98,10 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
           }
 
         
-        profileChr <- findCluster(profileChr, method=method, genome=FALSE, lambda=lambdacluster, nmin=1, nmax=nmax,type=type, param=param, verbose=verbose)
+        profileChr <- findCluster(profileChr, method=method, genome=FALSE,
+                                  lambda=lambdacluster, nmin=1, nmax=nmax,type=type,
+                                  param=param, verbose=verbose)
+        
         profileChr <- detectOutliers(profileChr, region="ZoneChr", alpha=alpha, msize=msize)	
  	
         nbzone <- length(unique((profileChr$profileValues$ZoneChr[which(profileChr$profileValues$ZoneChr!=0)])))	
@@ -117,14 +122,19 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         IQRdiff <- function(y) IQR(diff(y))/1.908
         profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$Chromosome, profileCGH$profileValues$PosOrder),]
         profileCGH$findClusterSigma <- IQRdiff(profileCGH$profileValues$LogRatio)
+                
+        
       }
+    
     else
       {
-        profileCGH$findClusterSigma <- sigma
+        profileCGH$findClusterSigma <- sigma^0.5
       }
 
     if (verbose) print("GLAD: starting clustering for whole genome")
-    timeClusterGenome <- system.time(profileCGH <- findCluster(profileCGH, region="ZoneChr", method=method, genome=TRUE, lambda=lambdaclusterGen, nmin=1, nmax=nmax, type=type, param=param, verbose=verbose))
+    profileCGH <- findCluster(profileCGH, region="ZoneChr", method=method, genome=TRUE,
+                              lambda=lambdaclusterGen, nmin=1, nmax=nmax, type=type,
+                              param=param, verbose=verbose)
     if (verbose)
       {
         print("GLAD: ending clustering for whole genome")
@@ -132,7 +142,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
       }
     
     class(profileCGH) <- "profileCGH"
-    timeaffectationGNL <- system.time(profileCGH <- affectationGNL(profileCGH, verbose=verbose))
+    profileCGH <- affectationGNL(profileCGH, verbose=verbose)
 
     if (verbose)
       {
@@ -158,6 +168,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 ### ordre des champs
     fieldorder <- c(fieldinput, fieldglad)
     profileCGH$profileValues <- profileCGH$profileValues[, fieldorder]
+
 
     indexBkp <- which(profileCGH$profileValues$Breakpoints==1)
     if (length(indexBkp)>0)

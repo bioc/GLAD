@@ -15,7 +15,8 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
                                    labels=TRUE, plotband=TRUE, unit=0,
                                    colDAGLAD=c("black","blue","red","green","yellow"),
                                    colCytoBand=c("white","darkblue"),
-                                   colCentro="red", text=NULL, ...)
+                                   colCentro="red", text=NULL,
+                                   main="", ...)
   {
 
     
@@ -156,7 +157,8 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
 
         par(mar=c(0,4,4,2))
 
-        plot(0, type="n", xlim=c(0, max(cytobandNew$End)), ylim=c(-1.5,1.5), xaxt="n", yaxt="n", ylab="", xlab="")
+        plot(0, type="n", xlim=c(0, max(cytobandNew$End)),
+        ylim=c(-1.5,1.5), xaxt="n", yaxt="n", ylab="", xlab="")
         
         LabelChrCyto <- unique(cytobandNew$Chromosome)
 
@@ -167,7 +169,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
           }
 
 
-        par(mar=c(1,4,0,2))
+        par(mar=c(4,4,0,2))
 
       }
     
@@ -200,6 +202,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
       }
 
 
+    
     if (length(intersect(names(profileCGH$profileValues),"ZoneGNL"))>=1)
       {
 
@@ -213,8 +216,18 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         outliers <- rep(20,length(profileCGH$profileValues$PosOrder))
         outliers[which(profileCGH$profileValues$OutliersTot!=0)] <- 13
 
-        plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
-        pch=outliers, col=col, xaxt="n", xlab="", ylab=variable, ...)
+        if (plotband)
+          {
+            
+            plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
+                 pch=outliers, col=col, xaxt="n", xlab=main,
+                 ylab=variable, ...)
+          }
+        else
+          {
+            plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
+                 pch=outliers, col=col, xaxt="n", xlab="", ylab=variable, main=main)
+          }
 
 
         if (!is.null(Smoothing))
@@ -236,7 +249,17 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
       }
     else
       {
-        plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues, pch=20, xaxt="n", xlab="", ylab=variable, ...)
+        if (plotband)
+          {
+            plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
+                 pch=20, xaxt="n", xlab=main, ylab=variable, ...)
+          }
+        else
+          {
+            plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
+                 pch=20, xaxt="n", xlab="", ylab=variable, main=main, ...)
+          }
+        
         if (Bkp)          
           {
             if (is.data.frame(profileCGH$BkpInfo))

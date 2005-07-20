@@ -5,6 +5,7 @@ as.profileCGH <- function(object)
 
 as.profileCGH.data.frame <- function(object)
   {
+
     profileCGH <- object
     nomchamp <- c("LogRatio","PosOrder","Chromosome")
 
@@ -49,6 +50,9 @@ as.profileCGH.data.frame <- function(object)
         profileCGH <- list(profileValues=profileCGH)
         class(profileCGH) <- "profileCGH"
       }
+
+
+###
 
     return(profileCGH)
     

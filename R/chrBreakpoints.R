@@ -14,7 +14,8 @@ chrBreakpoints <- function(...)
 
 
 
-chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, sigma=NULL, bandwidth=10, round=2, verbose=FALSE, ...)
+chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FALSE, sigma=NULL,
+                                      bandwidth=10, round=2, verbose=FALSE, ...)
   {
  
 
@@ -34,23 +35,33 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
       resetsigma <- FALSE
 
 
+### le round est fait a de nombreux endroits différents: cela peut
+### surement être changé
 
 
-#### local function
+
+#### local functions
     IQRdiff <- function(y) IQR(diff(y))/1.908
 
+    roundglad <- function(x, digits=2)
+      {
+        dec <- (digits-trunc(digits))
+        if (dec==0)
+          dec <- 1
+        
+        r <- 10^(-trunc(digits))*dec
+        x <- r*round(x/r)
+        return(x)
+      }
 
-####data <- data.frame(LogRatio=LogRatio, Position=Position, Chromosome=Chromosome)
-
-    data <- profileCGH$profileValues
 
     ### on ordonne par position et chromosome
-    data <- data[order(data$Chromosome,data$PosOrder),]
-    indice <- 1:length(data[,1])
+    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$Chromosome,profileCGH$profileValues$PosOrder),]
+    indice <- 1:length(profileCGH$profileValues[,1])
 
-    ChrIndice <- split(indice,data$Chromosome)
+    ChrIndice <- split(indice,profileCGH$profileValues$Chromosome)
     ChrName <- names(ChrIndice)
-    if (is.numeric(data$Chromosome[1]))
+    if (is.numeric(profileCGH$profileValues$Chromosome[1]))
       {
         labelChr <- as.numeric(ChrName)
       }
@@ -67,15 +78,14 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
 
     
 ### ajout des informations
-    Smoothing <- rep(NA, length(data[,1]))
-    OutliersAws <- rep(0, length(data[,1]))
+    NbRow <- length(profileCGH$profileValues[,1])
+    Smoothing <- rep(NA, NbRow)
+    OutliersAws <- rep(0, NbRow)
     Region <- Level <- Breakpoints <- MinPosOrder <- MaxPosOrder <- Smoothing
-    data <- data.frame(data, Smoothing, OutliersAws, Region, Level, Breakpoints, MinPosOrder, MaxPosOrder)
-    
-
-
-    #labelChr <- unique(data$Chromosome)
- 
+    profileCGH$profileValues <- data.frame(profileCGH$profileValues, Smoothing,
+                                           OutliersAws, Region, Level, Breakpoints,
+                                           MinPosOrder, MaxPosOrder)
+     
 
 
 ### initialization of region number to 0
@@ -85,11 +95,16 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
     nblevel <- 0
 
 
-    dataaux <- data.frame(data, MeanLevel=data$Region, LevelNewOrder=data$Region)
-    #print(class(dataaux$BAC))
-    FieldOrder <- names(dataaux)
-    #dataaux <- NULL
-    #print(names(dataaux))
+    ### Il ne faut pas les champs MedianLevel et LevelNewOrder
+    ### pour la jointure entre subsetdata et MedianLevel
+    ### par contre on en a besoin au momment du remplissage des données
+    FieldInit <- names(profileCGH$profileValues)
+    profileCGH$profileValues <- data.frame(profileCGH$profileValues,
+                                           MedianLevel=profileCGH$profileValues$Region,
+                                           LevelNewOrder=profileCGH$profileValues$Region)
+
+    FieldOrder <- names(profileCGH$profileValues)
+
     IQRvalue <- IQRChr <- NULL
     for (i in 1:NbChr)
       {
@@ -99,8 +114,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
 ### location  of data related to each chromosome
 
         indexChr <- ChrIndice[[i]]
-        #indexChr <- which(data$Chromosome==labelChr[i])
-        subsetdata <- data[indexChr,]
+        subsetdata <- profileCGH$profileValues[indexChr,FieldInit]
 
 ### information sur les bornes d'un chromosome
         PosOrderRange$Chromosome[i] <- labelChr[i]
@@ -109,23 +123,20 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
         subsetdata$MaxPosOrder <- PosOrderRange$MaxPosOrder[i] <- rangePos[2]
 
 ### les données doivent être ordonnées par position
-        #subsetdata <- subsetdata[order(subsetdata$PosOrder),]
 
         if (length(indexChr)>1)
           {
             if (resetsigma)
               {
-                #print(length(subsetdata$LogRatio))
-                #print(paste("in chrBkp:", IQRdiff(subsetdata$LogRatio)))
+
                 sigma <- IQRdiff(subsetdata$LogRatio)^2
                 IQRvalue[i] <- sigma^(0.5)
-                IQRChr[i] <- labelChr[i]
-                #write.table(subsetdata[,c("LogRatio","PosOrder")],file="~/tmp/Bkp.txt", row.names=FALSE, sep="\t")
+                IQRChr[i] <- labelChr[i]                
 
               }
             else
               {
-                IQRvalue[i] <- sigma
+                IQRvalue[i] <- sigma^0.5
                 IQRChr[i] <- labelChr[i]
               }
             
@@ -147,7 +158,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
 
                     if (is.null(awsres)==FALSE)
                       {
-                        subsetdata$Smoothing <- round(awsres, round)
+                        subsetdata$Smoothing <- roundglad(awsres, round)
                       }
 
                     else
@@ -163,7 +174,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
 
                     if (is.null(awsres)==FALSE)
                       {
-                        subsetdata$Smoothing <- round(awsres, round)
+                        subsetdata$Smoothing <- roundglad(awsres, round)
                       }
 
                     else
@@ -185,7 +196,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
 
                     if(is.null(awsres)==FALSE)
                       {
-                        subsetdata$Smoothing <- round(awsres, round)
+                        subsetdata$Smoothing <- roundglad(awsres, round)
                       }
 
                     else
@@ -200,7 +211,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
 
                     if(is.null(awsres)==FALSE)
                       {
-                        subsetdata$Smoothing <- round(awsres, round)
+                        subsetdata$Smoothing <- roundglad(awsres, round)
                       }
 
                     else
@@ -215,7 +226,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
                     
                     if(is.null(awsres)==FALSE)
                       {
-                        subsetdata$Smoothing <- round(awsres, round)
+                        subsetdata$Smoothing <- roundglad(awsres, round)
                       }
 
                     else
@@ -240,23 +251,52 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
             
                                         #level assignation
 
-            j <- 1
+            #j <- 1
             
 
-            labelLevel <- unique(round(subsetdata$Smoothing,round))
+            ### 29062005: cette partie peut-être optimisée:
+
             
-            for (j in 1:length(labelLevel))
-              {
-                nblevel <- nblevel + 1
-                subsetdata$Level[which(round(subsetdata$Smoothing, round)==labelLevel[j])] <- nblevel	
-              }
+            #labelLevel <- unique(roundglad(subsetdata$Smoothing,round))
+
+
+            #########################################
+            ########################################
+            ########################################
+
             
-            MeanLevel <- aggregate(subsetdata$LogRatio, list(Level=subsetdata$Level),mean)
-            names(MeanLevel) <- c("Level","MeanLevel")
-            MeanLevel <- MeanLevel[order(MeanLevel$MeanLevel),]
-            MeanLevel$Level <- as.numeric(as.character(MeanLevel$Level))
-            MeanLevel$LevelNewOrder <- min(MeanLevel$Level):max(MeanLevel$Level)
-            subsetdata <- merge(subsetdata, MeanLevel, by="Level",all=TRUE)
+##             labelLevel <- unique(subsetdata$Smoothing)
+  
+##             for (j in 1:length(labelLevel))
+##               {
+##                 nblevel <- nblevel + 1
+##                 ###subsetdata$Level[which(roundglad(subsetdata$Smoothing, round)==labelLevel[j])] <- nblevel	
+##                 subsetdata$Level[which(subsetdata$Smoothing==labelLevel[j])] <- nblevel	
+##               }
+
+            l <- length(subsetdata$Smoothing)
+            putLevel <- .C("putLevel",
+                           as.double(subsetdata$Smoothing),
+                           Level=integer(l),
+                           nblevel=as.integer(nblevel),
+                           as.integer(l),
+                           PACKAGE="GLAD")
+
+            subsetdata$Level <- putLevel$Level
+            nblevel <- putLevel$nblevel
+            
+            ###########################################"
+            ###########################################
+            ############################################
+            
+            ### 02062005: les levels sont ordonnées par ordre croissant
+            ### ceci est important dans le cas de l'utilisation de la fonction removeLevel
+            MedianLevel <- aggregate(subsetdata$LogRatio, list(Level=subsetdata$Level),median)
+            names(MedianLevel) <- c("Level","MedianLevel")
+            MedianLevel <- MedianLevel[order(MedianLevel$MedianLevel),]
+            MedianLevel$Level <- as.numeric(as.character(MedianLevel$Level))
+            MedianLevel$LevelNewOrder <- min(MedianLevel$Level):max(MedianLevel$Level)
+            subsetdata <- merge(subsetdata, MedianLevel, by="Level",all=TRUE)
 
 
 
@@ -268,23 +308,13 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
 ### il faut remettre les données dans l'ordre par position
             subsetdata <- subsetdata[order(subsetdata$PosOrder),]
 
-                                        #           ### debut
-                                        #           for (j in 2:length(subsetdata$LogRatio))
-                                        #             {
-            
-                                        # ####Outliers detection
-            
-                                        # ### not Outliers
-                                        # ### Pour les outliers, leur Level correspond à celui de la région
-                                        # ### de laquelle ils sont issus. Cela permet de faciliter l'affectation
-                                        # ### de leur statut dans la fonction affectationGNL              
-
 
             intl <- length(subsetdata$LogRatio)
             awsBkp <- .C("awsBkp",
-                         as.double(round(subsetdata$Smoothing,round)),
+                         #as.double(roundglad(subsetdata$Smoothing,round)),
+                         as.double(subsetdata$Smoothing,round),
                          OutliersAws=as.integer(subsetdata$OutliersAws),
-                         Level=as.integer(subsetdata$Level),
+                         Level=as.integer(subsetdata$LevelNewOrder),
                          nbregion=as.integer(nbregion),
                          regionChr=as.integer(c(nbregion,rep(0,intl-1))),
                          rupture=as.integer(rep(0,intl)),
@@ -294,14 +324,9 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
             
             subsetdata$Breakpoints <- c(awsBkp$rupture[2:intl],0)
             subsetdata$Region <- awsBkp$regionChr
-            subsetdata$Level <- awsBkp$regionChr
+            subsetdata$Level <- awsBkp$Level
             subsetdata$OutliersAws <- awsBkp$OutliersAws
-            nbregion <- awsBkp$nbregion
-            
-
-
-
-            
+            nbregion <- awsBkp$nbregion                        
 
           }
 
@@ -311,42 +336,30 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="laws", base=TRUE, 
             subsetdata$Level <- -1
             subsetdata$Breakpoints <- 0
             subsetdata$LevelNewOrder <- subsetdata$Breakpoints
-            subsetdata$MeanLevel <- subsetdata$Breakpoints
+            subsetdata$MedianLevel <- subsetdata$Breakpoints
+            IQRvalue[i] <- 0
+            IQRChr[i] <- labelChr[i]    
           }
 
-#        dataaux <- rbind(dataaux, subsetdata)
-#        ns <- print(names(subsetdata))
-#         print(ns==nd)
-#         print("ns")
-#         print(ns)
-#         print("nd")
-#         print(nd)
-#         print("sd1")
-#         print(setdiff(ns,nd))
-#         print("sd2")
-#         print(setdiff(nd,ns))
-#         print(class(subsetdata$BAC))
-        dataaux[indexChr,] <- subsetdata[,FieldOrder]
+
+        profileCGH$profileValues[indexChr,] <- subsetdata[,FieldOrder]
         
         
         if (verbose) print(paste("chrBreakpoints: ending chromosome", labelChr[i]))
 
       }
 
-    #print(dataaux[1:10,])
 
-    dataaux$Level <- dataaux$LevelNewOrder
-    data <- subset(dataaux, select=-MeanLevel)
-    data <- subset(data, select=-LevelNewOrder)
-    nomdata <- names(data)
+    profileCGH$profileValues <- subset(profileCGH$profileValues, select=-MedianLevel)
+    profileCGH$profileValues <- subset(profileCGH$profileValues, select=-LevelNewOrder)
+    nomdata <- names(profileCGH$profileValues)
     nomdata <- nomdata[order(nomdata)]
-    data <- data[,nomdata]
+    profileCGH$profileValues <- profileCGH$profileValues[,nomdata]
 
 
     
 ### permutation des Champs Level et LevelTrue pour faciliter l'utilisation dans les test sur removeLevel
 
-    profileCGH$profileValues <- data
 
     profileCGH$Sigma <- data.frame(Chromosome=IQRChr,Value=IQRvalue)
 

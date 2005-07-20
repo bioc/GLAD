@@ -1,8 +1,28 @@
 ##################################
+### release 1.1.0 (20-07-2005) ###
+##################################
+
+New functions:
+	- daglad: new method of array CGH data analysis.
+	- roundglad: new function to round numeric data.
+
+
+In plotProfile:
+	- modification to allow abline to be used.
+
+
+##################################
+### release 1.0.4 (18-05-2005) ###
+##################################
+	- small bug fixed in plotProfile
+
+
+##################################
 ### release 1.0.3 (28-04-2005) ###
 ##################################
 In glad function:
-	- if there is no breakpoints, no object BkpInfo is returned (otherwise there was error when usinf plotProfile)
+	- if there is no breakpoints, no object BkpInfo is returned (otherwise there was error when using plotProfile)
+
 
 ##################################
 ### release 1.0.2 (21-03-2005) ###

@@ -13,7 +13,7 @@ plotProfile.profileCGH(profileCGH, variable="LogRatio", Chromosome=NULL,
                        labels=TRUE, plotband=TRUE, unit=0,
                        colDAGLAD=c("black","blue","red","green","yellow"),
                        colCytoBand=c("white","darkblue"),
-                       colCentro="red", text=NULL, ...)
+                       colCentro="red", text=NULL, main="", ...)
 
 
 
@@ -39,7 +39,9 @@ plotProfile.profileCGH(profileCGH, variable="LogRatio", Chromosome=NULL,
     Lost and Normal status.}
   \item{colCytoBand}{Color code for cytogenetic banding.}
   \item{colCentro}{Color code for centromere.}
-  \item{text}{A list with the parameters to be passed to the function \code{\link[graphics]{text}}.}
+  \item{text}{A list with the parameters to be passed to the function
+    \code{\link[graphics]{text}}.}
+  \item{main}{title of the plot.}
   \item{...}{}
 
 

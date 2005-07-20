@@ -26,6 +26,14 @@
 \alias{removeBreakpoints.profileChr}
 \alias{removeLevel}
 \alias{removeLevel.profileChr}
+\alias{MoveBkpStep}
+\alias{MoveBkpStep.profileCGH}
+\alias{testBkpToMove}
+\alias{testBkpToMove.profileCGH}
+\alias{filterBkpStep}
+\alias{filterBkpStep.profileCGH}
+\alias{BkpInfo}
+\alias{BkpInfo.profileCGH}
 
 
 \usage{ }

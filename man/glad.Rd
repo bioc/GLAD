@@ -9,7 +9,7 @@
 }
 \usage{
 glad.profileCGH(profileCGH, mediancenter=FALSE,
-                smoothfunc="lawsglad", bandwidth=10, round=2,
+                smoothfunc="lawsglad", bandwidth=10, round=1.5,
                 model="Gaussian", lkern="Exponential", qlambda=0.999,
                 base=FALSE, sigma,
                 lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
@@ -221,6 +221,7 @@ glad.profileCGH(profileCGH, mediancenter=FALSE,
 data(snijders)
 
 ### Creation of "profileCGH" object
+gm13330$Clone <- gm13330$BAC
 profileCGH <- as.profileCGH(gm13330)
 
 
@@ -233,7 +234,7 @@ profileCGH <- as.profileCGH(gm13330)
 
 
 res <- glad(profileCGH, mediancenter=FALSE,
-                smoothfunc="lawsglad", bandwidth=10, round=2,
+                smoothfunc="lawsglad", bandwidth=10, round=1.5,
                 model="Gaussian", lkern="Exponential", qlambda=0.999,
                 base=FALSE,
                 lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
@@ -244,11 +245,13 @@ res <- glad(profileCGH, mediancenter=FALSE,
 
 
 ### Genomic profile on the whole genome
-plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing")
+plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing",
+main="Breakpoints detection: GLAD analysis")
 
 
 ###Genomic profile for chromosome 1
-plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1, Smoothing="Smoothing")
+plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1,
+Smoothing="Smoothing", main="Chromosome 1: GLAD analysis")
 
 
 ### The standard-deviation of LogRatio are:
