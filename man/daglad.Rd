@@ -96,7 +96,7 @@ daglad.profileCGH(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomes
       computed during the "clustering throughout the genome" step.}
 
     \item{deletion}{Level (and outliers) with a smoothing value (log-ratio
-      value) lower than this threshold are consider as amplicon. Note
+      value) lower than this threshold are consider as deletion. Note
       that first, the data are centered on the normal reference value
       computed during the "clustering throughout the genome" step.}
 

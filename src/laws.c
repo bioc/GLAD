@@ -140,7 +140,6 @@ void gawsuni(double *y,
   double hakt;
   double inv_hakt;
   const int n_aux=*n;
-  const double lamakt_aux=(2* *lamakt)/100;
   const double inv_lamakt=100/(2* *lamakt);
   const double hmax_aux=*hmax;
   const double eta_aux=*eta;

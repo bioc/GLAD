@@ -1,3 +1,7 @@
+
+In as.profileCGH:
+	- LogRatio with no finite values are put into profileValuesNA.
+
 ##################################
 ### release 1.1.0 (20-07-2005) ###
 ##################################

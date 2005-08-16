@@ -16,7 +16,7 @@ MoveBkpStep.profileCGH <- function(profileCGH, ...)
     maxiter <- 3
     nbiter <- 0
 
-    print("deb MoveBkp")
+    print("Check Breakpoints Position")
     if (is.data.frame(profileCGH$BkpInfo))
       {
 

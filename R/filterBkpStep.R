@@ -14,7 +14,6 @@ filterBkpStep <- function(...)
 filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, ...)
   {
 
-    print("deb filterBkp")
 
     profileCGH <- filterBkp(profileCGH, MinBkpWeight=MinBkpWeight)
      

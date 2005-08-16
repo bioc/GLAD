@@ -39,6 +39,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         print(paste("Choose smoothfunc=lawsglad if you want the process runs faster"))
       }
 
+    inputfields <- names(profileCGH$profileValues)
 
     ### Il faut des PosOrder uniques
     profileCGH$profileValues$NewPosOrder <- profileCGH$profileValues$PosOrder
@@ -640,7 +641,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     PosAux <- profileCGH$profileValues$PosOrder
     profileCGH$profileValues$PosOrder <- profileCGH$profileValues$NewPosOrder
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-NewPosOrder)
-#    profileCGH$profileValues <- subset(profileCGH$profileValues, select=-NormalRef)
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-Sigma)
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-DiffBase)
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-Region)
@@ -650,11 +650,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 
 
-
-
-
+    outputfields <- setdiff(names(profileCGH$profileValues),inputfields)
     at <- setdiff(attributes(profileCGH)$names,c("PosOrderRange","findClusterSigma","NbClusterOpt"))
     profileCGH <- profileCGH[at]
+    profileCGH$profileValues <- profileCGH$profileValues[,c(inputfields,outputfields)]
     class(profileCGH) <- "profileCGH"
     
         

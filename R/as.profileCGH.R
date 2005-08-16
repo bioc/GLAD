@@ -35,8 +35,10 @@ as.profileCGH.data.frame <- function(object)
       }
 
     
-    
+### Suppression des valeurs manquantes et des LogRatio avec Inf    
     indexNA <- attr(na.omit(profileCGH[,nomchamp]),"na.action")
+    indexInf <- which(is.finite(profileCGH$LogRatio)==FALSE)
+    indexNA <- c(indexNA,indexInf)
     
     if (!is.null(indexNA))
       {
