@@ -4,11 +4,17 @@
 \alias{as.profileCGH.data.frame}
 \description{Create an object of class profileCGH.}
 \usage{
-as.profileCGH(object)
-
+as.profileCGH(object,...)
+as.profileCGH.data.frame(object, infaction=c("value","empty"), value=20, ...)
 }
 \arguments{
   \item{object}{A data.frame to be convert into profileCGH.}
+  \item{infaction}{If "value" then the LogRatio with infinite values
+  (-Inf, Inf) are replace by + or - \code{value} according to the sign. If "empty"
+  then NAs are put instead.}
+\item{value}{replace Inf by \code{value} if \code{infaction} is
+  "value".}
+\item{...}{}
 }
 
 \value{

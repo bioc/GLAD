@@ -1,6 +1,6 @@
 
 In as.profileCGH:
-	- LogRatio with no finite values are put into profileValuesNA.
+	- LogRatio with infinite values can be set to NA or to some specific value.
 
 ##################################
 ### release 1.1.0 (20-07-2005) ###

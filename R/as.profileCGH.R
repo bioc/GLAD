@@ -1,12 +1,14 @@
-as.profileCGH <- function(object)
+as.profileCGH <- function(object, ...)
   {
     UseMethod("as.profileCGH")
   }
 
-as.profileCGH.data.frame <- function(object)
+as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value=20, ...)
   {
 
     profileCGH <- object
+    infaction <- match.arg(infaction)
+    
     nomchamp <- c("LogRatio","PosOrder","Chromosome")
 
     addedfields <- c("ChromosomeChar","Smoothing","Region","Level",
@@ -36,10 +38,30 @@ as.profileCGH.data.frame <- function(object)
 
     
 ### Suppression des valeurs manquantes et des LogRatio avec Inf    
+    indexInf <- which(is.infinite(profileCGH$LogRatio)==TRUE)
+    if (length(indexInf)>0)
+      {
+
+          
+        print("The LogRatio with following rows index contains infinite value:")
+        print(indexInf)
+        
+        profileCGH$LogRatio[indexInf] <- sign(profileCGH$LogRatio[indexInf]) * switch(infaction,
+                                                                                      empty = NA,
+                                                                                      value = value)
+        
+
+        printinfaction <- switch(infaction,
+                                 empty = "LogRatio with infinite values have been replaced by NA",
+                                 value = paste("LogRatio with infinite values have been replaced by + or - ",value))
+
+        print(printinfaction)
+        
+
+      }
+
     indexNA <- attr(na.omit(profileCGH[,nomchamp]),"na.action")
-    indexInf <- which(is.finite(profileCGH$LogRatio)==FALSE)
-    indexNA <- c(indexNA,indexInf)
-    
+
     if (!is.null(indexNA))
       {
         profileCGH <- list(profileValues=profileCGH[-indexNA,], profileValuesNA=profileCGH[indexNA,])
