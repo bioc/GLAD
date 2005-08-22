@@ -18,3 +18,4 @@ myPalette               Microarray color palette
 P9                      Public CGH data of Veltman
 plotProfile             Plot genomic profile and cytogenetic banding
 profileCGH              Objects of Class profileCGH and profileChr
+tkdaglad                Graphical interfac for GLAD

@@ -40,8 +40,7 @@ glad.profileCGH(profileCGH, mediancenter=FALSE,
     argument \code{digits} of the \code{\link[base]{round}} function.}
 
   \item{model}{Determines the distribution type of the LogRatio. Keep
-    always the model as "Gaussian" (see \code{\link[aws]{aws}} or
-    \code{\link[aws]{laws}}).}
+    always the model as "Gaussian" (see \code{\link[aws]{laws}}).}
 
   \item{lkern}{Determines the location kernel to be used (see \code{\link[aws]{aws}} or
     \code{\link[aws]{laws}}).}

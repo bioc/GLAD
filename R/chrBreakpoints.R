@@ -15,7 +15,7 @@ chrBreakpoints <- function(...)
 
 
 chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FALSE, sigma=NULL,
-                                      bandwidth=10, round=2, verbose=FALSE, ...)
+                                      model="Gaussian", bandwidth=10, round=1.5, verbose=FALSE, ...)
   {
  
 
@@ -154,7 +154,9 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                 if (smoothfunc=="laws")
                   {
                     dim(x) <- c(1,length(x)) #à supprimer dans la nouvelle version du package AWS
-                    awsres <- laws(y=subsetdata$LogRatio, x=x, hinit=hinit, hmax=hmax, shape=sigma, NN=FALSE, symmetric=TRUE, ...)$theta
+                    awsres <- laws(y=subsetdata$LogRatio, x=x,
+                                   hinit=hinit, hmax=hmax, shape=sigma, NN=FALSE,
+                                   symmetric=TRUE, model=model, ...)$theta
 
                     if (is.null(awsres)==FALSE)
                       {
@@ -192,7 +194,8 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                 
                 if (smoothfunc=="lawsglad")
                   {
-                    awsres <- lawsglad(y=subsetdata$LogRatio, hinit=hinit, hmax=hmax, shape=sigma, ...)
+                    awsres <- lawsglad(y=subsetdata$LogRatio,
+                                       hinit=hinit, hmax=hmax, shape=sigma, model=model, ...)
 
                     if(is.null(awsres)==FALSE)
                       {
@@ -207,7 +210,9 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                 
                 if (smoothfunc=="laws")
                   {
-                    awsres <- laws(y=subsetdata$LogRatio, hinit=hinit, hmax=hmax, shape=sigma, symmetric=TRUE, ...)$theta
+                    awsres <- laws(y=subsetdata$LogRatio, hinit=hinit,
+                                   hmax=hmax, shape=sigma, symmetric=TRUE, model=model,
+                                   ...)$theta
 
                     if(is.null(awsres)==FALSE)
                       {

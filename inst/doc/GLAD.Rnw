@@ -208,6 +208,22 @@ The \emph{daglad} function allows a smoothing step over the whole genome (if \em
 
 
 \clearpage
+
+\subsection{Tuning parameters}
+
+The most important parameters are:
+
+\begin{itemize}
+\item \emph{lambdabreak}
+\item \emph{lambdacluster}
+\item \emph{lambdaclusterGen}
+\item \emph{param $c(d=6)$}
+\end{itemize}
+
+Decreasing those parameters will lead to a higher number of breakpoints identified. For arrays experiments with very small Signal to Noise ratio it is recommended to use a small value of  \emph{param} like $d=3$ or less.
+
+
+
 \section{Graphical functions}
 
 \subsection{Plot of raw array data}

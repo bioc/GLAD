@@ -1,3 +1,11 @@
+##################################
+### release 1.1.1 (22-08-2005) ###
+##################################
+
+New functions:
+	- tkglad: graphical interface for glad function.
+	- tkdaglad: graphical interface for daglad function.
+
 
 In as.profileCGH:
 	- LogRatio with infinite values can be set to NA or to some specific value.

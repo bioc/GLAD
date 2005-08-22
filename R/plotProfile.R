@@ -29,9 +29,9 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
 
     if (!is.null(Smoothing))
       {
-            if (length(intersect(names(profileCGH$profileValues),"Smoothing"))<1)
+            if (length(intersect(names(profileCGH$profileValues),Smoothing))<1)
               {
-                stop("Error in plotProfile.profileCGH: Smoothing is not available")
+                print(paste("Warning in plotProfile.profileCGH:", Smoothing," is not available"))
               }
       }
     
@@ -39,7 +39,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
       {
         if (length(intersect(names(profileCGH$profileValues),"Breakpoints"))<1)
           {
-            stop("Error in plotProfile.profileCGH: Breakpoints is not available")
+            print("Warning in plotProfile.profileCGH: Breakpoints is not available")
           }
       }
 

@@ -25,6 +25,14 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
 ### champs tels qu'ils sont en entrée
     fieldinput <- names(profileCGH$profileValues)
+    excdudefields <- c("Smoothing", "Region", "Level", "OutliersAws",
+      "Breakpoints", "OutliersMad", "OutliersTot",
+      "ZoneChr", "ZoneGen", "ZoneGNL")
+    fieldstodel <- intersect(fieldinput, excdudefields)
+    fieldinput <- setdiff(fieldinput,fieldstodel)
+    profileCGH$profileValues <- profileCGH$profileValues[,fieldinput]
+
+    
     
     if (verbose)
       {

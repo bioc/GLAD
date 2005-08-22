@@ -40,6 +40,12 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
       }
 
     inputfields <- names(profileCGH$profileValues)
+    excdudefields <- c("Level", "OutliersAws", "OutliersMad",
+                       "OutliersTot", "Breakpoints", "Smoothing",
+                       "NormalRef", "ZoneGNL")
+    fieldstodel <- intersect(inputfields, excdudefields)
+    inputfields <- setdiff(inputfields,fieldstodel)
+    profileCGH$profileValues <- profileCGH$profileValues[,inputfields]
 
     ### Il faut des PosOrder uniques
     profileCGH$profileValues$NewPosOrder <- profileCGH$profileValues$PosOrder
@@ -299,7 +305,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     profileCGH$profileValues <- merge(profileCGH$profileValues, agg, by="Level", all=TRUE)    
     class(profileCGH) <- "profileCGH"
     
-    
 
 ### pour le calcul des poids, l'écart-type utilisé
 ### est celui calculé sur l'ensemble de génome    
@@ -541,13 +546,12 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
       }
 
 
-    
 
 ### Statut des Outliers
     profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion)    
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-NormalRange)
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-ZoneGen)
-    
+
 
 ### Récupération des informations sur l'analyse
     profileCGH <- profileCGH[-which(names(profileCGH)=="Sigma")]
