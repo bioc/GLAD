@@ -12,6 +12,7 @@ plotProfile.profileCGH(profileCGH, variable="LogRatio", Chromosome=NULL,
                        Smoothing=NULL, Bkp=FALSE,
                        labels=TRUE, plotband=TRUE, unit=0,
                        colDAGLAD=c("black","blue","red","green","yellow"),
+                       pchSymbol=c(20,13),
                        colCytoBand=c("white","darkblue"),
                        colCentro="red", text=NULL, main="", ...)
 
@@ -37,6 +38,8 @@ plotProfile.profileCGH(profileCGH, variable="LogRatio", Chromosome=NULL,
     PosBase are in Kb, if \code{unit=6}, PosBase are in Mb, ...}
   \item{colDAGLAD}{Color code to plot Deletion, Amplification, Gain,
     Lost and Normal status.}
+  \item{pchSymbol}{A vector of two elements to specify the symbol tu be
+    used for plotting point. pchSymbol[2] is the symbol for outliers.}
   \item{colCytoBand}{Color code for cytogenetic banding.}
   \item{colCentro}{Color code for centromere.}
   \item{text}{A list with the parameters to be passed to the function

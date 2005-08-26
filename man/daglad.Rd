@@ -40,19 +40,19 @@ daglad.profileCGH(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomes
     \code{\link[aws]{laws}}.}
 
   \item{lkern}{lkern determines the location kernel to be used
-    (see\code{\link[aws]{laws}} for details).}
+    (see \code{\link[aws]{laws}} for details).}
 
   \item{model}{model determines the distribution type of LogRatio
-    (see\code{\link[aws]{laws}} for details).}
+    (see \code{\link[aws]{laws}} for details).}
 
   \item{qlambda}{qlambda determines the scale parameter qlambda for the
-    stochastic penalty (see\code{\link[aws]{laws}} for details).}
+    stochastic penalty (see \code{\link[aws]{laws}} for details).}
   
   \item{base}{If TRUE, the position of clone is the physical position onto
     the chromosome, otherwise the rank position is used.}
   
   \item{sigma}{Value to be passed to either argument \code{sigma2}   
-    of\code{ \link[aws]{aws}} function or \code{shape} of
+    of \code{\link[aws]{aws}} function or \code{shape} of
     \code{\link[aws]{laws}}. If \code{NULL}, sigma is calculated from
     the data.}
 

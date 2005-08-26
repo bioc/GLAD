@@ -14,6 +14,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
                                    Smoothing=NULL, Bkp=FALSE,
                                    labels=TRUE, plotband=TRUE, unit=0,
                                    colDAGLAD=c("black","blue","red","green","yellow"),
+                                   pchSymbol=c(20,13),
                                    colCytoBand=c("white","darkblue"),
                                    colCentro="red", text=NULL,
                                    main="", ...)
@@ -213,8 +214,8 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         col[which(profileCGH$profileValues$ZoneGNL==-10)] <- colDAGLAD[1]
 
 
-        outliers <- rep(20,length(profileCGH$profileValues$PosOrder))
-        outliers[which(profileCGH$profileValues$OutliersTot!=0)] <- 13
+        outliers <- rep(pchSymbol[1],length(profileCGH$profileValues$PosOrder))
+        outliers[which(profileCGH$profileValues$OutliersTot!=0)] <- pchSymbol[2]
 
         if (plotband)
           {
