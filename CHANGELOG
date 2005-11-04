@@ -1,4 +1,18 @@
 ##################################
+### release 1.3.0              ###
+##################################
+In glad-function.c
+	- bug correction in the GNL affectation when ChekBkpPos is performed
+
+
+##################################
+### release 1.2.0              ###
+##################################
+
+same release as 1.1.1 but is was built by bioconductor
+
+
+##################################
 ### release 1.1.1 (22-08-2005) ###
 ##################################
 

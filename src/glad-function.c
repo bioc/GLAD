@@ -518,12 +518,11 @@ void updateGNL(int *ZoneGNL,
   rangeGainLoss(Smoothing, ZoneGNL, OutliersTot, minG, maxL, minAmp, maxDel, l);
 
 
-
   for (i=0; i<*l;i++)
     {
       ZoneGNL[i]=0;
 
-      if (Smoothing[i]>=*minG)
+      if (Smoothing[i]>=*minG | Smoothing[i]>=*minAmp)
 	{
 	  ZoneGNL[i]=1;
 	 
@@ -536,7 +535,7 @@ void updateGNL(int *ZoneGNL,
 
       else
 	{
-	  if (Smoothing[i]<=*maxL)
+	  if (Smoothing[i]<=*maxL | Smoothing[i]<=*maxDel)
 	    {
 	      ZoneGNL[i]=-1;
 
