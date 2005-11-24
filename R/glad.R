@@ -41,6 +41,13 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         print(paste("Call function:", call))
       }
 
+    if(base==TRUE)
+      {
+        if(!require(aws))
+          {
+            stop("Error in glad: the aws package is required to use these function. The aws package can be installed from http://www.r-project.org")
+          }
+      }
 
     if(smoothfunc=="lawsglad" & model!="Gaussian")
       stop("Error in glad: for lawsglad, only Gaussian model is available")

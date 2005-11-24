@@ -1,7 +1,6 @@
 array1                  Bladder cancer CGH data
 arrayCGH                Object of Class arrayCGH
-arrayPersp              Perspective image of microarray spots
-                        statistic
+arrayPersp              Perspective image of microarray spots statistic
 arrayPlot               Spatial image of microarray spots statistic
 as.data.frame.profileCGH
                         profileCGH consercion

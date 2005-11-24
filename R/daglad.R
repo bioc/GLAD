@@ -25,6 +25,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
   {
 
 
+    if(base==TRUE)
+      {
+        if(!require(aws))
+          {
+            stop("Error in daglad: the aws package is required to use these function. The aws package can be installed from http://www.r-project.org")
+          }
+      }
+
     
     if(smoothfunc=="lawsglad" & model!="Gaussian")
       stop("Error in daglad: for lawsglad, only Gaussian model is available")
