@@ -4,7 +4,7 @@ Date: 2005-07-20
 Title: Gain and Loss Analysis of DNA
 Depends: R (>= 1.8.0)
 Author: Philippe Hupé
-Maintainer: Philippe Hupé, <glad@curie.fr>
+Maintainer: Philippe Hupé <glad@curie.fr>
 Description: Analysis of array CGH data : detection of breakpoints in genomic profiles and assignment of a status (gain, normal or lost) to each chromosomal regions identified.
 License: GPL
 URL: http://bioinfo.curie.fr
