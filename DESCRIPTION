@@ -8,3 +8,4 @@ Maintainer: Philippe Hupé <glad@curie.fr>
 Description: Analysis of array CGH data : detection of breakpoints in genomic profiles and assignment of a status (gain, normal or lost) to each chromosomal regions identified.
 License: GPL
 URL: http://bioinfo.curie.fr
+biocViews: Microarray, DNACopyNumber
