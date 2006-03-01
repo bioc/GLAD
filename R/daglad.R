@@ -368,6 +368,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     
 
 
+    
 
 ### Calcul d'un poids pour les Breakpoints
 ### Attention: comme on calcul une variable GNLchange
@@ -589,7 +590,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ###
 #################################################################################        
 
+    
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight)
+
+
 
 #################################################################################
 ###
