@@ -216,15 +216,15 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, ...)
 
 
 ### on force les gains et les pertes pour certaines valeur de smoothing
-            indexForceGain <- which(profileCGH$profileValues$Smoothing >= profileCGH$forceGL[2])
+            indexForceGain <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$forceGL[2])
             profileCGH$profileValues$ZoneGNL[indexForceGain] <- 1
-            indexForceLost <- which(profileCGH$profileValues$Smoothing <= profileCGH$forceGL[1])
+            indexForceLost <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$forceGL[1])
             profileCGH$profileValues$ZoneGNL[indexForceLost] <- -1
 
 ### Amplicon et deletion
-            indexAmp <- which(profileCGH$profileValues$Smoothing >= profileCGH$amplicon)
+            indexAmp <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$amplicon)
             profileCGH$profileValues$ZoneGNL[indexAmp] <- 2
-            indexDel <- which(profileCGH$profileValues$Smoothing <= profileCGH$deletion)
+            indexDel <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$deletion)
             profileCGH$profileValues$ZoneGNL[indexDel] <- -10
             
 
