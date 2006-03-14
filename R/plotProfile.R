@@ -287,6 +287,6 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
 
 
 
-    par(def.par)
+#    par(def.par)
 
   }
