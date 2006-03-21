@@ -160,9 +160,7 @@ glad.profileCGH(profileCGH, mediancenter=FALSE,
       incremented by one when a new level occurs or when moving to the
       next chromosome.}
     
-    \item{\bold{OutliersAws}}{Each AWS outliers are flagged by -1 (if it is
-      in the \eqn{\alpha/2} lower tail of the distribution) or 1 (if it is
-      in the \eqn{\alpha/2} upper tail of the distribution)
+    \item{\bold{OutliersAws}}{Each AWS outliers are flagged by -1 or 1 
       otherwise  it is 0.}
     
 
