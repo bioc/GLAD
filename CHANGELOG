@@ -1,6 +1,21 @@
+##################################
+### release 1.4.0 (23-03-2006) ###
+##################################
+In daglad:
+	- after the "Optimization of Breakpoints" step, clones within the same Level can be splitted if they belong to non-contiguous regions.
+
+
+
 
 ##################################
-### release 1.3.1              ###
+### release 1.3.2 (23-03-2006) ###
+##################################
+In plotProfile:
+	- the user can spefify which varaible used to plot the GNL color code.
+
+
+##################################
+### release 1.3.1 (01-03-2006) ###
 ##################################
 In filterBkp:
 	- bug correction when the Normal range is computed (the NormalRef value is correctly taken into account)

@@ -11,7 +11,7 @@ plotProfile <- function(...)
   }
 
 plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=NULL,
-                                   Smoothing=NULL, Bkp=FALSE,
+                                   Smoothing=NULL, GNL="ZoneGNL", Bkp=FALSE,
                                    labels=TRUE, plotband=TRUE, unit=0,
                                    colDAGLAD=c("black","blue","red","green","yellow"),
                                    pchSymbol=c(20,13),
@@ -204,14 +204,14 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
 
 
     
-    if (length(intersect(names(profileCGH$profileValues),"ZoneGNL"))>=1)
+    if (length(intersect(names(profileCGH$profileValues),GNL))>=1)
       {
 
         col <- rep(colDAGLAD[5],length(profileCGH$profileValues$PosOrder))
-        col[which(profileCGH$profileValues$ZoneGNL==-1)] <- colDAGLAD[4]
-        col[which(profileCGH$profileValues$ZoneGNL==1)] <- colDAGLAD[3]
-        col[which(profileCGH$profileValues$ZoneGNL==2)] <- colDAGLAD[2]
-        col[which(profileCGH$profileValues$ZoneGNL==-10)] <- colDAGLAD[1]
+        col[which(profileCGH$profileValues[GNL]==-1)] <- colDAGLAD[4]
+        col[which(profileCGH$profileValues[GNL]==1)] <- colDAGLAD[3]
+        col[which(profileCGH$profileValues[GNL]==2)] <- colDAGLAD[2]
+        col[which(profileCGH$profileValues[GNL]==-10)] <- colDAGLAD[1]
 
 
         outliers <- rep(pchSymbol[1],length(profileCGH$profileValues$PosOrder))

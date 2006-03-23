@@ -19,6 +19,40 @@
 #define MAXDOUBLE DBL_MAX
 #endif
 
+void makeRegion (int *Level,
+		 int *Chromosome,
+		 int *ResLevel,
+		 int *l)
+{
+  int pos;
+  int idLevel=1;
+ 
+  ResLevel[0]=idLevel;
+ 
+  for (pos=1;pos<*l;pos++)
+    {
+      if (Chromosome[pos]==Chromosome[pos-1])
+	{
+	  if (Level[pos]==Level[pos-1])
+	    {
+	      ResLevel[pos]=ResLevel[pos-1];
+	    }
+	  else
+	    {
+	      idLevel++;
+	      ResLevel[pos]=idLevel;
+	    }
+	}
+      else
+	{
+	  idLevel++;
+	  ResLevel[pos]=idLevel;
+	}
+    }
+
+}
+
+
 
 
 
@@ -35,6 +69,10 @@ void updateLevel (int *Chromosome,
                   int *l)
 {
   int pos;
+  int idLevel=1;
+ 
+  Level[0]=idLevel;
+ 
   for (pos=1;pos<*l;pos++)
     {
       if (Chromosome[pos]==Chromosome[pos-1])
@@ -46,7 +84,14 @@ void updateLevel (int *Chromosome,
 	  if (Breakpoints[pos-1]==1)
 	    {
 	      NextLogRatio[pos-1]=LogRatio[pos];
+	      idLevel++;
+	      Level[pos]=idLevel;
 	    }
+	}
+      else
+	{
+	  idLevel++;
+	  Level[pos]=idLevel;
 	}
     }
 

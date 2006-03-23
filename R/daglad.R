@@ -299,13 +299,19 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         profileChr <- list(profileValues=subset)	
         class(profileChr) <- "profileChr"
 	profileChr$findClusterSigma <- profileCGH$SigmaC$Value[i]
-        #profileChr <- detectOutliers(profileChr, region="Level", alpha=alpha, msize=msize)       
         profileChr <- removeLevel(profileChr, lambda=lambdabreak, param=param, alpha=alpha, msize=msize, verbose=verbose)
-        #profileChr <- detectOutliers(profileChr, region="Level", alpha=alpha, msize=msize)       
         profileCGH$profileValues[indexChr,] <- profileChr$profileValues[,FieldOrder]
       }
 
-
+### Ajout le 23062006
+    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
+    profileCGH$profileValues$Level <- .C("makeRegion",
+                                         as.integer(profileCGH$profileValues$Level),
+                                         as.integer(profileCGH$profileValues$Chromosome),
+                                         ResLevel = as.integer(profileCGH$profileValues$Level),
+                                         as.integer(length(profileCGH$profileValues[,1])),
+                                         PACKAGE="GLAD")$ResLevel
+    
  
     agg <- aggregate(profileCGH$profileValues$LogRatio, list(Level=profileCGH$profileValues$Level), median)
     agg$Level <- as.numeric(as.character(agg$Level))
@@ -590,10 +596,12 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ###
 #################################################################################        
 
-    
+#    res <- profileCGH
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight)
 
-
+#    print("OK2")
+#    return(list(after=profileCGH, before=res))
+ 
 
 #################################################################################
 ###

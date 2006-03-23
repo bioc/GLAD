@@ -9,7 +9,7 @@
 \usage{
 
 plotProfile.profileCGH(profileCGH, variable="LogRatio", Chromosome=NULL,
-                       Smoothing=NULL, Bkp=FALSE,
+                       Smoothing=NULL, GNL="ZoneGNL", Bkp=FALSE,
                        labels=TRUE, plotband=TRUE, unit=0,
                        colDAGLAD=c("black","blue","red","green","yellow"),
                        pchSymbol=c(20,13),
@@ -29,6 +29,7 @@ plotProfile.profileCGH(profileCGH, variable="LogRatio", Chromosome=NULL,
     \code{NULL}, all the genome is plotted.}
   \item{Smoothing}{The variable used to plot the smoothing line. If
     \code{NULL}, nothing is plotted.}
+  \item{GNL}{The variable used to plot the Gain, Normal and Loss color code.}
   \item{Bkp}{If \code{TRUE}, the breakpoints are represented by a
     vertical red dashed line.}
   \item{labels}{If \code{TRUE}, the labels of the cytogenetic banding
