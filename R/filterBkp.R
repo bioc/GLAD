@@ -150,6 +150,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, ...)
                               as.integer(profileCGH$profileValues$PosOrder),
                               NextLogRatio=as.double(profileCGH$profileValues$NextLogRatio),
                               as.double(profileCGH$profileValues$LogRatio),
+                              as.integer(max(profileCGH$profileValues$Level)),
                               as.integer(l),
                               PACKAGE="GLAD")
 

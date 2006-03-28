@@ -305,12 +305,12 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 ### Ajout le 23062006
     profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
-    profileCGH$profileValues$Level <- .C("makeRegion",
-                                         as.integer(profileCGH$profileValues$Level),
-                                         as.integer(profileCGH$profileValues$Chromosome),
-                                         ResLevel = as.integer(profileCGH$profileValues$Level),
-                                         as.integer(length(profileCGH$profileValues[,1])),
-                                         PACKAGE="GLAD")$ResLevel
+##     profileCGH$profileValues$Level <- .C("makeRegion",
+##                                          as.integer(profileCGH$profileValues$Level),
+##                                          as.integer(profileCGH$profileValues$Chromosome),
+##                                          ResLevel = as.integer(profileCGH$profileValues$Level),
+##                                          as.integer(length(profileCGH$profileValues[,1])),
+##                                          PACKAGE="GLAD")$ResLevel
     
  
     agg <- aggregate(profileCGH$profileValues$LogRatio, list(Level=profileCGH$profileValues$Level), median)
@@ -374,7 +374,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     
 
 
-    
 
 ### Calcul d'un poids pour les Breakpoints
 ### Attention: comme on calcul une variable GNLchange
@@ -511,7 +510,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
       }
 
-    
+
+
 
     if (RecomputeGNL)
       {
@@ -563,7 +563,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 
 ### Statut des Outliers
-    profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion)    
+    profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion)
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-NormalRange)
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-ZoneGen)
 

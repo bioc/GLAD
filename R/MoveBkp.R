@@ -96,6 +96,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level")
                               as.integer(profileCGH$profileValues$PosOrder),
                               NextLogRatio=as.double(rep(0,l)),
                               as.double(profileCGH$profileValues$LogRatio),
+                              as.integer(max(profileCGH$profileValues$Level)),
                               as.integer(l),
                               PACKAGE="GLAD")
 

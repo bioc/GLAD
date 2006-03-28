@@ -36,11 +36,14 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
 
   checkGain <- FALSE
   checkLost <- FALSE
+  indexNormal <- which(CGH$ZoneGNL==0 & CGH$OutliersTot==0)
+  maxNormal <- max(CGH$Smoothing[indexNormal])
+  minNormal <- min(CGH$Smoothing[indexNormal])
 
 
   ### Il faut vérifier que des Outliers normaux n'aient pas un logratio supérieur au minimum du smoothing
   ### des régions gagnés (même principe pour les pertes)
-  GNL <- unique(CGH$ZoneGNL)
+  ###GNL <- unique(CGH$ZoneGNL)
   ### A-t-on détecté des gains
   indexGain <- which(CGH$ZoneGNL==1 & CGH$OutliersTot==0)
   if (length(indexGain)>0)
@@ -80,15 +83,19 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
       if (maxLost>minGain)
         {
           checkAlert <- TRUE
+#          print("A1")
         }
-      if (maxLost>NormalRef)
+      if (maxLost>minNormal)
         {
           checkAlert <- TRUE
+##         print("A2")
+#          print(maxLost)
         }
 
-      if (minGain<NormalRef)
+      if (minGain<maxNormal)
         {
           checkAlert <- TRUE
+#          print("A3")
         }
 
       if (checkAlert)

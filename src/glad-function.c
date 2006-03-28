@@ -19,38 +19,38 @@
 #define MAXDOUBLE DBL_MAX
 #endif
 
-void makeRegion (int *Level,
-		 int *Chromosome,
-		 int *ResLevel,
-		 int *l)
-{
-  int pos;
-  int idLevel=1;
+/* void makeRegion (int *Level, */
+/* 		 int *Chromosome, */
+/* 		 int *ResLevel, */
+/* 		 int *l) */
+/* { */
+/*   int pos; */
+/*   int idLevel=1; */
  
-  ResLevel[0]=idLevel;
+/*   ResLevel[0]=idLevel; */
  
-  for (pos=1;pos<*l;pos++)
-    {
-      if (Chromosome[pos]==Chromosome[pos-1])
-	{
-	  if (Level[pos]==Level[pos-1])
-	    {
-	      ResLevel[pos]=ResLevel[pos-1];
-	    }
-	  else
-	    {
-	      idLevel++;
-	      ResLevel[pos]=idLevel;
-	    }
-	}
-      else
-	{
-	  idLevel++;
-	  ResLevel[pos]=idLevel;
-	}
-    }
+/*   for (pos=1;pos<*l;pos++) */
+/*     { */
+/*       if (Chromosome[pos]==Chromosome[pos-1]) */
+/* 	{ */
+/* 	  if (Level[pos]==Level[pos-1]) */
+/* 	    { */
+/* 	      ResLevel[pos]=ResLevel[pos-1]; */
+/* 	    } */
+/* 	  else */
+/* 	    { */
+/* 	      idLevel++; */
+/* 	      ResLevel[pos]=idLevel; */
+/* 	    } */
+/* 	} */
+/*       else */
+/* 	{ */
+/* 	  idLevel++; */
+/* 	  ResLevel[pos]=idLevel; */
+/* 	} */
+/*     } */
 
-}
+/* } */
 
 
 
@@ -66,10 +66,11 @@ void updateLevel (int *Chromosome,
                   int *PosOrder,
 		  double *NextLogRatio,
 		  double *LogRatio,
+		  int *maxLevel,
                   int *l)
 {
   int pos;
-  int idLevel=1;
+  int idLevel=*maxLevel;
  
   Level[0]=idLevel;
  
@@ -84,8 +85,12 @@ void updateLevel (int *Chromosome,
 	  if (Breakpoints[pos-1]==1)
 	    {
 	      NextLogRatio[pos-1]=LogRatio[pos];
-	      idLevel++;
-	      Level[pos]=idLevel;
+	      if (Level[pos-1]==Level[pos])
+		{
+		  idLevel++;
+		  Level[pos]=idLevel;
+		}
+
 	    }
 	}
       else
@@ -504,38 +509,6 @@ void rangeGainLoss(double *Smoothing,
 	      break;
 
 	    }
-
-/* 	  if (ZoneGNL[i]==1) */
-/* 	    { */
-/* 	      if (Smoothing[i]<*minG) */
-/* 		{ */
-/* 		  *minG=Smoothing[i]; */
-/* 		} */
-/* 	    } */
-
-/* 	  if(ZoneGNL[i]==-1) */
-/* 	    { */
-/* 	      if (Smoothing[i]>*maxL) */
-/* 		{ */
-/* 		  *maxL=Smoothing[i]; */
-/* 		} */
-/* 	    } */
-
-/* 	  if (ZoneGNL[i]==2) */
-/* 	    { */
-/* 	      if(Smoothing[i]<*minAmp) */
-/* 		{ */
-/* 		  *minAmp=Smoothing[i]; */
-/* 		} */
-/* 	    } */
-
-/* 	  if (ZoneGNL[i]==-10) */
-/* 	    { */
-/* 	      if (Smoothing[i]>*maxDel) */
-/* 		{ */
-/* 		  *maxDel=Smoothing[i]; */
-/* 		} */
-/* 	    } */
 	}
 
     }
