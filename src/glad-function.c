@@ -72,7 +72,7 @@ void updateLevel (int *Chromosome,
   int pos;
   int idLevel=*maxLevel;
  
-  Level[0]=idLevel;
+/*   Level[0]=idLevel; */
  
   for (pos=1;pos<*l;pos++)
     {
@@ -93,11 +93,11 @@ void updateLevel (int *Chromosome,
 
 	    }
 	}
-      else
-	{
-	  idLevel++;
-	  Level[pos]=idLevel;
-	}
+/*       else */
+/* 	{ */
+/* 	  idLevel++; */
+/* 	  Level[pos]=idLevel; */
+/* 	} */
     }
 
 }

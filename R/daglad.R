@@ -1,4 +1,4 @@
-### This function detects chromosomal breakpoints along genome
+## This function detects chromosomal breakpoints along genome
 
 ### Copyright (C) 2005 Institut Curie
 ### Author(s): Philippe Hupé (Institut Curie) 2005
