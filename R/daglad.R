@@ -358,7 +358,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     profileCGH$profileValues <- merge(profileCGH$profileValues, MedianCluster[,c("ZoneGen","ZoneGNL")], all=TRUE, by="ZoneGen")
 
 
-   
+
     
 ### on force les gains et les pertes pour certaines valeur de smoothing
     indexForceGain <- which(profileCGH$profileValues$Smoothing - NormalRef>=forceGL[2])
@@ -563,7 +563,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 
 ### Statut des Outliers
+
     profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion)
+
+
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-NormalRange)
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=-ZoneGen)
 
@@ -596,12 +599,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ###
 #################################################################################        
 
-#    res <- profileCGH
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight)
-
-#    print("OK2")
-#    return(list(after=profileCGH, before=res))
- 
 
 #################################################################################
 ###

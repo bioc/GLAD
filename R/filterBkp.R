@@ -228,7 +228,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, ...)
             indexDel <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$deletion)
             profileCGH$profileValues$ZoneGNL[indexDel] <- -10
             
-
             profileCGH$profileValues <- subset(profileCGH$profileValues, select=-ZoneGen)
             profileCGH$profileValues <- subset(profileCGH$profileValues, select=-NormalRange)
 
