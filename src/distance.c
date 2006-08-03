@@ -172,7 +172,7 @@ double R_pearson(double *x, int nr, int nc, int i1, int i2)
 
 double R_correlation(double *x, int nr, int nc, int i1, int i2)
 {
-    double num,denum,sumx,sumy,sumxx,sumyy,sumxy,dist;
+    double num,denum,sumx,sumy,sumxx,sumyy,sumxy;
     int count,j;
 
     count= 0;

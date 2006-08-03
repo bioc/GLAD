@@ -46,14 +46,13 @@
 int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *crit,double *membr,double *diss,int *result)
 {
 
-  int im,jm,jj,i,j,ncl,ind,i2,j2,k,ind1,ind2,ind3;
+  int im=0,jm=0,jj=0,i,j,ncl,ind,i2,j2,k,ind1,ind2,ind3;
   double inf,dmin,x,xx;
   int *nn;
   double *disnn;
   short int *flag;
   int *iia;
   int *iib;
-  int *tmp;
 
   *result = 1;
   nn    = (int*) malloc (*n * sizeof(int));
@@ -273,6 +272,7 @@ int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *cri
   free(iib);
   
   *result = 0;
+  return(0);
 } /* end function hclust */
 
 

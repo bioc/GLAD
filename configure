@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "Configuring variable environment"
+
+OS=`uname -s`
+
+case $OS in
+"Darwin") echo -e "PKG_CFLAGS+=-DIS_MAC_OS\\nPKG_CXXFLAGS+=-DIS_MAC_OS" > src/Makevars;;
+esac
+

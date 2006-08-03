@@ -2,10 +2,7 @@
 \title{profileCGH consercion}
 \alias{as.data.frame.profileCGH}
 \description{Convert a profileCGH object into a data.frame.}
-\usage{
-as.data.frame.profileCGH(x, row.names = NULL, optional = FALSE)
-
-}
+\usage{as.data.frame.profileCGH(x, row.names = NULL, optional = FALSE, ...)}
 \arguments{
   \item{x}{The object to converted into data.frame.}
   \item{row.names}{NULL or a character vector giving the row names for the
@@ -13,6 +10,8 @@ as.data.frame.profileCGH(x, row.names = NULL, optional = FALSE)
 
   \item{optional}{logical. If 'TRUE', setting row names and converting column
     names (to syntactic names) is optional.}
+
+  \item{...}{ }
 
 
 }

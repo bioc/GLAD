@@ -20,7 +20,13 @@
 #include <functional>
 #include <iterator>
 #include <math.h>
+
+#ifdef IS_MAC_OS
+#include <limits.h>
+#else
 #include <values.h>
+#endif
+
 
 #ifndef MAXDOUBLE
 #include <float.h>

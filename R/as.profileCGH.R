@@ -83,7 +83,7 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
   }
 
 
-as.data.frame.profileCGH <- function(x, row.names = NULL, optional = FALSE)
+as.data.frame.profileCGH <- function(x, row.names = NULL, optional = FALSE, ...)
   {
     profileCGH <- x
     if (!is.null(profileCGH$profileValuesNA))

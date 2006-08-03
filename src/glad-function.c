@@ -12,7 +12,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+#ifdef IS_MAC_OS
+#include <limits.h>
+#else
 #include <values.h>
+#endif
 
 #ifndef MAXDOUBLE
 #include <float.h>
@@ -114,7 +119,7 @@ void updateOutliers (int *OutliersAws,
   for (pos=1;pos<(*l-1);pos++)
     {
 
-      if (Level[pos-1]==Level[pos+1] & Level[pos-1]!=Level[pos])
+      if (Level[pos-1]==Level[pos+1] && Level[pos-1]!=Level[pos])
 	{
 	  Level[pos]=Level[pos-1];
 	  Breakpoints[pos-1]=0;
@@ -139,7 +144,7 @@ void updateOutliersMoveBkp (int *OutliersAws,
   for (pos=1;pos<(*l-1);pos++)
     {
       
-      if (Level[pos-1]==Level[pos+1] & Level[pos-1]!=Level[pos])
+      if (Level[pos-1]==Level[pos+1] && Level[pos-1]!=Level[pos])
 	{
 	  Level[pos]=Level[pos-1];
 	  Breakpoints[pos-1]=0;
@@ -170,7 +175,7 @@ void moveBkp (int *ZoneGNL,
     {
       if (Chromosome[pos]==Chromosome[pos-1])
 	{
-	  if (OutliersTot[pos]!=0 & Breakpoints[pos]==1 & ZoneGNL[pos]==ZoneGNL[pos+1] & ZoneGNL[pos-1]!=ZoneGNL[pos+1])
+	  if (OutliersTot[pos]!=0 && Breakpoints[pos]==1 && ZoneGNL[pos]==ZoneGNL[pos+1] && ZoneGNL[pos-1]!=ZoneGNL[pos+1])
 	    {
 	      *RecomputeSmt=1;
 	      Breakpoints[pos]=0;
@@ -181,7 +186,7 @@ void moveBkp (int *ZoneGNL,
 
 	    }
 
-	  if (pos < (*l-1) & Breakpoints[pos]==1 & OutliersTot[pos+1]!=0 & ZoneGNL[pos]==ZoneGNL[pos+1] & ZoneGNL[pos-1]!=ZoneGNL[pos+1])
+	  if (pos < (*l-1) && Breakpoints[pos]==1 && OutliersTot[pos+1]!=0 && ZoneGNL[pos]==ZoneGNL[pos+1] && ZoneGNL[pos-1]!=ZoneGNL[pos+1])
 	    {
 	      *RecomputeSmt=1;	  
 	      Breakpoints[pos]=0;
@@ -227,7 +232,7 @@ void awsBkp (double *Smoothing,
               
       /*Outliers detection*/
 
-      if (Smoothing[j]!=Smoothing[j-1] & Smoothing[j+1]!=Smoothing[j] & Smoothing[j+1]==Smoothing[j-1] & j<(*l-1))
+      if (Smoothing[j]!=Smoothing[j-1] && Smoothing[j+1]!=Smoothing[j] && Smoothing[j+1]==Smoothing[j-1] && j<(*l-1))
 	{
 	  if (OutliersAws[j-1]==0)
 	    {
@@ -255,9 +260,9 @@ void awsBkp (double *Smoothing,
             
       else
 	{
-	  if (Smoothing[j]!=Smoothing[j-1] & OutliersAws[j-1]==0)
+	  if (Smoothing[j]!=Smoothing[j-1] && OutliersAws[j-1]==0)
 	    {
-	      if (j==1 | j==(*l-1))
+	      if (j==1 || j==(*l-1))
 		{
 		  regionChr[j]=*nbregion;
 		  rupture[j]=0;
@@ -329,7 +334,7 @@ void updateBkpRL (int *Region,
 
   for (i=1;i<*l;i++)
     {
-      if (i==1 | i==(*l-1))
+      if (i==1 || i==(*l-1))
 	{
 	  if (Region[i]!=Region[i-1])
 	    {
@@ -363,7 +368,7 @@ void updateBkpRL (int *Region,
 	    }
 	  else
 	    {
-	      if (Region[i]!=Region[i-1] & Region[i+1]!=Region[i] & Region[i+1]==Region[i-1])
+	      if (Region[i]!=Region[i-1] && Region[i+1]!=Region[i] && Region[i+1]==Region[i-1])
 		{
 		  if (OutliersAws[i-1]==0)
 		    {
@@ -373,7 +378,7 @@ void updateBkpRL (int *Region,
 		}
 	      else
 		{
-		  if (Region[i]!=Region[i-1] & OutliersAws[i-1]==0)
+		  if (Region[i]!=Region[i-1] && OutliersAws[i-1]==0)
 		    {
 		      Breakpoints[i-1]=1;
 		      NextLogRatio[i-1]=LogRatio[i];
@@ -539,7 +544,7 @@ void updateGNL(int *ZoneGNL,
     {
       ZoneGNL[i]=0;
 
-      if (Smoothing[i]>=*minG | Smoothing[i]>=*minAmp)
+      if (Smoothing[i]>=*minG || Smoothing[i]>=*minAmp)
 	{
 	  ZoneGNL[i]=1;
 	 
@@ -552,7 +557,7 @@ void updateGNL(int *ZoneGNL,
 
       else
 	{
-	  if (Smoothing[i]<=*maxL | Smoothing[i]<=*maxDel)
+	  if (Smoothing[i]<=*maxL || Smoothing[i]<=*maxDel)
 	    {
 	      ZoneGNL[i]=-1;
 

@@ -1,6 +1,6 @@
 Package: GLAD
-Version: 1.7.0
-Date: 2006-03-23
+Version: 1.7.1
+Date: 2006-08-03
 Title: Gain and Loss Analysis of DNA
 Depends: R (>= 1.8.0)
 Author: Philippe Hupé
