@@ -103,7 +103,6 @@ void updateLevel (int *Chromosome,
 }
 
 
-
 void updateOutliers (int *OutliersAws,
                      int *Level,
                      int *Breakpoints,
