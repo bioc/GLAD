@@ -206,7 +206,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ### on trouve le normal (ligne de base) à partir de la fonction affectationGNL
         profileCGH <- affectationGNL(profileCGH)
 
-       
+
         
 ### On renomme le champ ZoneGNL en ZoneGNLGen
         namesprofile <- names(profileCGH$profileValues)
@@ -220,7 +220,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         profileCGH$NormalRef <- NormalRef
 
         profileCGH$profileValues <- subset(profileCGH$profileValues, select=-LevelG)
-              
+
 
       }
 

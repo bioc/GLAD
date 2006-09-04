@@ -14,7 +14,6 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, ..
   CGH <- profileCGH$profileValues
 
 
-
   indexout <- which(CGH$OutliersTot==0)
   CGHaux <- CGH[indexout,]
   aggZone <- aggregate(CGHaux$LogRatio, list(ZoneGen=CGHaux$ZoneGen), median)
@@ -23,10 +22,10 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, ..
 
   aggZone$MedianSquare <- aggZone$Median*aggZone$Median
 
-  MinMedian <- aggZone$Median[which(min(aggZone$MedianSquare)==aggZone$MedianSquare)]
+  MinMedian <- aggZone$Median[which(min(aggZone$MedianSquare)==aggZone$MedianSquare)][1]
   aggZone$MinMedian <- aggZone$Median
   aggZone$MinMedian <- MinMedian
-  
+
 
   aggZone$ZoneGNL <- aggZone$ZoneGen
 
@@ -38,7 +37,6 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, ..
 
   CGH <- merge(CGH,aggZone[,c("ZoneGen","ZoneGNL")], by="ZoneGen")
 
-  
 
 
 ###################################################################
