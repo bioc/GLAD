@@ -22,7 +22,9 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
                             verbose=FALSE, ...)
   {
     
-
+### vérification de l'object donné en entrée
+    CheckData(profileCGH)
+    
 ### champs tels qu'ils sont en entrée
     fieldinput <- names(profileCGH$profileValues)
     excdudefields <- c("Smoothing", "Region", "Level", "OutliersAws",

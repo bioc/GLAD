@@ -24,6 +24,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
                               verbose=FALSE, ...)
   {
 
+### vérification de l'object donné en entrée
+    CheckData(profileCGH)
 
     if(base==TRUE)
       {

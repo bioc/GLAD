@@ -1,6 +1,8 @@
 \name{GLAD-internal}
 \title{GLAD-internal}
 \alias{GLAD-internal}
+\alias{CheckData}
+\alias{CheckData.profileCGH}
 \alias{affectationGNL}
 \alias{affectationGNL.profileCGH}
 \alias{chrBreakpoints}
