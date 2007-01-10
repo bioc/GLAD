@@ -9,4 +9,3 @@ Description: Analysis of array CGH data : detection of breakpoints in genomic pr
 License: GPL
 URL: http://bioinfo.curie.fr
 biocViews: Microarray, DNACopyNumber
-Packaged: Tue Mar 28 14:57:34 2006; phupe
