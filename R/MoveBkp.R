@@ -4,12 +4,12 @@
 ### Author(s): Philippe Hupé (Institut Curie) 2005
 ### Contact: glad@curie.fr
 
-MoveBkp <- function(profileCGH)
+MoveBkp <- function(profileCGH, ...)
   {
     UseMethod("MoveBkp")
   }
 
-MoveBkp.profileCGH <- function(profileCGH, region="Level")
+MoveBkp.profileCGH <- function(profileCGH, region="Level", ...)
   {
 
     

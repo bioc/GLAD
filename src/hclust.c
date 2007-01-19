@@ -154,6 +154,8 @@ int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *cri
 		}
 	      ind3=ioffst(*n,i2,j2);
 	      xx=diss[ind3];
+
+
 	      switch(*iopt)
 		{
 		  /*
@@ -164,6 +166,7 @@ int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *cri
 		    diss[ind1] =1/(membr[i2]+membr[j2])*((membr[i2]+membr[k])/membr[k]*diss[ind1]
 		                     + (membr[j2]+membr[k])/membr[k]*diss[ind2]
 				     -xx)*(membr[i2]+membr[j2])*membr[k]/x;
+		    //		    printf("diss[ind1]=%f\n", diss[ind1]);
 		    break; 
 		  }
 		  /*
@@ -173,7 +176,8 @@ int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *cri
 		  /*
 		   * COMPLETE LINK METHOD - IOPT=3.
 		   */
-		case 3: diss[ind1] = max (diss[ind1],diss[ind2]); break; 
+		case 3: diss[ind1] = max (diss[ind1],diss[ind2]);
+		    break;
 		  /*
 		   * AVERAGE LINK (OR GROUP AVERAGE) METHOD - IOPT=4.
 		   */
