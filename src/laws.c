@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <R_ext/Utils.h>
 #include "laws.h"
+
 
 #define max(a,b) ((a)>=(b)?(a):(b))
 #define min(a,b) ((a)<=(b)?(a):(b))
@@ -169,6 +171,7 @@ void gawsuni(double *y,
       ih=hakt;
       lawsuni(y,n_aux,inv_hakt,ih,inv_lamakt,theta,bi,ai,kernl,kerns);
       i=n_aux;
+      R_CheckUserInterrupt();
       /*      for (i=0;i<n_aux;i++)*/
       while (i--)
 	{
