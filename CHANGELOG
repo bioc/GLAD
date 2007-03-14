@@ -1,4 +1,10 @@
 ##################################
+### release 1.9.2 (14-03-2007) ###
+##################################
+corrected cytoband data for chromosome 6 (centromer position was wrong).
+
+
+##################################
 ### release 1.9.1 (02-03-2007) ###
 ##################################
 Interrupt handling in gawsuni C function.
