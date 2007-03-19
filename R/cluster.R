@@ -3,15 +3,15 @@
 # Contact: glad@curie.fr
 
 
-cluster <- function(...)
+clusterglad <- function(...)
 {
-  UseMethod("cluster")
+  UseMethod("clusterglad")
 }
 
 
 
 
-cluster.default <- function(Cluster, region, clusterRegion, lambda, nmin, nmax, sigma, ...)
+clusterglad <- function(Cluster, region, clusterRegion, lambda, nmin, nmax, sigma, ...)
 {
 
   if(class(Cluster)!="hclust")stop("wrong type for Cluster")

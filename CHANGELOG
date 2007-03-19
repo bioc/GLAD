@@ -1,4 +1,9 @@
 ##################################
+### release 1.9.3 (19-03-2007) ###
+##################################
+cluster function have been renamed clusterglad
+
+##################################
 ### release 1.9.2 (14-03-2007) ###
 ##################################
 corrected cytoband data for chromosome 6 (centromer position was wrong).

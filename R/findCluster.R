@@ -48,9 +48,9 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
 
         sigma <- profileChr$findClusterSigma
         dist <- dist(clusterRegion$Mean)
-        cluster <- hclustglad(dist, members=clusterRegion$Card, ...)
-        nbclasses <- cluster(cluster, region, clusterRegion, lambda, nmin, nmax, sigma, type, param)
-        classes <- cutree(cluster, k=nbclasses)
+        cluster.res <- hclustglad(dist, members=clusterRegion$Card, ...)
+        nbclasses <- clusterglad(cluster.res, region, clusterRegion, lambda, nmin, nmax, sigma, type, param)
+        classes <- cutree(cluster.res, k=nbclasses)
         profileChr$NbClusterOpt <- nbclasses
         clusterRegion <- data.frame(clusterRegion, zone=classes)
 ### jointure à optimiser

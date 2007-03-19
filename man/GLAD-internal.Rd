@@ -8,7 +8,7 @@
 \alias{chrBreakpoints}
 \alias{chrBreakpoints.profileCGH}
 \alias{cluster}
-\alias{cluster.default}
+\alias{clusterglad}
 \alias{detectOutliers}
 \alias{detectOutliers.profileChr}  
 \alias{filterBkp}
