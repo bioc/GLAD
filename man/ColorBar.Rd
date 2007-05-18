@@ -8,7 +8,7 @@
 This function produces a color image (color bar) which can be used for
 the legend to another color image obtained from the functions
 \code{\link{image}} or \code{\link{arrayPlot}}.}
-}
+
 \usage{
 ColorBar(x, horizontal=TRUE, col=heat.colors(50), scale=1:length(x), k=10, ...)
 }
