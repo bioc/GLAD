@@ -181,13 +181,13 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, ...)
             agg <- aggregate(profileCGH$profileValues$LogRatio, list(Level=profileCGH$profileValues$Level), median)
             agg$Level <- as.numeric(as.character(agg$Level))
             names(agg) <- c("Level","Smoothing")
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=-Smoothing)
+            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
             profileCGH$profileValues <- merge(profileCGH$profileValues, agg, by="Level", all=TRUE)
 
 
 
 ####################
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=-ZoneGNL)
+            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNL"))
             
             indexNormalLevel <- which(abs(profileCGH$profileValues$Smoothing-profileCGH$NormalRef)<=profileCGH$deltaN)
             profileCGH$profileValues$NormalRange <- profileCGH$profileValues$Level
@@ -228,8 +228,8 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, ...)
             indexDel <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$deletion)
             profileCGH$profileValues$ZoneGNL[indexDel] <- -10
             
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=-ZoneGen)
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=-NormalRange)
+            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
+            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))
 
                         
 

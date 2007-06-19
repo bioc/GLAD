@@ -354,8 +354,8 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
       }
 
 
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=-MedianLevel)
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=-LevelNewOrder)
+    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MedianLevel"))
+    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelNewOrder"))
     nomdata <- names(profileCGH$profileValues)
     nomdata <- nomdata[order(nomdata)]
     profileCGH$profileValues <- profileCGH$profileValues[,nomdata]

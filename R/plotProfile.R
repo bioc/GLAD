@@ -60,7 +60,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         profileCGH$profileValues <- profileCGH$profileValues[-indexna,]
       }
 
-    data(cytoband)
+    data("cytoband")
 
     if (!is.null(Chromosome))
       {
@@ -119,12 +119,12 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
 
     if (ChrNum)
       {
-        cytobandNew <- subset(cytoband, select=-Chromosome)
+        cytobandNew <- subset(cytoband, select=setdiff(names(cytoband),"Chromosome"))
         cytobandNew <- merge(LabelChr, cytobandNew, by.x="Chromosome", by.y="ChrNumeric")
       }
     else
       {
-        cytobandNew <- subset(cytoband, select=-ChrNumeric)
+        cytobandNew <- subset(cytoband, select=setdiff(names(cytoband),"ChrNumeric"))
         cytobandNew <- merge(LabelChr, cytobandNew, by="Chromosome") 
       }
 

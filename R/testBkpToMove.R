@@ -100,8 +100,8 @@ testBkpToMove.profileCGH <- function(profileCGH, ...)
     indexLeft <- which(profileCGH$BkpInfo$MoveBkp==-1 & profileCGH$BkpInfo$BeforePosOrder==profileCGH$BkpInfo$MinPosOrder)
     profileCGH$BkpInfo$MoveBkp[indexLeft] <- 0
 
-    profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=-NextPosOrder)
-    profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=-BeforePosOrder)
+    profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"NextPosOrder"))
+    profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"BeforePosOrder"))
     return(profileCGH)
     
   }

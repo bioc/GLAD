@@ -110,7 +110,7 @@ as.data.frame.profileCGH <- function(x, row.names = NULL, optional = FALSE, ...)
     if (length(which(names(profileCGH$profileValues)=="ChromosomeChar")))
       {
         values$Chromosome <- values$ChromosomeChar
-        values <- subset(values, select=-ChromosomeChar)
+        values <- subset(values, select=setdiff(names(values),"ChromosomeChar"))
       }
 
 

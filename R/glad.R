@@ -173,7 +173,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
     agg <- aggregate(profileCGH$profileValues$LogRatio, list(Region=profileCGH$profileValues$Region), median)
     names(agg) <- c("Region","Smoothing")
     agg$Region <- as.numeric(as.character(agg$Region))
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=-Smoothing)
+    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
 
     profileCGH$profileValues <- merge(profileCGH$profileValues, agg)
 
