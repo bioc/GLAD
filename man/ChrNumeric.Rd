@@ -1,4 +1,5 @@
 \name{ChrNumeric}
+\encoding{latin1}
 \title{Convert chromosome into numeric values}
 \alias{ChrNumeric}
 \description{Convert chromosome into numeric values.}

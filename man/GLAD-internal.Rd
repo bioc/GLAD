@@ -1,4 +1,5 @@
 \name{GLAD-internal}
+\encoding{latin1}
 \title{GLAD-internal}
 \alias{GLAD-internal}
 \alias{CheckData}

@@ -1,4 +1,5 @@
 \name{glad}
+\encoding{latin1}
 \alias{glad}
 \alias{glad.profileCGH}
 \title{Analysis of array CGH data}

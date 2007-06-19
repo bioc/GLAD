@@ -1,4 +1,5 @@
 \name{as.profileCGH}
+\encoding{latin1}
 \title{Create an object of class profileCGH}
 \alias{as.profileCGH}
 \alias{as.profileCGH.data.frame}

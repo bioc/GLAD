@@ -172,7 +172,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                 if (smoothfunc=="aws")
                   {
                     awsres <- aws(y=subsetdata$LogRatio, x=x, hinit=hinit, hmax=hmax, sigma2=sigma, NN=FALSE, symmetric=TRUE, ...)$theta
-                    print(timeBkp)
 
                     if (is.null(awsres)==FALSE)
                       {

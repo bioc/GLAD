@@ -2,7 +2,7 @@
 \alias{profileCGH}
 \alias{profileChr}
 
-
+\encoding{latin1}
 \title{Objects of Class profileCGH and profileChr}
 \description{
 Description of the objects \code{profileCGH} and \code{profileChr}. The

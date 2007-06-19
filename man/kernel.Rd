@@ -1,4 +1,5 @@
 \name{kernelpen}
+\encoding{latin1}
 \title{Kernelpen function}
 \alias{kernelpen}
 \description{Kernel function used in the penalty term.}

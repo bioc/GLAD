@@ -1,6 +1,7 @@
 \name{plotProfile}
 \alias{plotProfile}
 \alias{plotProfile.profileCGH}
+\encoding{latin1}
 \title{Plot genomic profile and cytogenetic banding}
 \description{Plot genomic profile with breakpoints, outliers, smoothing
   line and cytogenetic banding.

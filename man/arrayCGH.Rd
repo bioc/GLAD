@@ -1,7 +1,7 @@
 \name{arrayCGH}
 \alias{arrayCGH}
 
-
+\encoding{latin1}
 \title{Object of Class arrayCGH}
 \description{
 Description of the object \code{arrayCGH}.

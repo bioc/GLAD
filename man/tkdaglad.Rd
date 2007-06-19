@@ -4,7 +4,7 @@
 \alias{tkglad}
 \alias{tkglad.default}
 
-
+\encoding{latin1}
 \title{Graphical interface for GLAD package}
 \description{
 A graphical interface to analyse array CGH data.

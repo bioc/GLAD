@@ -1,6 +1,7 @@
 \name{daglad}
 \alias{daglad}
 \alias{daglad.profileCGH}
+\encoding{latin1}
 \title{Analysis of array CGH data}
 \description{
   This function allows the detection of breakpoints in genomic profiles

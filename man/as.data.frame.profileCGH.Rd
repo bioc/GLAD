@@ -1,4 +1,5 @@
 \name{as.data.frame.profileCGH}
+\encoding{latin1}
 \title{profileCGH consercion}
 \alias{as.data.frame.profileCGH}
 \description{Convert a profileCGH object into a data.frame.}

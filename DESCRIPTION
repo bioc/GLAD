@@ -2,7 +2,7 @@ Package: GLAD
 Version: 1.11.0
 Date: 2006-08-03
 Title: Gain and Loss Analysis of DNA
-Depends: R (>= 1.8.0), aws
+Depends: R (>= 1.8.0), aws, tcltk
 Author: Philippe Hupe
 Maintainer: Philippe Hupe <glad@curie.fr>
 Description: Analysis of array CGH data : detection of breakpoints in genomic profiles and assignment of a status (gain, normal or lost) to each chromosomal regions identified.
