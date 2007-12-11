@@ -5,10 +5,7 @@ tkglad <- function(...)
 
 tkglad.default <- function(list=character(0), ...)
   {
-
-##     if(!require(tcltk))
-##       stop("Error in glad: the tcltk package is required to use these function. The tcltk package can be installed from http://www.r-project.org")  
-
+    require("tcltk") || stop("Package not loaded: tcltk")    
 
     frameDaglad <- tktoplevel()
     frameOverall <- tkframe(frameDaglad)
