@@ -9,7 +9,7 @@
   or lost) to each clone.
 }
 \usage{
-glad.profileCGH(profileCGH, mediancenter=FALSE,
+\method{glad}{profileCGH}(profileCGH, mediancenter=FALSE,
                 smoothfunc="lawsglad", bandwidth=10, round=1.5,
                 model="Gaussian", lkern="Exponential", qlambda=0.999,
                 base=FALSE, sigma,

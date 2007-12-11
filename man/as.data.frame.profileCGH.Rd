@@ -3,7 +3,7 @@
 \title{profileCGH consercion}
 \alias{as.data.frame.profileCGH}
 \description{Convert a profileCGH object into a data.frame.}
-\usage{as.data.frame.profileCGH(x, row.names = NULL, optional = FALSE, ...)}
+\usage{\method{as.data.frame}{profileCGH}(x, row.names = NULL, optional = FALSE, ...)}
 \arguments{
   \item{x}{The object to converted into data.frame.}
   \item{row.names}{NULL or a character vector giving the row names for the

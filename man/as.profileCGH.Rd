@@ -6,7 +6,7 @@
 \description{Create an object of class profileCGH.}
 \usage{
 as.profileCGH(object,...)
-as.profileCGH.data.frame(object, infaction=c("value","empty"), value=20, ...)
+\method{as.profileCGH}{data.frame}(object, infaction=c("value","empty"), value=20, ...)
 }
 \arguments{
   \item{object}{A data.frame to be convert into profileCGH.}

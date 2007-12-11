@@ -10,7 +10,7 @@
 }
 \usage{
 
-daglad.profileCGH(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
+\method{daglad}{profileCGH}(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
                   smoothfunc="lawsglad", lkern="Exponential", model="Gaussian",
                   qlambda=0.999,  bandwidth=10, sigma=NULL, base=FALSE, round=1.5,
                   lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,

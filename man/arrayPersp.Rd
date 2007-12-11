@@ -9,14 +9,14 @@ The function \code{arrayPersp} creates perspective images of shades of gray or c
 }
 \usage{
 
-arrayPersp.default(Statistic, Col, Row,
+\method{arrayPersp}{default}(Statistic, Col, Row,
                    ArrCol, ArrRow, SpotCol, SpotRow,
                    mediancenter=FALSE,
                    col=myPalette("green","red","yellow"),
                    zlim=zlim, bar=TRUE, ...)
 
 
-arrayPersp.arrayCGH(arrayCGH, variable,
+\method{arrayPersp}{arrayCGH}(arrayCGH, variable,
    	            mediancenter=FALSE,
 		    col=myPalette("green","red","yellow"),
 	            zlim=zlim, bar=TRUE, ...)

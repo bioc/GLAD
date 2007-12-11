@@ -41,7 +41,7 @@
 
 \usage{ }
 
-\description{ }
+\description{Internal functions}
 
 \value{ }
 

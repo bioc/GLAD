@@ -8,7 +8,7 @@
 The function \code{arrayPlot} creates spatial images of shades of gray or colors that correspond to the values of a statistic for each spot on the array. The statistic can be the intensity log-ratio, a spot quality measure (e.g. spot size or shape), or a test statistic. This function can be used to explore whether there are any spatial effects in the data, for example, print-tip or cover-slip effects.
 }
 \usage{
-arrayPlot.default(Statistic, Col, Row,
+\method{arrayPlot}{default}(Statistic, Col, Row,
                   ArrCol, ArrRow, SpotCol, SpotRow,
                   mediancenter=FALSE,
                   col=myPalette("green", "red", "yellow"),
@@ -16,7 +16,7 @@ arrayPlot.default(Statistic, Col, Row,
                   zlim=NULL, bar=c("none", "horizontal", "vertical"),
                   layout=TRUE, ...) 
 
-arrayPlot.arrayCGH(arrayCGH, variable,
+\method{arrayPlot}{arrayCGH}(arrayCGH, variable,
                    mediancenter=FALSE,
                    col=myPalette("green", "red", "yellow"),
                    contour=FALSE, nlevels=5,

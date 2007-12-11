@@ -9,7 +9,7 @@
 }
 \usage{
 
-plotProfile.profileCGH(profileCGH, variable="LogRatio", Chromosome=NULL,
+\method{plotProfile}{profileCGH}(profileCGH, variable="LogRatio", Chromosome=NULL,
                        Smoothing=NULL, GNL="ZoneGNL", Bkp=FALSE,
                        labels=TRUE, plotband=TRUE, unit=0,
                        colDAGLAD=c("black","blue","red","green","yellow"),
