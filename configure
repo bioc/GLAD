@@ -1,10 +1,23 @@
 #!/bin/sh
 
+echo""
 echo "Configuring variable environment"
+echo ""
+echo "OS is: $(uname -s)"
 
 OS=`uname -s`
 
 case $OS in
 "Darwin") echo -e "PKG_CFLAGS+=-DIS_MAC_OS\\nPKG_CXXFLAGS+=-DIS_MAC_OS" > src/Makevars;;
 esac
+
+
+if [ -f src/Makevars ]
+then
+echo "src/Makevars has been created"
+cat src/Makevars
+fi
+
+echo "variable environment completed"
+echo ""
 

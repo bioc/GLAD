@@ -39,15 +39,15 @@
 \alias{BkpInfo.profileCGH}
 
 
-\usage{ }
+\usage{" "}
 
 \description{Internal functions}
 
-\value{ }
+\value{" "}
 
 \author{Philippe Hupé, \url{glad@curie.fr}.}
 
-\seealso{}
+\seealso{" "}
 
 \keyword{internal}
 

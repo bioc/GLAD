@@ -1,4 +1,4 @@
-\name{plotProfile}
+>\name{plotProfile}
 \alias{plotProfile}
 \alias{plotProfile.profileCGH}
 \encoding{latin1}
@@ -54,7 +54,7 @@
   }
 
 
-\details{}
+\details{" "}
 
 \value{A plot}
 
@@ -63,9 +63,9 @@
 
 \author{Philippe Hupé, \email{glad@curie.fr}.}
 
-\seealso{}
+\seealso{" "}
 
-\keyword{}
+\keyword{hplot}
 
 \examples{
 

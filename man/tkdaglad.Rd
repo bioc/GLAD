@@ -24,7 +24,7 @@ A graphical interface to analyse array CGH data.
 
 \seealso{\code{\link{glad}}, \code{\link{daglad}}, \code{\link{plotProfile}}.}
 
-\keyword{}
+\keyword{utilities}
 
 \examples{
   

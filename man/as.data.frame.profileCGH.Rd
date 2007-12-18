@@ -17,7 +17,7 @@
 
 }
 
-\value{}
+\value{A data.frame object}
 
 \details{The attributes \code{profileValues} and \code{profileValuesNA}
   are binded into a data.frame.}
@@ -31,7 +31,7 @@
 
 \seealso{\code{\link{as.profileCGH}}}
 
-\keyword{}
+\keyword{manip}
 
 \examples{
 

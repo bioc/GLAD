@@ -38,7 +38,7 @@ ColorBar(x, horizontal=TRUE, col=heat.colors(50), scale=1:length(x), k=10, ...)
 
 \seealso{\code{\link{image}}, \code{\link{arrayPlot}} \code{\link{myPalette}}.}
 
-\keyword{}
+\keyword{hplot}
 
 \examples{
 

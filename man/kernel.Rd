@@ -23,4 +23,4 @@ kernelpen(x, type="tricubic", param)
 
 \author{Philippe Hupé, \email{glad@curie.fr}}
 
-\keyword{}
+\keyword{math}

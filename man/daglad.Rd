@@ -225,7 +225,7 @@
 
 \seealso{\code{\link{glad}}.}
 
-\keyword{}
+\keyword{models}
 
 \examples{
 

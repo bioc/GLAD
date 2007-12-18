@@ -43,7 +43,7 @@ LogRatio, PosOrder or Chromosome; profileValues contains the remaining rows.}
 
 \seealso{\code{\link{as.data.frame.profileCGH}}}
 
-\keyword{}
+\keyword{manip}
 
 \examples{
 

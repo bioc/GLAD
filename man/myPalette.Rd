@@ -28,7 +28,7 @@ myPalette(low = "white", high = c("green", "red"), mid=NULL, k =50)
 
 \author{Sandrine Dudoit, Yee Hwa (Jean) Yang.}
 
-\keyword{}
+\keyword{color}
 
 \seealso{\code{palette}, \code{rgb},
 \code{colors}, \code{col2rgb}, \code{\link{image}}, \code{\link{ColorBar}}, \code{\link{arrayPlot}}.}

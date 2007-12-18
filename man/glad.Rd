@@ -212,7 +212,7 @@
 \seealso{\code{\link{profileCGH}}, \code{\link{as.profileCGH}}, \code{\link{plotProfile}}.}
 
 
-\keyword{}
+\keyword{models}
 
 \examples{
 

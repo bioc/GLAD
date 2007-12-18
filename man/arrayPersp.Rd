@@ -62,7 +62,7 @@ The function \code{arrayPersp} creates perspective images of shades of gray or c
 
 \seealso{\code{\link[base]{persp}}, \code{\link{arrayPlot}}, \code{\link{myPalette}}.}
 
-\keyword{}
+\keyword{hplot}
 
 \examples{
 data(arrayCGH)

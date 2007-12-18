@@ -72,7 +72,7 @@ The function \code{arrayPlot} creates spatial images of shades of gray or colors
 
 \seealso{\code{\link[base]{image}}, \code{\link[base]{contour}}, \code{\link{arrayPersp}}, \code{\link{myPalette}}.}
 
-\keyword{}
+\keyword{hplot}
 
 \examples{
 data(arrayCGH)

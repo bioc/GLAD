@@ -37,7 +37,7 @@ Description of the object \code{arrayCGH}.
 
 \seealso{\code{\link{glad}}.}
 
-\keyword{}
+\keyword{classes}
 
 \examples{
 data(arrayCGH)

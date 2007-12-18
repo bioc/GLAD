@@ -17,7 +17,7 @@ ChrNumeric(Chromosome)
 
 \author{Philippe Hupé, \email{glad@curie.fr}}
 
-\keyword{}
+\keyword{manip}
 
 \examples{
 

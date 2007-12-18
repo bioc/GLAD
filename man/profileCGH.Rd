@@ -33,7 +33,7 @@ last object corresponds to data of only one chromosome.
 
 \seealso{\code{\link{glad}}, \code{\link{as.profileCGH}}.}
 
-\keyword{}
+\keyword{classes}
 
 \examples{
   

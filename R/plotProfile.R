@@ -60,6 +60,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         profileCGH$profileValues <- profileCGH$profileValues[-indexna,]
       }
 
+#    cytoband <- NULL
     data("cytoband")
 
     if (!is.null(Chromosome))
