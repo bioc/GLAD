@@ -1,4 +1,4 @@
->\name{plotProfile}
+\name{plotProfile}
 \alias{plotProfile}
 \alias{plotProfile.profileCGH}
 \encoding{latin1}
