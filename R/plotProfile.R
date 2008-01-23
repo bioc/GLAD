@@ -17,7 +17,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
                                    pchSymbol=c(20,13),
                                    colCytoBand=c("white","darkblue"),
                                    colCentro="red", text=NULL,
-                                   main="", ...)
+                                   main="", ylim=NULL, ...)
   {
 
     
@@ -223,12 +223,12 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
             
             plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
                  pch=outliers, col=col, xaxt="n", xlab=main,
-                 ylab=variable, ...)
+                 ylab=variable, ylim=ylim, ...)
           }
         else
           {
             plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
-                 pch=outliers, col=col, xaxt="n", xlab="", ylab=variable, main=main)
+                 pch=outliers, col=col, xaxt="n", xlab="", ylab=variable, main=main, ylim=ylim, ...)
           }
 
 
@@ -254,12 +254,12 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         if (plotband)
           {
             plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
-                 pch=20, xaxt="n", xlab=main, ylab=variable, ...)
+                 pch=20, xaxt="n", xlab=main, ylab=variable, ylim=ylim, ...)
           }
         else
           {
             plot(VarToPlot ~ NewPosBase, data=profileCGH$profileValues,
-                 pch=20, xaxt="n", xlab="", ylab=variable, main=main, ...)
+                 pch=20, xaxt="n", xlab="", ylab=variable, main=main, ylim=ylim, ...)
           }
         
         if (Bkp)          
