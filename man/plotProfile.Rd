@@ -15,7 +15,7 @@
                        colDAGLAD=c("black","blue","red","green","yellow"),
                        pchSymbol=c(20,13),
                        colCytoBand=c("white","darkblue"),
-                       colCentro="red", text=NULL, main="", ...)
+                       colCentro="red", text=NULL, main="", ylim=NULL, ...)
 
 
 
@@ -47,6 +47,7 @@
   \item{text}{A list with the parameters to be passed to the function
     \code{\link[graphics]{text}}.}
   \item{main}{title of the plot.}
+  \item{ylim}{range of the y-axis}
   \item{...}{}
 
 
