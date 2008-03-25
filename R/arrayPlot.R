@@ -81,9 +81,9 @@ arrayPlot.arrayCGH <- function(arrayCGH, variable, mediancenter=FALSE,
     else x.bar <- seq((zlim[1] - 1), (zlim[2] + 1), length = 41)
 
     if (bar=="horizontal")
-      par(mar = c(4, 1, 0, 1), las=2)
+      par(mar = c(3, 1, 0, 1), las=2)
     if (bar=="vertical")
-      par(mar = c(1, 0, 4, 4))
+      par(mar = c(1, 0, 4, 3))
     
     ColorBar(x.bar, horizontal = (bar=="horizontal"), col = col, main = "", k=7)
     par(mar = omar, las=olas) ## restore old margins
