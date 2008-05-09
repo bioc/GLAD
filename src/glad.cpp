@@ -382,12 +382,12 @@ double median_vector_double(vector<double> vec)
   sort(vec.begin(),vec.end());
   if(vec.size()%2!=0)
     {
-      return(*(vec.begin() + ((vec.size()-1))/2));
+      return(*(vec.begin() + ((vec.size()-1))*0.5));
     }
 
   else
     {
-      return((*(vec.begin() + ((vec.size()))/2-1) + *(vec.begin() + ((vec.size()))/2))*0.5);
+      return((*(vec.begin() + ((vec.size()))*0.5-1) + *(vec.begin() + ((vec.size()))*0.5))*0.5);
     }
 
 }

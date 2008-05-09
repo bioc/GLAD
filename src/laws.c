@@ -22,6 +22,7 @@ void iawsuni (double *y,
 {
 
   int i,j;
+  int i_moins_un;
   int ja,je,ih,iz;
   double z,wj,az,swj,swjy;
   double diff;
@@ -55,8 +56,9 @@ void iawsuni (double *y,
 	    }	
 	}
 
-      ai[i-1]=swjy;
-      bi[i-1]=swj;
+      i_moins_un=i-1;
+      ai[i_moins_un]=swjy;
+      bi[i_moins_un]=swj;
     }
 
 }   
@@ -76,13 +78,15 @@ void lawsuni(double *y,
 	     double *kerns)
 {
   int i,j;
+  int i_moins_un, j_moins_un;
   int ja,je,iz;
   double z,wj,az,swj,swjy,bii,thetai;
   /*double diff;*/
 
   for (i=1;i<=n;i++)
     {
-      thetai=theta[i-1];
+      i_moins_un=i-1;
+      thetai=theta[i_moins_un];
       ja=max(1,i-ih);
       je=min(n,i+ih);
       swj=0;
@@ -91,8 +95,9 @@ void lawsuni(double *y,
 
       for (j=ja;j<=je;j++)
 	{
-	  bii=bi[i-1]+bi[j-1];
-	  z=thetai-theta[j-1];
+	  j_moins_un=j-1;
+	  bii=bi[i_moins_un]+bi[j_moins_un];
+	  z=thetai-theta[j_moins_un];
 	  z=z*z*bii*inv_lamakt;
 
 	  if (z<100)
@@ -110,12 +115,12 @@ void lawsuni(double *y,
 		  az=z-iz;
 		  wj=wj*((kernl[iz+1] - kernl[iz])*az + kernl[iz]);
 		  swj=swj+wj;
-		  swjy = swjy+wj*y[j-1];
+		  swjy = swjy+wj*y[j_moins_un];
 		}
 	    }
 	}
-      ai[i-1]=swjy;
-      bi[i-1]=swj;
+      ai[i_moins_un]=swjy;
+      bi[i_moins_un]=swj;
     }
       
 }
