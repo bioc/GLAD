@@ -3,7 +3,7 @@ filterBkp <- function(...)
     UseMethod("filterBkp")
   }
 
-filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, ...)
+filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRUE, ...)
   {
 
 
@@ -239,9 +239,13 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, ...)
             
 ### Mise à jour du GNL des Outliers
             class(profileCGH) <- "profileCGH"
-            profileCGH <- OutliersGNL(profileCGH, alpha=profileCGH$alpha,
-                                      sigma=profileCGH$SigmaG$Value, NormalRef=profileCGH$NormalRef,
-                                      amplicon=profileCGH$amplicon, deletion=profileCGH$deletion)
+
+            if(assignGNLOut)
+              {
+                profileCGH <- OutliersGNL(profileCGH, alpha=profileCGH$alpha,
+                                          sigma=profileCGH$SigmaG$Value, NormalRef=profileCGH$NormalRef,
+                                          amplicon=profileCGH$amplicon, deletion=profileCGH$deletion)
+              }
 
           }
         

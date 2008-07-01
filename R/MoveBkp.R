@@ -9,7 +9,7 @@ MoveBkp <- function(profileCGH, ...)
     UseMethod("MoveBkp")
   }
 
-MoveBkp.profileCGH <- function(profileCGH, region="Level", ...)
+MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...)
   {
 
     
@@ -133,8 +133,11 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", ...)
 
 ### Mise à jour du GNL des Outliers
             class(profileCGH) <- "profileCGH"
-            profileCGH <- OutliersGNL(profileCGH, alpha=profileCGH$alpha, sigma=profileCGH$SigmaG$Value, NormalRef=profileCGH$NormalRef, amplicon=profileCGH$amplicon, deletion=profileCGH$deletion)
+            if(assignGNLOut)
+              {
+                profileCGH <- OutliersGNL(profileCGH, alpha=profileCGH$alpha, sigma=profileCGH$SigmaG$Value, NormalRef=profileCGH$NormalRef, amplicon=profileCGH$amplicon, deletion=profileCGH$deletion)
 
+              }
           }
 
         else

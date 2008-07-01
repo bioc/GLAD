@@ -8,9 +8,14 @@ OutliersGNL <- function(...)
 }
 
 
-OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, amplicon, deletion, verbose=FALSE, ...)
+OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, amplicon, deletion, verbose=FALSE, assignGNLOut=TRUE, ...)
 {
   if (verbose) print("OutliersGNL: starting function")
+  if(!assignGNLOut)
+    {
+      print("GNL wil not assigned for outliers")
+      return(profileCGH)
+    }
 
   CGH <- profileCGH$profileValues
 

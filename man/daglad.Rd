@@ -16,7 +16,7 @@
                   lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
                   method="centroid", nmin=1, nmax=8,
                   amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
-                  MinBkpWeight=0.35, CheckBkpPos=TRUE,
+                  MinBkpWeight=0.35, CheckBkpPos=TRUE, assignGNLOut=TRUE,
                   verbose=FALSE, ...)
 
 }
@@ -121,6 +121,10 @@
 
     \item{CheckBkpPos}{If \code{TRUE}, the accuracy position of each
       breakpoints is checked.}
+    
+  \item{assignGNLOut}{If \code{FALSE} the status (gain/normal/loss) is
+  not assigned for outliers.}  
+    
 
     \item{verbose}{If \code{TRUE} some information are printed.}  
     

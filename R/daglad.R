@@ -20,7 +20,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
                               lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
                               method="centroid", nmin=1, nmax=8,
                               amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
-                              MinBkpWeight=0.35, CheckBkpPos=TRUE,
+                              MinBkpWeight=0.35, CheckBkpPos=TRUE, assignGNLOut=TRUE,
                               verbose=FALSE, ...)
   {
 
@@ -566,7 +566,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 ### Statut des Outliers
 
-    profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion)
+    profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion, assignGNLOut=assignGNLOut)
 
 
     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))
@@ -601,7 +601,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ###
 #################################################################################        
 
-    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight)
+    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, assignGNLOut=assignGNLOut)
 
 #################################################################################
 ###
@@ -611,7 +611,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     if (CheckBkpPos)
       {
-        profileCGH <- MoveBkpStep(profileCGH)        
+        profileCGH <- MoveBkpStep(profileCGH, assignGNLOut=assignGNLOut)        
       }
 
 

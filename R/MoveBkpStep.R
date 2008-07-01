@@ -9,7 +9,7 @@ MoveBkpStep <- function(...)
     UseMethod("MoveBkpStep")
   }
 
-MoveBkpStep.profileCGH <- function(profileCGH, ...)
+MoveBkpStep.profileCGH <- function(profileCGH, assignGNLOut=TRUE,...)
   {
     
     fin <- 0
@@ -41,7 +41,7 @@ MoveBkpStep.profileCGH <- function(profileCGH, ...)
         while (fin!=1)
           {
             nbiter <- nbiter + 1
-            profileCGH <- MoveBkp(profileCGH)
+            profileCGH <- MoveBkp(profileCGH, assignGNLOut=assignGNLOut)
 
             if (is.data.frame(profileCGH$BkpInfo))
               {

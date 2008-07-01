@@ -18,7 +18,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
                             lambdabreak=8, lambdacluster=8, lambdaclusterGen=40,
                             type="tricubic", param=c(d=6),
                             alpha=0.001, msize=5,
-                            method="centroid", nmax=8,
+                            method="centroid", nmax=8, assignGNLOut=TRUE,
                             verbose=FALSE, ...)
   {
     
@@ -159,7 +159,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
       }
     
     class(profileCGH) <- "profileCGH"
-    profileCGH <- affectationGNL(profileCGH, verbose=verbose)
+    profileCGH <- affectationGNL(profileCGH, verbose=verbose, assignGNLOut=assignGNLOut)
 
     if (verbose)
       {

@@ -8,7 +8,7 @@ affectationGNL <- function(...)
 }
 
 
-affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, ...)
+affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, assignGNLOut=TRUE, ...)
 {
   if (verbose) print("affectationGNL: starting function")
   CGH <- profileCGH$profileValues
@@ -45,43 +45,45 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, ..
 ###
 ###################################################################
 
-
-  indexout <- which(CGH$OutliersTot!=0)
-
-
-
-  if (length(indexout)>0)
+  if(assignGNLOut==FALSE) print("GNL will no be assigned for outliers")
+  if(assignGNLOut)
     {
+      indexout <- which(CGH$OutliersTot!=0)
 
 
-      
-      CGHnotout <- CGH[-indexout,]
 
-      sagg <- split(CGHnotout$LogRatio, CGHnotout$ZoneGNL)
+      if (length(indexout)>0)
+        {
 
-      Mean <- sapply(sagg,mean)
-      std <- sapply(sagg,var)
-      std <- std^0.5
-      ZoneGNL <- as.numeric(as.character(names(Mean)))
-      
-      statnormal <- data.frame(ZoneGNL,Mean,std)
 
-      
-      
-      statnormal <- statnormal[which(statnormal$ZoneGNL==0),]
-      
+          
+          CGHnotout <- CGH[-indexout,]
 
-      
-      CGHout <- CGH[indexout,]
-      ZoneGNLaux <- CGHout$ZoneGNL      
-      CGHout$ZoneGNL <- CGHout$OutliersTot
+          sagg <- split(CGHnotout$LogRatio, CGHnotout$ZoneGNL)
 
-      
+          Mean <- sapply(sagg,mean)
+          std <- sapply(sagg,var)
+          std <- std^0.5
+          ZoneGNL <- as.numeric(as.character(names(Mean)))
+          
+          statnormal <- data.frame(ZoneGNL,Mean,std)
+
+          
+          
+          statnormal <- statnormal[which(statnormal$ZoneGNL==0),]
+          
+
+          
+          CGHout <- CGH[indexout,]
+          ZoneGNLaux <- CGHout$ZoneGNL      
+          CGHout$ZoneGNL <- CGHout$OutliersTot
+
+          
 
 
 ### intervalle de confiance pour les régions normales
-      seuilinf <- statnormal$Mean - statnormal$std*qnorm(1-alpha/2)
-      seuilsup <- statnormal$Mean + statnormal$std*qnorm(1-alpha/2)
+          seuilinf <- statnormal$Mean - statnormal$std*qnorm(1-alpha/2)
+          seuilsup <- statnormal$Mean + statnormal$std*qnorm(1-alpha/2)
 
 
 
@@ -94,37 +96,37 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, ..
 
 
 ### ceux qui sont perdus
-      indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio<seuilinf)
+          indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio<seuilinf)
 
-      if (length(indexgainmoins)>0)
-        {
-          CGHout[indexgainmoins,"ZoneGNL"] <- -1
+          if (length(indexgainmoins)>0)
+            {
+              CGHout[indexgainmoins,"ZoneGNL"] <- -1
 
-        }
-      
+            }
+          
 
-      
+          
 
 ### ceux qui sont normaux
-      indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio>=seuilinf&CGHout$LogRatio<=seuilsup)
+          indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio>=seuilinf&CGHout$LogRatio<=seuilsup)
 
-      if (length(indexgainmoins)>0)
-        {
-          CGHout[indexgainmoins,"ZoneGNL"] <- 0
+          if (length(indexgainmoins)>0)
+            {
+              CGHout[indexgainmoins,"ZoneGNL"] <- 0
 
-        }
+            }
 
 
-      
+          
 ### ceux qui sont outliers mais quand meme gagnés
-      indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio>seuilsup)
+          indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio>seuilsup)
 
-      if (length(indexgainmoins)>0)
-        {
-          CGHout[indexgainmoins,"ZoneGNL"] <- 1
+          if (length(indexgainmoins)>0)
+            {
+              CGHout[indexgainmoins,"ZoneGNL"] <- 1
 
-        }
-      
+            }
+          
 
 ###################################################################################
 ###
@@ -133,39 +135,39 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, ..
 ###################################################################################
 
 ### ceux qui sont gagnés
-      indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio>seuilsup)
+          indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio>seuilsup)
 
-      if (length(indexlostplus)>0)
-        {
-          CGHout[indexlostplus,"ZoneGNL"] <- 1
+          if (length(indexlostplus)>0)
+            {
+              CGHout[indexlostplus,"ZoneGNL"] <- 1
 
-        }
+            }
 
 ### ceux qui sont normaux
-      indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio<=seuilsup&CGHout$LogRatio>=seuilinf)
+          indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio<=seuilsup&CGHout$LogRatio>=seuilinf)
 
-      if (length(indexlostplus)>0)
-        {
-          CGHout[indexlostplus,"ZoneGNL"] <- 0
+          if (length(indexlostplus)>0)
+            {
+              CGHout[indexlostplus,"ZoneGNL"] <- 0
 
-        }
-      
+            }
+          
 
 ### ceux qui sont des outliers mais perdus quand meme
-      indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio<seuilinf)
+          indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio<seuilinf)
 
-      if (length(indexlostplus)>0)
-        {
-          CGHout[indexlostplus,"ZoneGNL"] <- -1
+          if (length(indexlostplus)>0)
+            {
+              CGHout[indexlostplus,"ZoneGNL"] <- -1
 
+            }
+          
+          CGH[indexout,] <- CGHout
+          
+          
         }
-      
-      CGH[indexout,] <- CGHout
-      
-      
-    }
 
-  
+    }
 
 
 
