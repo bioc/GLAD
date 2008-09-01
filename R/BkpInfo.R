@@ -25,15 +25,6 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
 
         champinter <- intersect(nomchamp,nomchamptot)
         
-##         if (length(intersect(names(profileCGH$profileValues),"PosBase"))>=1)
-##           {
-##             BP <- profileCGH$profileValues[indexBP,c("PosOrder","PosBase", "Smoothing","Chromosome","ZoneGNL", "LogRatio", "NextLogRatio", "MinPosOrder", "MaxPosOrder")]
-##           }
-##         else
-##           {
-##             BP <- profileCGH$profileValues[indexBP,c("PosOrder", "Smoothing","Chromosome","ZoneGNL", "LogRatio", "NextLogRatio", "MinPosOrder", "MaxPosOrder")]
-
-##           }
 
         BP <- profileCGH$profileValues[indexBP,champinter]
         

@@ -23,7 +23,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
   {
     
 ### vérification de l'object donné en entrée
-    CheckData(profileCGH)
+    CheckData(profileCGH, bandwidth=bandwidth)
     
 ### champs tels qu'ils sont en entrée
     fieldinput <- names(profileCGH$profileValues)

@@ -25,7 +25,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
   {
 
 ### vérification de l'object donné en entrée
-    CheckData(profileCGH)
+    CheckData(profileCGH, bandwidth=bandwidth)
 
     if(base==TRUE)
       {

@@ -10,10 +10,22 @@ CheckData <- function(...)
     UseMethod("CheckData")
   }
 
-CheckData.profileCGH <- function(profileCGH=profileCGH, ...)
+CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, ...)
   {
-    if(dim(profileCGH$profileValues)[1]==0)
+
+    n <- dim(profileCGH$profileValues)[1]    
+    if(n==0)
       {
         stop("Error: the data contains only missing values. Check that the fields LogRatio, Chromosome or PosOrder are not empty.")
       }
+
+
+    if (n>200)
+      {
+        if (bandwidth>1)
+          {
+            print("You can set bandwitdth to 1 to decrease computation time")
+          }
+      }
+    
   }
