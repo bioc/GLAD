@@ -11,11 +11,13 @@ filterBkpStep <- function(...)
 
 
 
-filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, assignGNLOut=TRUE, ...)
+filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, assignGNLOut=TRUE, verbose=FALSE, ...)
   {
 
 
-    profileCGH <- filterBkp(profileCGH, MinBkpWeight=MinBkpWeight, assignGNLOut=assignGNLOut)
+    if (verbose) print("filterBkpStep: starting function")            
+
+    profileCGH <- filterBkp(profileCGH, MinBkpWeight=MinBkpWeight, assignGNLOut=assignGNLOut, verbose=verbose)
      
     fin <- 0
     maxiter <- 100
@@ -68,6 +70,9 @@ filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, assignGNLOut
 
       }
 
+
+    if (verbose) print("filterBkpStep: ending function")
+    
     return(profileCGH)
     
   }

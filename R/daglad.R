@@ -25,6 +25,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
   {
 
 ### vérification de l'object donné en entrée
+    if (verbose) print("daglad - step CheckData")
     CheckData(profileCGH, bandwidth=bandwidth)
 
     if(base==TRUE)
@@ -126,6 +127,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     if (genomestep)
       {
 
+        if (verbose) print("daglad - step genomestep")        
 ### pour le smoothing sur l'ensemble du génome, il ne faut qu'un seul chromosome
         profileCGH$profileValues$ChromosomeTrue <- profileCGH$profileValues$Chromosome
         profileCGH$profileValues$Chromosome <- 0
@@ -382,7 +384,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ### il ne faut pas le statut des outliers pour définir le changement de statut
 ### car un outlier peut être aussi un breakpoints
 
-
+    if (verbose) print("daglad - step BkpInfo")
     profileCGH$nbsigma <- nbsigma
     profileCGH$BkpInfo <- BkpInfo(profileCGH)
     
@@ -514,7 +516,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 
 
-
+    if (verbose) print("daglad - step recomputeGNL")
     if (RecomputeGNL)
       {
         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNL"))
@@ -566,6 +568,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 ### Statut des Outliers
 
+    if (verbose) print("daglad - step OutliersGNL")    
     profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion, assignGNLOut=assignGNLOut)
 
 
@@ -601,7 +604,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ###
 #################################################################################        
 
-    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, assignGNLOut=assignGNLOut)
+    if (verbose) print("daglad - step filterBkpStep")    
+    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, assignGNLOut=assignGNLOut, verbose=verbose)
 
 #################################################################################
 ###
@@ -611,6 +615,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     if (CheckBkpPos)
       {
+        if (verbose) print("daglad - step MoveBkpStep")            
         profileCGH <- MoveBkpStep(profileCGH, assignGNLOut=assignGNLOut)        
       }
 
