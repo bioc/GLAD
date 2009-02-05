@@ -12,11 +12,13 @@ row, 21 columns per bloc and 22 rows by blocs.
 \usage{data(arrayCGH)}
 \format{
 A data frame composed of the following elements :
-\item{Log2Rat}{Log 2 ratio.}
-\item{Position}{BAC position on the genome.}
-\item{CHROMOSOME}{Chromosome.}
-\item{Col}{Column location on the array.}
-\item{Row}{Row location on the array.}
+  \describe{
+    \item{Log2Rat}{Log 2 ratio.}
+    \item{Position}{BAC position on the genome.}
+    \item{CHROMOSOME}{Chromosome.}
+    \item{Col}{Column location on the array.}
+    \item{Row}{Row location on the array.}
+  }
 }
 \source{Institut Curie, \email{glad@curie.fr}.}
 \examples{
