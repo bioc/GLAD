@@ -17,6 +17,7 @@
                 type="tricubic", param=c(d=6),
                 alpha=0.001, msize=5,
                 method="centroid", nmax=8, assignGNLOut=TRUE,
+                breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5,
                 verbose=FALSE, ...)
 
 }
@@ -93,6 +94,10 @@
   \item{assignGNLOut}{If \code{FALSE} the status (gain/normal/loss) is
   not assigned for outliers.}  
 
+\item{breaksFdrQ}{breaksFdrQ for HaarSeg algorithm.}
+\item{haarStartLevel}{haarStartLevel for
+  HaarSeg algorithm.}
+\item{haarEndLevel}{ for HaarSeg algorithm.}
 
   \item{verbose}{If \code{TRUE} some information are printed}  
   
@@ -104,12 +109,13 @@
 
   The function \code{glad} implements the methodology which
   is described in the article : Analysis of array CGH data: from signal
-  ratio to gain and loss of DNA regions (Hupé et al., Bioinformatics 2004 20(18):3413-3422).
+  ratio to gain and loss of DNA regions (Hupé et al., Bioinformatics, 2004).
 
   The principle of the GLAD algorithm:
   First, the detection of breakpoints is based on the estimation of a
   piecewise constant function with the Adaptive Weights Smoothing (AWS)
-  procedure (Polzehl and Spokoiny, 2002).
+  procedure (Polzehl and Spokoiny, 2002). Alternatively, it is possible
+  to use the HaarSeg algorithm (Ben-Yaacov and Eldar, Bioinformatics, 2008).
   Thus, a procedure based on penalyzed maximum likelihood optimizes the number of
   breakpoints allows the undesirable breakpoints to be removed.
   Finally, based on the regions previously identified, a two-step
@@ -207,6 +213,15 @@
 }
 
   
+}
+
+
+\references{
+\itemize{
+  \item{Hupé et al. (Bioinformatics, 2004)}{ Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.}
+  \item{Polzehl and Spokoiny (WIAS-Preprint 787, 2002)}{Local likelihood modelling by adaptive weights smoothing.}
+  \item{Ben-Yaacov and Eldar (Bioinformatics, 2008)}{A fast and flexible method for the segmentation of aCGH data.}
+}
 }
 
 \note{People interested in tools dealing with array CGH analysis can

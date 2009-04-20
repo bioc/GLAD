@@ -19,6 +19,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
                             type="tricubic", param=c(d=6),
                             alpha=0.001, msize=5,
                             method="centroid", nmax=8, assignGNLOut=TRUE,
+                            breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5,                            
                             verbose=FALSE, ...)
   {
     
@@ -58,15 +59,15 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
       stop("Error in glad: for lawsglad it is not possible to use the option base=TRUE. Choose laws smoothfunc instead.")
 
     
-    if (smoothfunc!="lawsglad")
+    if (smoothfunc!="lawsglad" && smoothfunc!="haarseg")
       {
         print(paste("You have chosen smoothfunc=", smoothfunc))
-        print(paste("Choose smoothfunc=lawsglad if you want the process runs faster"))
+        print(paste("Choose smoothfunc=lawsglad or smoothfunc=haarseg if you want the process runs faster"))
       }
 
     ### Méthode d'estimation du sigma
 
-    profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, verbose=verbose, model=model, lkern=lkern, qlambda=qlambda)
+    profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, verbose=verbose, model=model, lkern=lkern, qlambda=qlambda, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
 ### LogRatio are median-centered
     if (mediancenter)
       {

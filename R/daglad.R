@@ -21,6 +21,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
                               method="centroid", nmin=1, nmax=8,
                               amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
                               MinBkpWeight=0.35, CheckBkpPos=TRUE, assignGNLOut=TRUE,
+                              breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5,
                               verbose=FALSE, ...)
   {
 
@@ -44,10 +45,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
       stop("Error in daglad: for lawsglad it is not possible to use the option base=TRUE. Choose laws smoothfunc instead.")
 
     
-    if (smoothfunc!="lawsglad")
+    if (smoothfunc!="lawsglad" && smoothfunc!="haarseg")      
       {
         print(paste("You have chosen smoothfunc=", smoothfunc))
-        print(paste("Choose smoothfunc=lawsglad if you want the process runs faster"))
+        print(paste("Choose smoothfunc=lawsglad or smoothfunc=haarseg if you want the process runs faster"))
       }
 
     inputfields <- names(profileCGH$profileValues)
@@ -78,7 +79,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     print("Smoothing for each Chromosome")
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma,
                                  bandwidth=bandwidth, lkern=lkern, model=model, qlambda=qlambda,
-                                 round=round, verbose=verbose)
+                                 round=round, verbose=verbose,
+                                 breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
 
 
     
@@ -139,7 +141,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         print("Smoothing over the genome")
         profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=FALSE, sigma=sigma,
                                      bandwidth=bandwidth, round=round, verbose=verbose,
-                                     lkern=lkern, model=model, qlambda=0.9999999)
+                                     lkern=lkern, model=model, qlambda=0.9999999,
+                                     breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
 
 
         profileCGH$PosOrderRange <- PosOrderRange
@@ -402,78 +405,110 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ### on regarde que si il y a au moins 2 Bkp
         if (length(profileCGH$BkpInfo[,1])>1)
           {
-            for (i in 2:length(profileCGH$BkpInfo[,1]))
-              {
-                if (profileCGH$BkpInfo$PosOrder[i]==profileCGH$BkpInfo$NextPosOrder[i-1] & profileCGH$BkpInfo$BkpToDel[i-1]==0)
-                  {
-                    SigChr <- profileCGH$BkpInfo$Sigma[i]
-### on regarde d'abord à gauche
-                    UpLeft <- profileCGH$BkpInfo$Smoothing[i-1] + 3*SigChr
-                    LowLeft <- profileCGH$BkpInfo$Smoothing[i-1] - 3*SigChr
 
-### On regarde ce qui se passe à droite
-                    UpRight <- profileCGH$BkpInfo$SmoothingNext[i] + 3*SigChr
-                    LowRight <- profileCGH$BkpInfo$SmoothingNext[i] - 3*SigChr
+            deleteContiguousBkp <- .C("delete_contiguous_bkp",
+                                      BkpToDel=as.integer(profileCGH$BkpInfo$BkpToDel),
+                                      Gap=as.double(profileCGH$BkpInfo$Gap),
+                                      LogRatio=as.double(profileCGH$BkpInfo$LogRatio),
+                                      NextPosOrder=as.integer(profileCGH$BkpInfo$NextPosOrder),
+                                      PosOrder=as.integer(profileCGH$BkpInfo$PosOrder),
+                                      Side=as.integer(profileCGH$BkpInfo$Side),
+                                      Sigma=as.double(profileCGH$BkpInfo$Sigma),
+                                      Smoothing=as.double(profileCGH$BkpInfo$Smoothing),
+                                      SmoothingNext=as.double(profileCGH$BkpInfo$SmoothingNext),
+                                      Weight=as.double(profileCGH$BkpInfo$Weight),
+                                      as.integer(length(profileCGH$BkpInfo[,1])),
+                                      RecomputeGNL=as.integer(0),
+                                      as.integer(nbsigma),                                      
+                                      PACKAGE="GLAD")
 
-                    LRV <- profileCGH$BkpInfo$LogRatio[i]
+
+            profileCGH$BkpInfo$BkpToDel <- deleteContiguousBkp$BkpToDel
+            profileCGH$BkpInfo$Gap <- deleteContiguousBkp$Gap
+            profileCGH$BkpInfo$LogRatio <- deleteContiguousBkp$LogRatio
+            profileCGH$BkpInfo$NextPosOrder <- deleteContiguousBkp$NextPosOrder
+            profileCGH$BkpInfo$PosOrder <- deleteContiguousBkp$PosOrder
+            profileCGH$BkpInfo$Side <- deleteContiguousBkp$Side
+            profileCGH$BkpInfo$Sigma <- deleteContiguousBkp$Sigma
+            profileCGH$BkpInfo$Smoothing <- deleteContiguousBkp$Smoothing
+            profileCGH$BkpInfo$SmoothingNext <- deleteContiguousBkp$SmoothingNext
+            profileCGH$BkpInfo$Weight <- deleteContiguousBkp$Weight
+            
+            RecomputeGNL <- deleteContiguousBkp$RecomputeGNL
+
+            
+##             for (i in 2:length(profileCGH$BkpInfo[,1]))
+##               {
+##                 if (profileCGH$BkpInfo$PosOrder[i]==profileCGH$BkpInfo$NextPosOrder[i-1] & profileCGH$BkpInfo$BkpToDel[i-1]==0)
+##                   {
+##                     SigChr <- profileCGH$BkpInfo$Sigma[i]
+## ### on regarde d'abord à gauche
+##                     UpLeft <- profileCGH$BkpInfo$Smoothing[i-1] + 3*SigChr
+##                     LowLeft <- profileCGH$BkpInfo$Smoothing[i-1] - 3*SigChr
+
+## ### On regarde ce qui se passe à droite
+##                     UpRight <- profileCGH$BkpInfo$SmoothingNext[i] + 3*SigChr
+##                     LowRight <- profileCGH$BkpInfo$SmoothingNext[i] - 3*SigChr
+
+##                     LRV <- profileCGH$BkpInfo$LogRatio[i]
                     
-                    if ((LRV > LowLeft & LRV < UpLeft) || (LRV > LowRight & LRV < UpRight))
-                      {
-                                        #print("des Bkp vont être supprimés")
-                        RecomputeGNL <- TRUE
-                        if ((LRV > LowLeft & LRV < UpLeft) & (LRV > LowRight & LRV < UpRight))
-                          {
-### attention, lors de la suppression d'un Bkp, le gap n'est plus bon
-### d'où recalcul du weight
-### je ne vois pas où il est recalculé!!!!
-                            DiffLeft <- abs(LRV - profileCGH$BkpInfo$Smoothing[i-1])
-                            DiffRight <- abs(LRV - profileCGH$BkpInfo$SmoothingNext[i])
-                            if (DiffRight<DiffLeft)
-                              {
-### On fusionne le Bkp avec la région à droite
-                                profileCGH$BkpInfo$BkpToDel[i] <- 1
-                                profileCGH$BkpInfo$Side[i] <- 1
-                                profileCGH$BkpInfo$Gap[i-1] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
-                                profileCGH$BkpInfo$Weight[i-1] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))
+##                     if ((LRV > LowLeft & LRV < UpLeft) || (LRV > LowRight & LRV < UpRight))
+##                       {
+##                         RecomputeGNL <- TRUE
+##                         if ((LRV > LowLeft & LRV < UpLeft) & (LRV > LowRight & LRV < UpRight))
+##                           {
+## ### attention, lors de la suppression d'un Bkp, le gap n'est plus bon
+## ### d'où recalcul du weight
+## ### je ne vois pas où il est recalculé!!!!
+##                             DiffLeft <- abs(LRV - profileCGH$BkpInfo$Smoothing[i-1])
+##                             DiffRight <- abs(LRV - profileCGH$BkpInfo$SmoothingNext[i])
+##                             if (DiffRight<DiffLeft)
+##                               {
+## ### On fusionne le Bkp avec la région à droite
+##                                 profileCGH$BkpInfo$BkpToDel[i] <- 1
+##                                 profileCGH$BkpInfo$Side[i] <- 1
+##                                 profileCGH$BkpInfo$Gap[i-1] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
+##                                 profileCGH$BkpInfo$Weight[i-1] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))
                                 
-                              }
-                            else
-                              {
-### On fusionne le Bkp avec la région à gauche
-                                profileCGH$BkpInfo$BkpToDel[i-1] <- 1
-                                profileCGH$BkpInfo$Side[i-1] <- 0
-                                profileCGH$BkpInfo$Gap[i] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
-                                profileCGH$BkpInfo$Weight[i] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))
+##                               }
+##                             else
+##                               {
+## ### On fusionne le Bkp avec la région à gauche
+##                                 profileCGH$BkpInfo$BkpToDel[i-1] <- 1
+##                                 profileCGH$BkpInfo$Side[i-1] <- 0
+##                                 profileCGH$BkpInfo$Gap[i] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
+##                                 profileCGH$BkpInfo$Weight[i] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))
                                 
 
-                              }
-                          }
-                        else
-                          {
-                            if ((LRV > LowLeft & LRV < UpLeft))
-                              {
-### On fusionne le Bkp avec la région à gauche
-                                profileCGH$BkpInfo$BkpToDel[i-1] <- 1
-                                profileCGH$BkpInfo$Side[i-1] <- 0
-                                profileCGH$BkpInfo$Gap[i] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
-                                profileCGH$BkpInfo$Weight[i] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))
+##                               }
+##                           }
+##                         else
+##                           {
+##                             if ((LRV > LowLeft & LRV < UpLeft))
+##                               {
+## ### On fusionne le Bkp avec la région à gauche
+##                                 profileCGH$BkpInfo$BkpToDel[i-1] <- 1
+##                                 profileCGH$BkpInfo$Side[i-1] <- 0
+##                                 profileCGH$BkpInfo$Gap[i] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
+##                                 profileCGH$BkpInfo$Weight[i] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))
                                 
-                              }
-                            else
-                              {
-### On fusionne le Bkp avec la région à droite
-                                profileCGH$BkpInfo$BkpToDel[i] <- 1
-                                profileCGH$BkpInfo$Side[i] <- 1
-                                profileCGH$BkpInfo$Gap[i-1] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
-                                profileCGH$BkpInfo$Weight[i-1] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))                            
-                              }
-                          }                                        
-                      }
-                  }
-              }
+##                               }
+##                             else
+##                               {
+## ### On fusionne le Bkp avec la région à droite
+##                                 profileCGH$BkpInfo$BkpToDel[i] <- 1
+##                                 profileCGH$BkpInfo$Side[i] <- 1
+##                                 profileCGH$BkpInfo$Gap[i-1] <- abs(profileCGH$BkpInfo$Smoothing[i-1]-profileCGH$BkpInfo$SmoothingNext[i])
+##                                 profileCGH$BkpInfo$Weight[i-1] <- 1 - kernelpen(profileCGH$BkpInfo$Gap[i-1], param=c(d=nbsigma*profileCGH$BkpInfo$Sigma[i-1]))                            
+##                               }
+##                           }                                        
+##                       }
+##                   }
+##               }### fin de la boucle for
           }
 
 
+### ICI on peut encore optimiser en supprimant la boucle for
         indexBPtoDel <- which(profileCGH$BkpInfo$BkpToDel==1)
         if (length(indexBPtoDel)>0)
           {

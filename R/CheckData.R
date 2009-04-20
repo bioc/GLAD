@@ -13,14 +13,16 @@ CheckData <- function(...)
 CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, ...)
   {
 
-    n <- dim(profileCGH$profileValues)[1]    
+    n <- dim(profileCGH$profileValues)[1]
+    nb.chr <- length(unique(profileCGH$profileValues$Chromosome))
+    
     if(n==0)
       {
         stop("Error: the data contains only missing values. Check that the fields LogRatio, Chromosome or PosOrder are not empty.")
       }
 
 
-    if (n>200)
+    if (n/nb.chr>2000) ### 2000 ~ 50K/24      
       {
         if (bandwidth>1)
           {

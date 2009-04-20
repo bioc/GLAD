@@ -15,7 +15,8 @@ chrBreakpoints <- function(...)
 
 
 chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FALSE, sigma=NULL,
-                                      model="Gaussian", bandwidth=10, round=1.5, verbose=FALSE, ...)
+                                      model="Gaussian", bandwidth=10, round=1.5, verbose=FALSE,
+                                      breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, ...)
   {
  
 
@@ -26,8 +27,12 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
         print(paste("Call function:", call))
       }
 
-    if (smoothfunc!="laws" && smoothfunc!="aws" && smoothfunc!="lawsglad")stop("Choose either aws or laws for smoothfunc")
+    if (smoothfunc!="laws" && smoothfunc!="aws" && smoothfunc!="lawsglad" && smoothfunc!="haarseg")stop("Choose either aws, laws or haarseg for smoothfunc")
 
+    if (base==TRUE)
+      {
+        if(smoothfunc!="lawsglad" && smoothfunc!="haarseg")stop("Choose either aws, or laws when base=TRUE")
+      }
     if (is.null(sigma))
       resetsigma <- TRUE
 
@@ -183,6 +188,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                         subsetdata$Smoothing <- 99999
                       }
                   }
+                
               }
             
             else          
@@ -238,7 +244,23 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                         subsetdata$Smoothing <- 99999
                       }                    
                     
-                  }			
+                 }
+
+                if (smoothfunc=="haarseg")
+                  {
+                    awsres <- HaarSeg(subsetdata$LogRatio, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)$Segmented
+
+                    if (is.null(awsres)==FALSE)
+                      {
+                        subsetdata$Smoothing <- roundglad(awsres, round)
+                      }
+
+                    else
+                      {
+                        subsetdata$Smoothing <- 99999
+                      }
+                  }
+                
               }
 
 

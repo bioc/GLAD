@@ -34,20 +34,36 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
         BP <- merge(BP, profileCGH$SigmaC)
         BP$Gap <- abs(BP$Smoothing-BP$Next)
         BP$Weight <- BP$Gap
-        BP$GNLchange <- BP$Weight
+        BP$GNLchange <- 0
 
-        for (i in 1:length(BP[,1]))
-          {
-            BP$Weight[i] <- 1 - kernelpen(BP$Gap[i], param=c(d=profileCGH$nbsigma*BP$Value[i]))
-            if (BP$ZoneGNL[i]==BP$ZoneGNLnext[i])
-              {
-                BP$GNLchange[i] <- 0
-              }
-            else
-              {
-                BP$GNLchange[i] <- 1
-              }
-          }
+
+        makeBkpInfo <- .C("make_BkpInfo",
+                          as.double(BP$Gap),
+                          GNLchange=as.integer(BP$GNLchange),
+                          as.double(BP$Value),
+                          Weight=as.double (BP$Weight),
+                          as.integer(BP$ZoneGNL),
+                          as.integer(BP$ZoneGNLnext),
+                          as.integer(length(BP[,1])),
+                          as.double(profileCGH$nbsigma),
+                          PACKAGE="GLAD")
+
+        BP$Weight <- makeBkpInfo$Weight
+        BP$GNLchange <- makeBkpInfo$GNLchange
+                
+        
+##         for (i in 1:length(BP[,1]))
+##           {
+##             BP$Weight[i] <- 1 - kernelpen(BP$Gap[i], param=c(d=profileCGH$nbsigma*BP$Value[i]))
+##             if (BP$ZoneGNL[i]==BP$ZoneGNLnext[i])
+##               {
+##                 BP$GNLchange[i] <- 0
+##               }
+##             else
+##               {
+##                 BP$GNLchange[i] <- 1
+##               }
+##           }
 
 
         BP$SmoothingNext <- BP$Next

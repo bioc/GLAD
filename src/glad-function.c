@@ -13,6 +13,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "glad-function.h"
+
 #ifdef IS_MAC_OS
 #include <limits.h>
 #else
@@ -23,6 +25,7 @@
 #include <float.h>
 #define MAXDOUBLE DBL_MAX
 #endif
+
 
 /* void makeRegion (int *Level, */
 /* 		 int *Chromosome, */
@@ -574,4 +577,158 @@ void updateGNL(int *ZoneGNL,
   free(minAmp);
   free(maxDel);
 
+}
+
+
+/*************************************/
+/* fonctions utilisées dans daglad   */
+/*************************************/
+
+void delete_contiguous_bkp(int *BkpInfo_BkpToDel,
+			   double *BkpInfo_Gap,
+			   double *BkpInfo_LogRatio,
+			   int *BkpInfo_NextPosOrder,
+			   int *BkpInfo_PosOrder,
+			   int *BkpInfo_Side,
+			   double *BkpInfo_Sigma,
+			   double *BkpInfo_Smoothing,
+			   double *BkpInfo_SmoothingNext,
+			   double *BkpInfo_Weight,
+			   int *nb_Bkp,
+			   int *RecomputeGNL,
+			   int *nbsigma)
+{
+
+  // nb_Bkp=length(profileCGH$BkpInfo[,1])
+  int i;
+  const int l=*nb_Bkp;
+  double UpLeft, LowLeft, UpRight, LowRight, DiffLeft, DiffRight;
+  double LRV;
+  double SigChr;
+
+
+  //  for (i in 2:length(profileCGH$BkpInfo[,1]))
+  for (i=1;i<l;i++)
+    {
+      if (BkpInfo_PosOrder[i]==BkpInfo_NextPosOrder[i-1] && BkpInfo_BkpToDel[i-1]==0)
+	{
+	  SigChr=BkpInfo_Sigma[i];
+	  // on regarde d'abord à gauche
+	  UpLeft=BkpInfo_Smoothing[i-1] + 3*SigChr;
+	  LowLeft=BkpInfo_Smoothing[i-1] - 3*SigChr;
+
+	  // On regarde ce qui se passe à droite
+	  UpRight=BkpInfo_SmoothingNext[i] + 3*SigChr;
+	  LowRight=BkpInfo_SmoothingNext[i] - 3*SigChr;
+
+	  LRV=BkpInfo_LogRatio[i];
+                    
+	  if (((LRV > LowLeft) && (LRV < UpLeft)) || ((LRV > LowRight) && (LRV < UpRight)))
+	    {
+	      *RecomputeGNL=1;
+	      if (((LRV > LowLeft) && (LRV < UpLeft)) && ((LRV > LowRight) && (LRV < UpRight)))
+		{
+		  // attention, lors de la suppression d'un Bkp, le gap n'est plus bon
+		  // d'où recalcul du weight
+		  // je ne vois pas où il est recalculé!!!!
+		  DiffLeft=fabs(LRV - BkpInfo_Smoothing[i-1]);
+		  DiffRight=fabs(LRV - BkpInfo_SmoothingNext[i]);
+		  if (DiffRight<DiffLeft)
+		    {
+		      // On fusionne le Bkp avec la région à droite
+		      BkpInfo_BkpToDel[i]=1;
+		      BkpInfo_Side[i]=1;
+		      BkpInfo_Gap[i-1]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i-1]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);
+                                
+		    }
+		  else
+		    {
+		      // On fusionne le Bkp avec la région à gauche
+		      BkpInfo_BkpToDel[i-1]=1;
+		      BkpInfo_Side[i-1]=0;
+		      BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);
+                                
+
+		    }
+		}
+	      else
+		{
+		  if (((LRV > LowLeft) && (LRV < UpLeft)))
+		    {
+		      // On fusionne le Bkp avec la région à gauche
+		      BkpInfo_BkpToDel[i-1]=1;
+		      BkpInfo_Side[i-1]=0;
+		      BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);
+                                
+		    }
+		  else
+		    {
+		      // On fusionne le Bkp avec la région à droite
+		      BkpInfo_BkpToDel[i]=1;
+		      BkpInfo_Side[i]=1;
+		      BkpInfo_Gap[i-1]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i-1]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);                            
+		    }
+		}                                        
+	    }
+	}
+    }
+}
+
+
+/*************************************/
+/* fonctions utilisées dans Kernel.R  */
+/*************************************/
+
+
+double kernelpen(double value, const double d)
+{
+  double tricubic;
+  if (value>d)
+    return(0);
+
+  // index <- which(x<=param["d"])
+  // k[index] <- (1-(x[index]/param["d"])^3)^3
+
+  tricubic=value/d;
+  tricubic=tricubic*tricubic*tricubic;
+  tricubic=1-tricubic;
+
+  return(tricubic*tricubic*tricubic);
+
+}
+
+
+/*************************************/
+/* fonctions utilisées dans BkpInfo.R  */
+/*************************************/
+
+void make_BkpInfo(double *BkpInfo_Gap,
+		  int *BkpInfo_GNLchange,
+		  double *BkpInfo_Value,
+		  double *BkpInfo_Weight,
+		  int *BkpInfo_ZoneGNL,
+		  int *BkpInfo_ZoneGNLnext,
+		  int *nb_Bkp,
+		  double *nbsigma)
+{
+
+  const int l=*nb_Bkp;
+  int i;
+
+  for (i=0;i<l;i++)
+    {
+      BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i], *nbsigma*BkpInfo_Value[i]);
+      if (BkpInfo_ZoneGNL[i]==BkpInfo_ZoneGNLnext[i])
+	{
+	  BkpInfo_GNLchange[i]=0;
+	}
+      else
+	{
+	  BkpInfo_GNLchange[i]=1;
+	}
+    }
 }

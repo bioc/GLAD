@@ -17,6 +17,7 @@
                   method="centroid", nmin=1, nmax=8,
                   amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
                   MinBkpWeight=0.35, CheckBkpPos=TRUE, assignGNLOut=TRUE,
+                  breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5,
                   verbose=FALSE, ...)
 
 }
@@ -124,7 +125,12 @@
     
   \item{assignGNLOut}{If \code{FALSE} the status (gain/normal/loss) is
   not assigned for outliers.}  
-    
+
+
+\item{breaksFdrQ}{breaksFdrQ for HaarSeg algorithm.}
+\item{haarStartLevel}{haarStartLevel for
+  HaarSeg algorithm.}
+\item{haarEndLevel}{ for HaarSeg algorithm.}
 
     \item{verbose}{If \code{TRUE} some information are printed.}  
     
@@ -134,7 +140,9 @@
 
 \details{The function \code{daglad} implements a slightly modified
   version of the methodology described in the article : Analysis of array CGH data: from signal
-  ratio to gain and loss of DNA regions (Hupé et al., Bioinformatics 2004 20(18):3413-3422).
+  ratio to gain and loss of DNA regions (Hupé et al., Bioinformatics,
+  2004). For smoothing, it is possible
+  to use either the AWS algorithm (Polzehl and Spokoiny, 2002) or the HaarSeg algorithm (Ben-Yaacov and Eldar, Bioinformatics, 2008).
   The \code{daglad} function allows to choose some threshold to help the algorithm to identify the status of the genomic regions. The threshodls are given in the following parameters:
   \itemize{
     \item deltaN
@@ -220,6 +228,15 @@
 	step. Otherwise NormalRef is 0.}
   
   
+}
+
+
+\references{
+\itemize{
+  \item{Hupé et al. (Bioinformatics, 2004)}{ Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.}
+  \item{Polzehl and Spokoiny (WIAS-Preprint 787, 2002)}{Local likelihood modelling by adaptive weights smoothing.}
+  \item{Ben-Yaacov and Eldar (Bioinformatics, 2008)}{A fast and flexible method for the segmentation of aCGH data.}
+}
 }
 
 \note{People interested in tools dealing with array CGH analysis can

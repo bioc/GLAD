@@ -37,7 +37,9 @@
 \alias{filterBkpStep.profileCGH}
 \alias{BkpInfo}
 \alias{BkpInfo.profileCGH}
-
+\alias{HaarSeg}
+\alias{FDRThres}
+\alias{SegmentByPeaks}
 
 \usage{" "}
 
