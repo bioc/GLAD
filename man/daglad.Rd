@@ -36,9 +36,10 @@
   
   \item{normalrefcenter}{If \code{TRUE}, the LogRatio are centered
     through the median of the cluster identified during the \code{genomestep}.}
-  
+
   \item{smoothfunc}{Type of algorithm used to smooth \code{LogRatio} by a
-    piecewise constant function. Choose either \code{\link[aws]{aws}} or
+    piecewise constant function. Choose either \code{lawsglad},
+    \code{haarseg}, \code{\link[aws]{aws}} or
     \code{\link[aws]{laws}}.}
 
   \item{lkern}{lkern determines the location kernel to be used

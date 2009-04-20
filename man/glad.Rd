@@ -28,7 +28,8 @@
   \item{mediancenter}{If \code{TRUE}, LogRatio are center on their median.}
   
   \item{smoothfunc}{Type of algorithm used to smooth \code{LogRatio} by a
-    piecewise constant function. Choose either \code{lawsglad}, \code{\link[aws]{aws}} or
+    piecewise constant function. Choose either \code{lawsglad},
+    \code{haarseg}, \code{\link[aws]{aws}} or
     \code{\link[aws]{laws}}.}
 
   
