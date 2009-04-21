@@ -10,7 +10,7 @@ CheckData <- function(...)
     UseMethod("CheckData")
   }
 
-CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, ...)
+CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc, ...)
   {
 
     n <- dim(profileCGH$profileValues)[1]
@@ -22,11 +22,14 @@ CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, ...
       }
 
 
-    if (n/nb.chr>2000) ### 2000 ~ 50K/24      
+    if(smoothfunc!="haarseg")
       {
-        if (bandwidth>1)
+        if (n/nb.chr>2000) ### 2000 ~ 50K/24      
           {
-            print("You can set bandwitdth to 1 to decrease computation time")
+            if (bandwidth>1)
+              {
+                print("You can set bandwitdth to 1 to decrease computation time")
+              }
           }
       }
     

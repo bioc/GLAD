@@ -176,13 +176,13 @@
 	incremented by one when a new level occurs or when moving to the
 	next chromosome.}
       
-      \item{\bold{OutliersAws}}{Each AWS outliers are flagged by -1 (if it is
+      \item{\bold{OutliersAws}}{Each AWS outliers are flagged -1 (if it is
 	in the \eqn{\alpha/2} lower tail of the distribution) or 1 (if it is
 	in the \eqn{\alpha/2} upper tail of the distribution)
 	otherwise  it is 0.}
       
 
-      \item{\bold{OutliersMad}}{Each MAD outliers are flagged by -1 (if it is
+      \item{\bold{OutliersMad}}{Each MAD outliers are flagged -1 (if it is
 	in the \eqn{\alpha/2} lower tail of the distribution) or 1 (if it is
 	in the \eqn{\alpha/2} upper tail of the distribution)
 	otherwise  it is 0.}

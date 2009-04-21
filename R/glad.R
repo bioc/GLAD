@@ -22,9 +22,10 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
                             breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5,                            
                             verbose=FALSE, ...)
   {
-    
+
+    if (verbose) print("daglad - step CheckData")    
 ### vérification de l'object donné en entrée
-    CheckData(profileCGH, bandwidth=bandwidth)
+    CheckData(profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc)
     
 ### champs tels qu'ils sont en entrée
     fieldinput <- names(profileCGH$profileValues)

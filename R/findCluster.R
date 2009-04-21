@@ -53,10 +53,27 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
         classes <- cutree(cluster.res, k=nbclasses)
         profileChr$NbClusterOpt <- nbclasses
         clusterRegion <- data.frame(clusterRegion, zone=classes)
+
+        lengthDest <- length(profileChr$profileValues[,region])
+        lengthSrc <- length(clusterRegion$Region)
+        myzone <- .C("my_merge_int",
+                     as.integer(profileChr$profileValues[,region]),
+                     zone=integer(lengthDest),
+                     as.integer(clusterRegion$Region),
+                     as.integer(clusterRegion$zone),
+                     as.integer(lengthDest),
+                     as.integer(lengthSrc),
+                     PACKAGE="GLAD")
+
+        profileChr$profileValues$zone <- myzone$zone
+
+
+
 ### jointure à optimiser
-        profileChr$profileValues <- merge(profileChr$profileValues,
-                                          clusterRegion[,c("Region","zone")],
-                                          by.x=region, by.y="Region")
+##         t0 <- system.time(profileChr$profileValues <- merge(profileChr$profileValues,
+##                                           clusterRegion[,c("Region","zone")],
+##                                           by.x=region, by.y="Region"))
+
 
       }	
 

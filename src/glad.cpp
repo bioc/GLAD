@@ -306,15 +306,15 @@ extern "C"
 		    it_map_vec++;
 		  }
 
-		  it_map_vec=map_ind_reg[LabelRegionRemovedNext].begin();
-		  it_map_vec_end=map_ind_reg[LabelRegionRemovedNext].end();
-		  while(it_map_vec != it_map_vec_end)
+		it_map_vec=map_ind_reg[LabelRegionRemovedNext].begin();
+		it_map_vec_end=map_ind_reg[LabelRegionRemovedNext].end();
+		while(it_map_vec != it_map_vec_end)
 		  {
 		    Region[*it_map_vec]=LabelRegionRemoved;
 		    it_map_vec++;
 		  }
 
-		}
+	      }
 	    else
 	      {
 		stop=1;
@@ -370,7 +370,57 @@ extern "C"
 
 
   }
+
+  void my_merge(int *index_dest,
+		double *value_dest,
+		int *index_src,
+		double *value_src,
+		int *length_dest,
+		int *length_src)
+  {
+    int i;
+    map<int, double > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i=0;i<*length_src;i++)
+      {
+	agg_data[index_src[i]]=value_src[i];
+      }
+
+    for (i=0;i<*length_dest;i++)
+      {
+	value_dest[i]=agg_data[index_dest[i]];
+      }
+
+  }
+
+  void my_merge_int(int *index_dest,
+		    int *value_dest,
+		    int *index_src,
+		    int *value_src,
+		    int *length_dest,
+		    int *length_src)
+  {
+    int i;
+    map<int, int > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i=0;i<*length_src;i++)
+      {
+	agg_data[index_src[i]]=value_src[i];
+      }
+
+    for (i=0;i<*length_dest;i++)
+      {
+	value_dest[i]=agg_data[index_dest[i]];
+      }
+
+  }
+
+
 }
+
+
 /////////////////////////////////////////////////////////////
 //
 //   Fonctions statistiques
@@ -508,6 +558,7 @@ double computeSumKernelPen(vector<struct agg> agg_region, double sigma, double d
   
 
 }
+
 
 
 void printagg(vector<struct agg> agg_region)

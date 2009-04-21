@@ -14,7 +14,7 @@
 
 \begin{document}
 
-\title{\bf GLAD package : Gain and Loss Analysis of DNA}
+\title{\bf GLAD package: Gain and Loss Analysis of DNA}
 
 \author{Philippe Hupe$^{1,2}$ and Emmanuel Barillot$^{2}$}
 
@@ -33,21 +33,28 @@
 
 \tableofcontents
 
+\clearpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview}
 
-This document presents an overview of the {\tt GLAD} package (Gain and Loss Analysis of DNA). This package is devoted to the analysis of  Array Comparative Genomic Hybridization (array CGH) \citep{pinkel98, snijders01, solinas97,ishkanian04} .  The methodology for detecting the breakpoints delimiting altered regions in genomic patterns and assigning a status (normal, gained or lost) to each chromosomal region described in the paper \cite{hupe04} is implemented in this package. Some graphical functions are provided as well.
+This document presents an overview of the {\tt GLAD} package (Gain and Loss Analysis of DNA). This package is devoted to the analysis of Array Comparative Genomic Hybridization (array CGH) \citep{pinkel98, snijders01, solinas97,ishkanian04}. The methodology for detecting the breakpoints delimiting altered regions in genomic patterns and assigning a status (normal, gained or lost) to each chromosomal region described in the paper \cite{hupe04} is implemented in this package. Some graphical functions are provided as well.
+ 
 
 
 \section{Data}
 
 \subsection{Public data set}
 
-We used the public data set described in \cite{snijders01}. The data correspond to 15 human cell strains with known karyotypes (12 fibroblast cell strains, 2 chorionic villus cell strains, 1 lymploblast cell strain) from the NIGMS Human Genetics Cell Repository ({\tt http://locus.umdnj.edu/nigms}). Each cell strain has been hybridized with an array CGH of 2276 BAC's, spotted in triplicate. Two array CGH profiles from the data obtained by \cite{veltman03} are available.
+
+We used the public data set described in \cite{snijders01}. The data corresponds to 15 human cell strains with known karyotypes (12 fibroblast cell strains, 2 chorionic villus cell strains, 1 lymploblast cell strain) from the NIGMS Human Genetics Cell Repository ({\tt http://locus.umdnj.edu/nigms}). Each cell strain has been hybridized on CGH arrays of 2276 BACs, spotted in triplicates. Two array CGH profiles from the data obtained by \cite{veltman03} are available.
+ 
 
 \subsection{Bladder cancer data}
 
-Bladder cancer data from tumors collected at Henri Mondor Hospital (Créteil, France) \citep{billerey01} have been hybridized on arrays CGH composed of 2464 BACs (Radvanyi, Pinkel et al., unpublished results). In this data, only the log-ratios are provided and no information about clones is available since the data are not yet published. These data allow only some graphical functionalities to be shown and will be used as a support to illustrate some functions for array normalization (not yes available in the current version of the package).
+
+Bladder cancer data from tumors collected at Henri Mondor Hospital (Créteil, France) \citep{billerey01} have been hybridized on CGH arrays composed of 2464 BACs (Radvanyi, Pinkel et al., unpublished results). In this data, only the log-ratios are provided and no information about clones is available since the data is not yet published. This data allows only some graphical functionalities to be shown and will be used as a support to illustrate some functions for array normalization (not yes available in the current version of the package).
+ 
 
 
 \section{GLAD classes}
@@ -63,12 +70,12 @@ This class stores raw values after images analysis. The object arrayCGH is a lis
 \end{description}
 
 
-\noindent The vector arrayDesign is composed of 4 values : c(arrayCol, arrayRow, SpotCol, SpotRow). The array CGH is represented by arrayRow*arrayCol blocs and each bloc is composed of SpotRow*SpotCol spots.
-N.B. : Col takes the values in 1:arrayRow*SpotRow and Row takes the values in 1:arrayCol*SpotCol
+\noindent The vector arrayDesign is composed of 4 values: c(arrayCol, arrayRow, SpotCol, SpotRow). The array CGH is represented by arrayRow*arrayCol blocs and each bloc is composed of SpotRow*SpotCol spots.
+N.B.: Col takes the values in 1:arrayRow*SpotRow and Row takes the values in 1:arrayCol*SpotCol
 
 \subsection{profileCGH and profileChr}
 
-This class stores synthetic values related to each clone available onto the arrayCGH. The object profileChr corresponds to data of only one chromosome. Objects profileCGH and profileChr are composed of a list with the first element profileValues which is a data.frame with the following columns names:
+This class stores synthetic values related to each clone available on the arrayCGH. The object profileChr corresponds to data of only one chromosome. Objects profileCGH and profileChr are composed of a list with the first element profileValues which is a data.frame with the following columns names:
 
 \begin{description}
 \item[LogRatio] Test over Reference log-ratio.
@@ -84,9 +91,18 @@ LogRatio, Chromosome and PosOrder are compulsory.
 To create those objects you can use the function \emph{as.profileCGH}.
 
 
-\clearpage
 \section{Analysis of array CGH profile}
 
+Two functions are available: \emph{glad} and \emph{daglad}. The second one is an improvment of of first one which was originally describes in \cite{hupe04}. We recommand to use the \emph{daglad} function.
+
+\subsection{Segmentation algorithms}
+
+Two algorithms are available for data segmentation:
+
+\begin{itemize}
+  \item AWS \citep{polzehl00,polzehl02}
+  \item HaarSeg \citep{yaacov08}
+\end{itemize}    
 
 \subsection{The \emph{glad} function}
 

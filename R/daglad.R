@@ -27,7 +27,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
 ### vérification de l'object donné en entrée
     if (verbose) print("daglad - step CheckData")
-    CheckData(profileCGH, bandwidth=bandwidth)
+    CheckData(profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc)
 
     if(base==TRUE)
       {
