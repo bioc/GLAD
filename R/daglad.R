@@ -655,6 +655,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
       }
 
 
+    print("Results Preparation")
+    
 ### fin comment
 ### suppression des champs inutiles
 
