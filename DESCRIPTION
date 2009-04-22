@@ -1,6 +1,6 @@
 Package: GLAD
-Version: 2.1.0
-Date: 2009-04-20
+Version: 2.1.1
+Date: 2009-04-22
 Title: Gain and Loss Analysis of DNA
 Depends: R (>= 1.8.0)
 Suggests: aws, tcltk
