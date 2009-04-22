@@ -274,31 +274,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                                         #set label zone for each position along chromosome
             regionChr <- c(regionChr, nbregion)  #first BAC corresponds to nbregion
             
-            
-                                        #level assignation
-
-            #j <- 1
-            
-
-            ### 29062005: cette partie peut-être optimisée:
-
-            
-            #labelLevel <- unique(roundglad(subsetdata$Smoothing,round))
-
-
-            #########################################
-            ########################################
-            ########################################
-
-            
-##             labelLevel <- unique(subsetdata$Smoothing)
-  
-##             for (j in 1:length(labelLevel))
-##               {
-##                 nblevel <- nblevel + 1
-##                 ###subsetdata$Level[which(roundglad(subsetdata$Smoothing, round)==labelLevel[j])] <- nblevel	
-##                 subsetdata$Level[which(subsetdata$Smoothing==labelLevel[j])] <- nblevel	
-##               }
 
             l <- length(subsetdata$Smoothing)
             putLevel <- .C("putLevel",
@@ -321,11 +296,8 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
             names(MedianLevel) <- c("Level","MedianLevel")
             MedianLevel <- MedianLevel[order(MedianLevel$MedianLevel),]
             MedianLevel$Level <- as.numeric(as.character(MedianLevel$Level))
-            MedianLevel$LevelNewOrder <- min(MedianLevel$Level):max(MedianLevel$Level)
+            MedianLevel$LevelNewOrder <- min(MedianLevel$Level):max(MedianLevel$Level)            
             subsetdata <- merge(subsetdata, MedianLevel, by="Level",all=TRUE)
-
-
-
 
 ###breakpoints detection
             rupture <- 0
@@ -368,6 +340,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
           }
 
 
+        
         profileCGH$profileValues[indexChr,] <- subsetdata[,FieldOrder]
         
         
@@ -376,8 +349,11 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
       }
 
 
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MedianLevel"))
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelNewOrder"))
+    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("MedianLevel","LevelNewOrder"))]
+    
+##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MedianLevel"))
+##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelNewOrder"))
+    
     nomdata <- names(profileCGH$profileValues)
     nomdata <- nomdata[order(nomdata)]
     profileCGH$profileValues <- profileCGH$profileValues[,nomdata]

@@ -177,6 +177,7 @@ extern "C"
 		  double *sigma,
 		  int *l)
   {
+    const int nb=*l;
     int nb_loop=0;
     int stop=0;
     int i,j;
@@ -209,7 +210,7 @@ extern "C"
 	aggTot.erase(aggTot.begin(),aggTot.end());
 
 
-	for (i=0;i<*l;i++)
+	for (i=0;i<nb;i++)
 	  {
 	    map_ind_reg[Region[i]].push_back(i);
 
@@ -341,13 +342,14 @@ extern "C"
 		int *l)
   {
     int i;
+    const int nb=*l;
     map<double, vector<int> > indexLevel;
     map<double, vector<int> >::iterator it_ind;
     map<double, vector<int> >::iterator it_ind_end;
     vector<int>::iterator it_vec;
     vector<int>::const_iterator it_vec_end;
 
-    for (i=0; i<*l; i++)
+    for (i=0; i<nb; i++)
       {
 	indexLevel[Smoothing[i]].push_back(i);
       }
@@ -395,6 +397,9 @@ extern "C"
       }
 
   }
+
+
+
 
   void my_merge_int(int *index_dest,
 		    int *value_dest,

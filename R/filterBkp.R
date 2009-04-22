@@ -7,7 +7,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
   {
 
 
-    profilage <- TRUE
+    profilage <- FALSE
     if (verbose) print("filterBkp: starting function")            
     if (is.data.frame(profileCGH$BkpInfo))
       {
@@ -230,7 +230,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             MedianCluster$ZoneGen <- as.numeric(as.character(MedianCluster$ZoneGen))
             names(MedianCluster) <- c("ZoneGen","Median")
             RefNorm <- MedianCluster$Median[which(MedianCluster$ZoneGen==NormalCluster)]
-            MedianCluster$ZoneGNL <- rep(0,length(MedianCluster[,1]))
+            MedianCluster$ZoneGNL <- 0
             indexClusterGain <- which(MedianCluster$Median>RefNorm)
             MedianCluster$ZoneGNL[indexClusterGain] <- 1
             indexClusterLost <- which(MedianCluster$Median<RefNorm)
@@ -266,7 +266,8 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             profileCGH$profileValues$ZoneGNL[indexDel] <- -10
             
 
-profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGen","NormalRange"))]
+
+            profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGen","NormalRange"))]
 ##             profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
 ##             profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))
 

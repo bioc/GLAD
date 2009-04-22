@@ -45,7 +45,7 @@ MoveBkpStep.profileCGH <- function(profileCGH, assignGNLOut=TRUE,...)
 
             if (is.data.frame(profileCGH$BkpInfo))
               {
-                profileCGH$BkpInfo$MoveBkp <- rep(0,length(profileCGH$BkpInfo[,1]))
+                profileCGH$BkpInfo$MoveBkp <- 0
                 profileCGH <- testBkpToMove(profileCGH)
                 BkpInfo <- profileCGH$BkpInfo
                 indexMoveBkp <- which(BkpInfo$MoveBkp!=0)

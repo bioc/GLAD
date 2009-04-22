@@ -87,13 +87,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
             profileChr$profileValues$ZoneGen <- myzone$zone
           }
 
-
-### jointure à optimiser
-##         t0 <- system.time(profileChr$profileValues <- merge(profileChr$profileValues,
-##                                           clusterRegion[,c("Region","zone")],
-##                                           by.x=region, by.y="Region"))
-
-
       }	
 
     

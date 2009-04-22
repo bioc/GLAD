@@ -11,7 +11,6 @@ MoveBkp <- function(profileCGH, ...)
 
 MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...)
   {
-
     
 
     if (is.data.frame(profileCGH$BkpInfo))
@@ -77,7 +76,6 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             profileCGH$profileValues$Smoothing <- res$Smoothing
             profileCGH$profileValues$ZoneGNL <- res$ZoneGNL
             
-
 
           }
 

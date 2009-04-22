@@ -27,39 +27,6 @@
 #endif
 
 
-/* void makeRegion (int *Level, */
-/* 		 int *Chromosome, */
-/* 		 int *ResLevel, */
-/* 		 int *l) */
-/* { */
-/*   int pos; */
-/*   int idLevel=1; */
- 
-/*   ResLevel[0]=idLevel; */
- 
-/*   for (pos=1;pos<*l;pos++) */
-/*     { */
-/*       if (Chromosome[pos]==Chromosome[pos-1]) */
-/* 	{ */
-/* 	  if (Level[pos]==Level[pos-1]) */
-/* 	    { */
-/* 	      ResLevel[pos]=ResLevel[pos-1]; */
-/* 	    } */
-/* 	  else */
-/* 	    { */
-/* 	      idLevel++; */
-/* 	      ResLevel[pos]=idLevel; */
-/* 	    } */
-/* 	} */
-/*       else */
-/* 	{ */
-/* 	  idLevel++; */
-/* 	  ResLevel[pos]=idLevel; */
-/* 	} */
-/*     } */
-
-/* } */
-
 
 
 
@@ -77,37 +44,31 @@ void updateLevel (int *Chromosome,
 		  int *maxLevel,
                   int *l)
 {
+  const int nb=*l;
+  int pos_moins_un;
   int pos;
   int idLevel=*maxLevel;
  
-/*   Level[0]=idLevel; */
- 
-  for (pos=1;pos<*l;pos++)
+  for (pos=1;pos<nb;pos++)
     {
-      if (Chromosome[pos]==Chromosome[pos-1])
+      pos_moins_un=pos-1;
+      if (Chromosome[pos]==Chromosome[pos_moins_un])
 	{
-	  if (Breakpoints[pos-1]!=1)
+	  if (Breakpoints[pos_moins_un]!=1)
 	    {
-	      Level[pos]=Level[pos-1];
+	      Level[pos]=Level[pos_moins_un];
 	    }
-	  if (Breakpoints[pos-1]==1)
+	  if (Breakpoints[pos_moins_un]==1)
 	    {
-	      NextLogRatio[pos-1]=LogRatio[pos];
-	      if (Level[pos-1]==Level[pos])
+	      NextLogRatio[pos_moins_un]=LogRatio[pos];
+	      if (Level[pos_moins_un]==Level[pos])
 		{
 		  idLevel++;
 		  Level[pos]=idLevel;
 		}
-
 	    }
 	}
-/*       else */
-/* 	{ */
-/* 	  idLevel++; */
-/* 	  Level[pos]=idLevel; */
-/* 	} */
     }
-
 }
 
 
@@ -119,16 +80,19 @@ void updateOutliers (int *OutliersAws,
 {
   
   int pos;
-  for (pos=1;pos<(*l-1);pos++)
-    {
+  int pos_moins_un;
+  const int nb=*l-1;
 
-      if (Level[pos-1]==Level[pos+1] && Level[pos-1]!=Level[pos])
+  for (pos=1;pos<nb;pos++)
+    {
+      pos_moins_un=pos-1;
+      if (Level[pos_moins_un]==Level[pos+1] && Level[pos_moins_un]!=Level[pos])
 	{
-	  Level[pos]=Level[pos-1];
-	  Breakpoints[pos-1]=0;
+	  Level[pos]=Level[pos_moins_un];
+	  Breakpoints[pos_moins_un]=0;
 	  Breakpoints[pos]=0;
 	  OutliersAws[pos]=1;
-	  Smoothing[pos]=Smoothing[pos-1];
+	  Smoothing[pos]=Smoothing[pos_moins_un];
 	}
     }
 
@@ -144,17 +108,20 @@ void updateOutliersMoveBkp (int *OutliersAws,
 {
   
   int pos;
-  for (pos=1;pos<(*l-1);pos++)
+  int pos_moins_un;
+  const int nb=*l-1;
+
+  for (pos=1;pos<nb;pos++)
     {
-      
-      if (Level[pos-1]==Level[pos+1] && Level[pos-1]!=Level[pos])
+      pos_moins_un=pos-1;      
+      if (Level[pos_moins_un]==Level[pos+1] && Level[pos_moins_un]!=Level[pos])
 	{
-	  Level[pos]=Level[pos-1];
-	  Breakpoints[pos-1]=0;
+	  Level[pos]=Level[pos_moins_un];
+	  Breakpoints[pos_moins_un]=0;
 	  Breakpoints[pos]=0;
 	  OutliersAws[pos]=1;
-	  ZoneGNL[pos]=ZoneGNL[pos-1];
-	  Smoothing[pos]=Smoothing[pos-1];
+	  ZoneGNL[pos]=ZoneGNL[pos_moins_un];
+	  Smoothing[pos]=Smoothing[pos_moins_un];
 	}
 
     }
@@ -173,39 +140,47 @@ void moveBkp (int *ZoneGNL,
 {
 
   int pos;
+  int pos_moins_un;
+  int pos_plus_un;
+  int pos_plus_deux;
+  const int nb=*l;
+  const int nb_moins_un=*l-1;
+  const int nb_moins_deux=*l-2;
 
-  for (pos=1;pos<*l;pos++)
+  for (pos=1;pos<nb;pos++)
     {
-      if (Chromosome[pos]==Chromosome[pos-1])
+      pos_moins_un=pos-1;
+      if (Chromosome[pos]==Chromosome[pos_moins_un])
 	{
-	  if (OutliersTot[pos]!=0 && Breakpoints[pos]==1 && ZoneGNL[pos]==ZoneGNL[pos+1] && ZoneGNL[pos-1]!=ZoneGNL[pos+1])
+	  pos_plus_un=pos+1;
+	  if (OutliersTot[pos]!=0 && Breakpoints[pos]==1 && ZoneGNL[pos]==ZoneGNL[pos_plus_un] && ZoneGNL[pos_moins_un]!=ZoneGNL[pos_plus_un])
 	    {
 	      *RecomputeSmt=1;
 	      Breakpoints[pos]=0;
-	      Breakpoints[pos-1]=1;
+	      Breakpoints[pos_moins_un]=1;
 	      OutliersTot[pos]=0;
 	      OutliersAws[pos]=0;
-	      Level[pos]=Level[pos+1];
+	      Level[pos]=Level[pos_plus_un];
 
 	    }
 
-	  if (pos < (*l-1) && Breakpoints[pos]==1 && OutliersTot[pos+1]!=0 && ZoneGNL[pos]==ZoneGNL[pos+1] && ZoneGNL[pos-1]!=ZoneGNL[pos+1])
+	  if (pos < nb_moins_un && Breakpoints[pos]==1 && OutliersTot[pos_plus_un]!=0 && ZoneGNL[pos]==ZoneGNL[pos_plus_un] && ZoneGNL[pos_moins_un]!=ZoneGNL[pos+1])
 	    {
 	      *RecomputeSmt=1;	  
 	      Breakpoints[pos]=0;
-	      Breakpoints[pos+1]=1;
-	      OutliersTot[pos+1]=0;
-	      OutliersAws[pos+1]=0;
-	      Level[pos+1]=Level[pos];
+	      Breakpoints[pos_plus_un]=1;
+	      OutliersTot[pos_plus_un]=0;
+	      OutliersAws[pos_plus_un]=0;
+	      Level[pos_plus_un]=Level[pos];
 
-	      if (pos < (*l-2))
+	      if (pos < nb_moins_deux)
 		{
-
-		  if (Chromosome[pos+1]==Chromosome[pos+2])
+		  pos_plus_deux=pos+2;
+		  if (Chromosome[pos_plus_un]==Chromosome[pos_plus_deux])
 		    {
-		      if (Level[pos+1]==Level[pos+2])
+		      if (Level[pos_plus_un]==Level[pos_plus_deux])
 			{
-			  Breakpoints[pos+1]=0;
+			  Breakpoints[pos_plus_un]=0;
 			}
 		    }		    		        
 		}
@@ -230,25 +205,31 @@ void awsBkp (double *Smoothing,
 {
 
   int j;
-  for (j=1;j<*l;j++)
-    {
-              
+  int j_moins_un;
+  int j_plus_un;
+  const int nb=*l;
+  const int nb_moins_un=*l-1;
+
+  for (j=1;j<nb;j++)
+    {              
+      j_moins_un=j-1;
+      j_plus_un=j+1;
       /*Outliers detection*/
 
-      if (Smoothing[j]!=Smoothing[j-1] && Smoothing[j+1]!=Smoothing[j] && Smoothing[j+1]==Smoothing[j-1] && j<(*l-1))
+      if (Smoothing[j]!=Smoothing[j_moins_un] && Smoothing[j_plus_un]!=Smoothing[j] && Smoothing[j_plus_un]==Smoothing[j_moins_un] && j<nb_moins_un)
 	{
-	  if (OutliersAws[j-1]==0)
+	  if (OutliersAws[j_moins_un]==0)
 	    {
-	      if (Smoothing[j]>Smoothing[j+1])
+	      if (Smoothing[j]>Smoothing[j_plus_un])
 		{
 		  OutliersAws[j]=1;
-		  Level[j]=Level[j-1];
+		  Level[j]=Level[j_moins_un];
 		}
 
 	      else
 		{
 		  OutliersAws[j]=-1;
-		  Level[j]=Level[j-1];
+		  Level[j]=Level[j_moins_un];
 		}
 	    }
                   
@@ -263,9 +244,9 @@ void awsBkp (double *Smoothing,
             
       else
 	{
-	  if (Smoothing[j]!=Smoothing[j-1] && OutliersAws[j-1]==0)
+	  if (Smoothing[j]!=Smoothing[j_moins_un] && OutliersAws[j_moins_un]==0)
 	    {
-	      if (j==1 || j==(*l-1))
+	      if (j==1 || j==nb_moins_un)
 		{
 		  regionChr[j]=*nbregion;
 		  rupture[j]=0;
@@ -287,16 +268,16 @@ void awsBkp (double *Smoothing,
                           
 		  else
 		    {
-		      if (Smoothing[j]>Smoothing[j-1])
+		      if (Smoothing[j]>Smoothing[j_moins_un])
 			{                                  
 			  OutliersAws[j]=1;
-			  Level[j]=Level[j-1];
+			  Level[j]=Level[j_moins_un];
 			}
 
 		      else
 			{
 			  OutliersAws[j]=-1;
-			  Level[j]=Level[j-1];
+			  Level[j]=Level[j_moins_un];
 			}
 		    }
 		}
@@ -334,12 +315,19 @@ void updateBkpRL (int *Region,
 {
 
   int i;
+  int i_moins_un;
+  int i_plus_un;
+  int i_moins_deux;
+  const int nb=*l;
+  const int nb_moins_un=*l-1;
+  const int nb_moins_deux=*l-2;
 
-  for (i=1;i<*l;i++)
+  for (i=1;i<nb;i++)
     {
-      if (i==1 || i==(*l-1))
+      i_moins_un=i-1;
+      if (i==1 || i==nb_moins_un)
 	{
-	  if (Region[i]!=Region[i-1])
+	  if (Region[i]!=Region[i_moins_un])
 	    {
 	      if (i==1)
 		{
@@ -348,43 +336,45 @@ void updateBkpRL (int *Region,
 		}
 	      else
 		{
-		  OutliersAws[*l-1]=1;
-		  Region[*l-1]=Region[*l-2];
+		  OutliersAws[nb_moins_un]=1;
+		  Region[nb_moins_un]=Region[nb_moins_deux];
 		}
 	    }
 	}
       else
 	{
-	  if (Chromosome[i]!=Chromosome[i-1])
+	  i_plus_un=i+1;
+	  if (Chromosome[i]!=Chromosome[i_moins_un])
 	    {
-	      if (Region[i-1]!=Region[i-2])
+	      i_moins_deux=i-2;
+	      if (Region[i_moins_un]!=Region[i_moins_deux])
 		{
-		  Region[i-1]=Region[i-2];
-		  OutliersAws[i-1]=1;
+		  Region[i_moins_un]=Region[i_moins_deux];
+		  OutliersAws[i_moins_un]=1;
 		}
 
-	      if (Region[i+1]!=Region[i])
+	      if (Region[i_plus_un]!=Region[i])
 		{
-		  Region[i+1]=Region[i];
+		  Region[i_plus_un]=Region[i];
 		  OutliersAws[i]=1;
 		}                
 	    }
 	  else
 	    {
-	      if (Region[i]!=Region[i-1] && Region[i+1]!=Region[i] && Region[i+1]==Region[i-1])
+	      if (Region[i]!=Region[i_moins_un] && Region[i_plus_un]!=Region[i] && Region[i_plus_un]==Region[i_moins_un])
 		{
-		  if (OutliersAws[i-1]==0)
+		  if (OutliersAws[i_moins_un]==0)
 		    {
 		      OutliersAws[i]=1;
-		      Region[i]=Region[i-1];
+		      Region[i]=Region[i_moins_un];
 		    }
 		}
 	      else
 		{
-		  if (Region[i]!=Region[i-1] && OutliersAws[i-1]==0)
+		  if (Region[i]!=Region[i_moins_un] && OutliersAws[i_moins_un]==0)
 		    {
-		      Breakpoints[i-1]=1;
-		      NextLogRatio[i-1]=LogRatio[i];
+		      Breakpoints[i_moins_un]=1;
+		      NextLogRatio[i_moins_un]=LogRatio[i];
 		    }
 		}                                               
 	    }
@@ -410,14 +400,14 @@ void loopMoveBkp(int *subBkpInfo_MoveBkp,
   int indexPos;
   int indexPosNext;
   int indexPosBefore;
+  const int nb=*l;
 
-  for (i=0;i<*l;i++)
+  for (i=0;i<nb;i++)
     {
 
 
       if (subBkpInfo_MoveBkp[i]==1)
 	{
-
 	  // déplacement à droite
 	  indexPos=subBkpInfo_PosOrder[i]-1;
 	  indexPosNext=indexPos+1;
@@ -436,7 +426,6 @@ void loopMoveBkp(int *subBkpInfo_MoveBkp,
 	}
       if (subBkpInfo_MoveBkp[i]==-1)
 	{
-
 	  // déplacement à gauche
 	  indexPos=subBkpInfo_PosOrder[i]-1;
 	  indexPosBefore=indexPos-1;
@@ -471,13 +460,14 @@ void rangeGainLoss(double *Smoothing,
 		   int *l)
 {
   int i;
+  const int nb=*l;
 
   *minG=MAXDOUBLE;
   *minAmp=MAXDOUBLE;
   *maxL=-MAXDOUBLE;
   *maxDel=-MAXDOUBLE;
 
-  for (i=0;i<*l;i++)
+  for (i=0;i<nb;i++)
     {
       if (OutliersTot[i]==0)
 	{
@@ -534,6 +524,7 @@ void updateGNL(int *ZoneGNL,
   double *minAmp;
   double *maxDel;
   int i;
+  const int nb=*l;
 
   minG=malloc(1 * sizeof(double));
   maxL=malloc(1 * sizeof(double));
@@ -543,7 +534,7 @@ void updateGNL(int *ZoneGNL,
   rangeGainLoss(Smoothing, ZoneGNL, OutliersTot, minG, maxL, minAmp, maxDel, l);
 
 
-  for (i=0; i<*l;i++)
+  for (i=0; i<nb;i++)
     {
       ZoneGNL[i]=0;
 
@@ -601,6 +592,7 @@ void delete_contiguous_bkp(int *BkpInfo_BkpToDel,
 
   // nb_Bkp=length(profileCGH$BkpInfo[,1])
   int i;
+  int i_moins_un;
   const int l=*nb_Bkp;
   double UpLeft, LowLeft, UpRight, LowRight, DiffLeft, DiffRight;
   double LRV;
@@ -610,12 +602,13 @@ void delete_contiguous_bkp(int *BkpInfo_BkpToDel,
   //  for (i in 2:length(profileCGH$BkpInfo[,1]))
   for (i=1;i<l;i++)
     {
-      if (BkpInfo_PosOrder[i]==BkpInfo_NextPosOrder[i-1] && BkpInfo_BkpToDel[i-1]==0)
+      i_moins_un=i-1;
+      if (BkpInfo_PosOrder[i]==BkpInfo_NextPosOrder[i_moins_un] && BkpInfo_BkpToDel[i_moins_un]==0)
 	{
 	  SigChr=BkpInfo_Sigma[i];
 	  // on regarde d'abord à gauche
-	  UpLeft=BkpInfo_Smoothing[i-1] + 3*SigChr;
-	  LowLeft=BkpInfo_Smoothing[i-1] - 3*SigChr;
+	  UpLeft=BkpInfo_Smoothing[i_moins_un] + 3*SigChr;
+	  LowLeft=BkpInfo_Smoothing[i_moins_un] - 3*SigChr;
 
 	  // On regarde ce qui se passe à droite
 	  UpRight=BkpInfo_SmoothingNext[i] + 3*SigChr;
@@ -631,24 +624,24 @@ void delete_contiguous_bkp(int *BkpInfo_BkpToDel,
 		  // attention, lors de la suppression d'un Bkp, le gap n'est plus bon
 		  // d'où recalcul du weight
 		  // je ne vois pas où il est recalculé!!!!
-		  DiffLeft=fabs(LRV - BkpInfo_Smoothing[i-1]);
+		  DiffLeft=fabs(LRV - BkpInfo_Smoothing[i_moins_un]);
 		  DiffRight=fabs(LRV - BkpInfo_SmoothingNext[i]);
 		  if (DiffRight<DiffLeft)
 		    {
 		      // On fusionne le Bkp avec la région à droite
 		      BkpInfo_BkpToDel[i]=1;
 		      BkpInfo_Side[i]=1;
-		      BkpInfo_Gap[i-1]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
-		      BkpInfo_Weight[i-1]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);
+		      BkpInfo_Gap[i_moins_un]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i_moins_un]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);
                                 
 		    }
 		  else
 		    {
 		      // On fusionne le Bkp avec la région à gauche
-		      BkpInfo_BkpToDel[i-1]=1;
-		      BkpInfo_Side[i-1]=0;
-		      BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
-		      BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);
+		      BkpInfo_BkpToDel[i_moins_un]=1;
+		      BkpInfo_Side[i_moins_un]=0;
+		      BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);
                                 
 
 		    }
@@ -658,10 +651,10 @@ void delete_contiguous_bkp(int *BkpInfo_BkpToDel,
 		  if (((LRV > LowLeft) && (LRV < UpLeft)))
 		    {
 		      // On fusionne le Bkp avec la région à gauche
-		      BkpInfo_BkpToDel[i-1]=1;
-		      BkpInfo_Side[i-1]=0;
-		      BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
-		      BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);
+		      BkpInfo_BkpToDel[i_moins_un]=1;
+		      BkpInfo_Side[i_moins_un]=0;
+		      BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);
                                 
 		    }
 		  else
@@ -669,8 +662,8 @@ void delete_contiguous_bkp(int *BkpInfo_BkpToDel,
 		      // On fusionne le Bkp avec la région à droite
 		      BkpInfo_BkpToDel[i]=1;
 		      BkpInfo_Side[i]=1;
-		      BkpInfo_Gap[i-1]=fabs(BkpInfo_Smoothing[i-1]-BkpInfo_SmoothingNext[i]);
-		      BkpInfo_Weight[i-1]=1 - kernelpen(BkpInfo_Gap[i-1], *nbsigma*BkpInfo_Sigma[i-1]);                            
+		      BkpInfo_Gap[i_moins_un]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+		      BkpInfo_Weight[i_moins_un]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);                            
 		    }
 		}                                        
 	    }
