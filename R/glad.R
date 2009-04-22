@@ -68,6 +68,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
     ### Méthode d'estimation du sigma
 
+    print("Smoothing for each Chromosome")    
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, verbose=verbose, model=model, lkern=lkern, qlambda=qlambda, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
 ### LogRatio are median-centered
     if (mediancenter)
@@ -93,7 +94,8 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
     profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio=Init, OutliersMad=Init, OutliersTot=Init, ZoneChr=Init)
     FieldOrder <- names(profileCGH$profileValues)
-    
+
+    print("Optimization of the Breakpoints")    
     for (i in 1:NbChr)
       {
         indexChr <- ChrIndice[[i]]
@@ -181,6 +183,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
     profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
 
+    print("Results Preparation")
 ### champs ajoutés par glad
     fieldglad <- c("Smoothing","Region","Level","OutliersAws","Breakpoints","OutliersMad","OutliersTot","ZoneChr","ZoneGen","ZoneGNL")
 

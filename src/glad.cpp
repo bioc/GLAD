@@ -177,6 +177,7 @@ extern "C"
 		  double *sigma,
 		  int *l)
   {
+    int nb_loop=0;
     int stop=0;
     int i,j;
     int nbregion;
@@ -200,6 +201,7 @@ extern "C"
 
     while(stop!=1)
       {
+	nb_loop++;
 	detectOutliers(LogRatio,Region,OutliersAws,OutliersMad,OutliersTot,msize,alpha,l);
 
 	map_ind_reg.erase(map_ind_reg.begin(),map_ind_reg.end());

@@ -38,6 +38,7 @@ loopRemove.profileChr <- function(profileChr, sigma, lambda=10, type="tricubic",
               as.integer(l),
               PACKAGE="GLAD")
 
+
     profileChr$profileValues$Region <- res$Region
     profileChr$profileValues$OutliersAws <- res$OutliersAws
     profileChr$profileValues$OutliersMad <- res$OutliersMad

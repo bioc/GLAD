@@ -13,44 +13,44 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
   if (verbose) print("OutliersGNL: starting function")
   if(!assignGNLOut)
     {
-      print("GNL wil not assigned for outliers")
+      print("GNL will not be assigned for outliers")
       return(profileCGH)
     }
 
-  CGH <- profileCGH$profileValues
+###  CGH <- profileCGH$profileValues
 
   
   ### dire qu'il faut la BaseLine
-  indexout <- which(CGH$OutliersTot!=0)
-  CGH$ZoneGNL[indexout] <- 0
+  indexout <- which(profileCGH$profileValues$OutliersTot!=0)
+  profileCGH$profileValues$ZoneGNL[indexout] <- 0
   seuilsup <- NormalRef + sigma*qnorm(1-alpha/2)
   seuilinf <- NormalRef - sigma*qnorm(1-alpha/2)
-  indexoutGain <- which(CGH$OutliersTot!=0 & CGH$LogRatio>seuilsup)
-  CGH$ZoneGNL[indexoutGain] <- 1
-  indexoutLost <- which(CGH$OutliersTot!=0 & CGH$LogRatio<seuilinf)
-  CGH$ZoneGNL[indexoutLost] <- -1
+  indexoutGain <- which(profileCGH$profileValues$OutliersTot!=0 & profileCGH$profileValues$LogRatio>seuilsup)
+  profileCGH$profileValues$ZoneGNL[indexoutGain] <- 1
+  indexoutLost <- which(profileCGH$profileValues$OutliersTot!=0 & profileCGH$profileValues$LogRatio<seuilinf)
+  profileCGH$profileValues$ZoneGNL[indexoutLost] <- -1
 
-  indexOutAmp <- which(CGH$OutliersTot!=0 & (CGH$LogRatio - NormalRef) > amplicon)
-  CGH$ZoneGNL[indexOutAmp] <- 2
+  indexOutAmp <- which(profileCGH$profileValues$OutliersTot!=0 & (profileCGH$profileValues$LogRatio - NormalRef) > amplicon)
+  profileCGH$profileValues$ZoneGNL[indexOutAmp] <- 2
 
   ###print("dans OutliersGNL")
-  ###print(CGH[indexOutAmp,])
+  ###print(profileCGH$profileValues[indexOutAmp,])
 
-  indexOutDel <- which(CGH$OutliersTot!=0 & (CGH$LogRatio - NormalRef) < deletion)
-  CGH$ZoneGNL[indexOutDel] <- -10    
+  indexOutDel <- which(profileCGH$profileValues$OutliersTot!=0 & (profileCGH$profileValues$LogRatio - NormalRef) < deletion)
+  profileCGH$profileValues$ZoneGNL[indexOutDel] <- -10    
 
   checkGain <- FALSE
   checkLost <- FALSE
   checkNormal <- FALSE
-  indexNormal <- which(CGH$ZoneGNL==0 & CGH$OutliersTot==0)
+  indexNormal <- which(profileCGH$profileValues$ZoneGNL==0 & profileCGH$profileValues$OutliersTot==0)
   if (length(indexNormal)>0)
     {
 
-      maxNormal <- max(CGH$Smoothing[indexNormal])
-      minNormal <- min(CGH$Smoothing[indexNormal])
-      indMinN <- which(CGH$Smoothing[indexNormal]==minNormal)
+      maxNormal <- max(profileCGH$profileValues$Smoothing[indexNormal])
+      minNormal <- min(profileCGH$profileValues$Smoothing[indexNormal])
+      indMinN <- which(profileCGH$profileValues$Smoothing[indexNormal]==minNormal)
       #print(indMinN)
-      ###print(CGH[indexNormal,][indMinN,])
+      ###print(profileCGH$profileValues[indexNormal,][indMinN,])
       checkNormal <- TRUE
 
       ###print("maxNormal")
@@ -62,38 +62,38 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
 
   ### Il faut vérifier que des Outliers normaux n'aient pas un logratio supérieur au minimum du smoothing
   ### des régions gagnés (même principe pour les pertes)
-  ###GNL <- unique(CGH$ZoneGNL)
+  ###GNL <- unique(profileCGH$profileValues$ZoneGNL)
   ### A-t-on détecté des gains
-  indexGain <- which(CGH$ZoneGNL==1 & CGH$OutliersTot==0)
+  indexGain <- which(profileCGH$profileValues$ZoneGNL==1 & profileCGH$profileValues$OutliersTot==0)
   if (length(indexGain)>0)
     {
       checkGain <- TRUE
-      minGain <- min(CGH$Smoothing[indexGain])
+      minGain <- min(profileCGH$profileValues$Smoothing[indexGain])
       ###print("G")
       ###print(minGain)
-      #ind1 <- which(CGH$Smoothing==min(CGH$Smoothing[indexGain]) & CGH$ZoneGNL==1)
-      #print(CGH[ind1,c("PosOrder","Smoothing","Level","Breakpoints","ZoneGNL","OutliersTot")])
-      indexOutGain <- which(CGH$OutliersTot!=0 & CGH$LogRatio>minGain & CGH$ZoneGNL==0)
-      CGH$ZoneGNL[indexOutGain] <- 1
+      #ind1 <- which(profileCGH$profileValues$Smoothing==min(profileCGH$profileValues$Smoothing[indexGain]) & profileCGH$profileValues$ZoneGNL==1)
+      #print(profileCGH$profileValues[ind1,c("PosOrder","Smoothing","Level","Breakpoints","ZoneGNL","OutliersTot")])
+      indexOutGain <- which(profileCGH$profileValues$OutliersTot!=0 & profileCGH$profileValues$LogRatio>minGain & profileCGH$profileValues$ZoneGNL==0)
+      profileCGH$profileValues$ZoneGNL[indexOutGain] <- 1
       ###print("pour les gains")
-      ###print(CGH[indexOutGain,])
+      ###print(profileCGH$profileValues[indexOutGain,])
     }
 
   
   ### A-t-on détecté des pertes
-  indexLost <- which(CGH$ZoneGNL==-1 & CGH$OutliersTot==0)
+  indexLost <- which(profileCGH$profileValues$ZoneGNL==-1 & profileCGH$profileValues$OutliersTot==0)
   if (length(indexLost)>0)
     {
       checkLost <- TRUE
-      maxLost <- max(CGH$Smoothing[indexLost])
+      maxLost <- max(profileCGH$profileValues$Smoothing[indexLost])
       ###print("L")
       ###print(maxLost)
-      ###ind2 <- which(CGH$Smoothing==max(CGH$Smoothing[indexLost]) & CGH$ZoneGNL==-1)
-      ###print(CGH[ind2,c("PosOrder","Smoothing","Level","Breakpoints","ZoneGNL","OutliersTot", "Chromosome")])
-      indexOutLost <- which(CGH$OutliersTot!=0 & CGH$LogRatio<maxLost & CGH$ZoneGNL==0)
-      CGH$ZoneGNL[indexOutLost] <- -1
+      ###ind2 <- which(profileCGH$profileValues$Smoothing==max(profileCGH$profileValues$Smoothing[indexLost]) & profileCGH$profileValues$ZoneGNL==-1)
+      ###print(profileCGH$profileValues[ind2,c("PosOrder","Smoothing","Level","Breakpoints","ZoneGNL","OutliersTot", "Chromosome")])
+      indexOutLost <- which(profileCGH$profileValues$OutliersTot!=0 & profileCGH$profileValues$LogRatio<maxLost & profileCGH$profileValues$ZoneGNL==0)
+      profileCGH$profileValues$ZoneGNL[indexOutLost] <- -1
       ###print("pour les pertes")
-      ###print(CGH[indexOutLost,])
+      ###print(profileCGH$profileValues[indexOutLost,])
     }
 
   if (checkGain & checkLost)
@@ -108,8 +108,8 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
         {
           if (maxLost>minNormal)
             {
-              ind <- which(CGH$ZoneGNL==0 & CGH$OutliersTot==0 & CGH$Smoothing<=maxLost)
-              CGH$ZoneGNL[ind] <- -1
+              ind <- which(profileCGH$profileValues$ZoneGNL==0 & profileCGH$profileValues$OutliersTot==0 & profileCGH$profileValues$Smoothing<=maxLost)
+              profileCGH$profileValues$ZoneGNL[ind] <- -1
               checkAlert <- TRUE
 ###              print("A2")
             }
@@ -117,8 +117,8 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
           if (minGain<maxNormal)
             {
 
-              ind <- which(CGH$ZoneGNL==0 & CGH$OutliersTot==0 & CGH$Smoothing>=minGain)
-              CGH$ZoneGNL[ind] <- 1
+              ind <- which(profileCGH$profileValues$ZoneGNL==0 & profileCGH$profileValues$OutliersTot==0 & profileCGH$profileValues$Smoothing>=minGain)
+              profileCGH$profileValues$ZoneGNL[ind] <- 1
               checkAlert <- TRUE
 ###              print("A3")
             }
@@ -132,7 +132,7 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
     }
   
   
-  profileCGH$profileValues <- CGH
+###  profileCGH$profileValues <- CGH
   if (verbose) print("OutliersGNL: ending function")
   return(profileCGH)
   

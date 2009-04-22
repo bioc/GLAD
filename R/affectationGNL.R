@@ -35,6 +35,7 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
 
   aggZone$ZoneGNL[aggZone$Median<aggZone$MinMedian] <- -1
 
+
   CGH <- merge(CGH,aggZone[,c("ZoneGen","ZoneGNL")], by="ZoneGen")
 
 
@@ -168,7 +169,6 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
         }
 
     }
-
 
 
   profileCGH$profileValues <- CGH

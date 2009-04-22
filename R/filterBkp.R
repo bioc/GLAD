@@ -7,7 +7,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
   {
 
 
-
     if (verbose) print("filterBkp: starting function")            
     if (is.data.frame(profileCGH$BkpInfo))
       {
@@ -33,7 +32,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
           }
 
 
-        
 ##################################################################################
 ###
 ### On Déplace les Bkp qui sont aussi Outliers et dont
@@ -43,13 +41,11 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 ###
 ##################################################################################
         
-
         if (verbose) print("filterBkp: move breakpoints which are outliers")        
         profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
 
         nb <- length(profileCGH$profileValues[,1])-1
         
-
 
         moveBkp <- .C("moveBkp",
                       as.integer(profileCGH$profileValues$ZoneGNL),
@@ -61,7 +57,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
                       RecomputeSmt=as.integer(0),
                       as.integer(nb),
                       PACKAGE="GLAD")
-
 
         if (moveBkp$RecomputeSmt==1)
           {            
@@ -121,7 +116,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
         indexWeightZero <- which(profileCGH$BkpInfo["Weight"]==0 & profileCGH$BkpInfo["GNLchange"]==1)
         if (length(indexWeightZero)>0)
           {
-            
+
             RecomputeGNL <- TRUE
             indexPos <- profileCGH$BkpInfo$PosOrder[indexWeightZero]
             profileCGH$profileValues$Breakpoints[indexPos] <- -1            
@@ -183,11 +178,9 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             profileCGH$profileValues$OutliersAws <- updateOutliers$OutliersAws
             profileCGH$profileValues$Smoothing <- updateOutliers$Smoothing
             
-            
 ### Recalcul des Outliers
             class(profileCGH) <- "profileChr"
             profileCGH <- detectOutliers(profileCGH, region="Level", alpha=profileCGH$alpha, msize=profileCGH$msize)
-
             
 ### recalcul de la smoothing line
             agg <- aggregate(profileCGH$profileValues$LogRatio, list(Level=profileCGH$profileValues$Level), median)
@@ -195,7 +188,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             names(agg) <- c("Level","Smoothing")
             profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
 
-            
 ###            print("NEW1")
             lengthDest <- length(profileCGH$profileValues$Level)
             lengthSrc <- length(agg$Level)
@@ -211,26 +203,25 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             profileCGH$profileValues$Smoothing <- mySmooting$Smoothing
             
 ###            print(tt1)
- ###           print(mySmooting$Smoothing)
+###           print(mySmooting$Smoothing)
 ###            profileCGH$profileValues$SmoothingBis <- mySmooting$Smoothing
 ###            print("NEW2")
 
             
-##             print("ICI1")
-##             print(date())
-##             t1 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, agg, by="Level", all=TRUE))
-##             print(date())
-##             print(t1)
-##             print("ICI2")            
+            ##             print("ICI1")
+            ##             print(date())
+            ##             t1 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, agg, by="Level", all=TRUE))
+            ##             print(date())
+            ##             print(t1)
+            ##             print("ICI2")            
 
             
-##             print("verif1")
-##             print(which(profileCGH$profileValues$Smoothing!=profileCGH$profileValues$SmoothingBis))
-##             print("verif1 end")            
+            ##             print("verif1")
+            ##             print(which(profileCGH$profileValues$Smoothing!=profileCGH$profileValues$SmoothingBis))
+            ##             print("verif1 end")            
 
 ####################
             profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNL"))
-            
             indexNormalLevel <- which(abs(profileCGH$profileValues$Smoothing-profileCGH$NormalRef)<=profileCGH$deltaN)
             profileCGH$profileValues$NormalRange <- profileCGH$profileValues$Level
             profileCGH$profileValues$NormalRange[indexNormalLevel] <- 0
@@ -239,7 +230,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             profileCGH <- findCluster(profileCGH, region="NormalRange", method=profileCGH$method, genome=TRUE,
                                       lambda=profileCGH$lambdaclusterGen,
                                       nmin=profileCGH$NbClusterOpt, nmax=profileCGH$NbClusterOpt)
-            
+
 ### le cluster correspondant au normal est celui qui comprend
 ### le NormalRange 0
             indexNormalRange <- which(profileCGH$profileValues$NormalRange==0)
@@ -265,26 +256,25 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
                             as.integer(lengthSrc),
                             PACKAGE="GLAD")
 
-
             profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
-##             print("NEW2")
+            ##             print("NEW2")
 
-##             print(MedianCluster[,c("ZoneGen","ZoneGNL")])
+            ##             print(MedianCluster[,c("ZoneGen","ZoneGNL")])
 
             
-##             print("ICI3")
-##             print(date())
-##             t2 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, MedianCluster[,c("ZoneGen","ZoneGNL")], all=TRUE, by="ZoneGen"))
-##             print(date())
-##             print(t2)
-##             print("ICI4")            
+            ##             print("ICI3")
+            ##             print(date())
+            ##             t2 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, MedianCluster[,c("ZoneGen","ZoneGNL")], all=TRUE, by="ZoneGen"))
+            ##             print(date())
+            ##             print(t2)
+            ##             print("ICI4")            
 
 
-##             print("verif2")
-##             ind <- which(profileCGH$profileValues$ZoneGNLBis!=profileCGH$profileValues$ZoneGNL) 
-##             print(ind)
-##             print(profileCGH$profileValues[ind,c("ZoneGen","ZoneGNL","ZoneGNLBis")])
-##             print("verif2b")
+            ##             print("verif2")
+            ##             ind <- which(profileCGH$profileValues$ZoneGNLBis!=profileCGH$profileValues$ZoneGNL) 
+            ##             print(ind)
+            ##             print(profileCGH$profileValues[ind,c("ZoneGen","ZoneGNL","ZoneGNLBis")])
+            ##             print("verif2b")
 
 ### on force les gains et les pertes pour certaines valeur de smoothing
             indexForceGain <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$forceGL[2])
