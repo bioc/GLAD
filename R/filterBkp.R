@@ -7,6 +7,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
   {
 
 
+    profilage <- TRUE
     if (verbose) print("filterBkp: starting function")            
     if (is.data.frame(profileCGH$BkpInfo))
       {
@@ -144,11 +145,11 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 ### Normalement NormalRef vaut 0 puisqu'en sortie de gladLA
 ### les log-ratios sont centrés sur NormalRef
         
-        if (verbose) print("filterBkp: recomputeGNL")        
+
         if (RecomputeGNL)
           {
-
-
+            if(profilage) Rprof("/tmp/Step00FilterBkp.dat")
+            if (verbose) print("filterBkp: recomputeGNL")        
             profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
             l <- length(profileCGH$profileValues[,1])
             updateLevel <- .C("updateLevel",
@@ -177,7 +178,10 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             profileCGH$profileValues$Breakpoints <- updateOutliers$Breakpoints
             profileCGH$profileValues$OutliersAws <- updateOutliers$OutliersAws
             profileCGH$profileValues$Smoothing <- updateOutliers$Smoothing
+
+            if(profilage) Rprof(NULL)
             
+            if(profilage) Rprof("/tmp/Step01FilterBkpOutliers.dat")            
 ### Recalcul des Outliers
             class(profileCGH) <- "profileChr"
             profileCGH <- detectOutliers(profileCGH, region="Level", alpha=profileCGH$alpha, msize=profileCGH$msize)
@@ -186,9 +190,10 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             agg <- aggregate(profileCGH$profileValues$LogRatio, list(Level=profileCGH$profileValues$Level), median)
             agg$Level <- as.numeric(as.character(agg$Level))
             names(agg) <- c("Level","Smoothing")
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
 
-###            print("NEW1")
+### ne sert plus à rien car on utilise la fonction my_merge à la place de la fonction merge de R
+###            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
+
             lengthDest <- length(profileCGH$profileValues$Level)
             lengthSrc <- length(agg$Level)
             mySmooting <- .C("my_merge",
@@ -202,26 +207,12 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
             profileCGH$profileValues$Smoothing <- mySmooting$Smoothing
             
-###            print(tt1)
-###           print(mySmooting$Smoothing)
-###            profileCGH$profileValues$SmoothingBis <- mySmooting$Smoothing
-###            print("NEW2")
+           
+###             t1 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, agg, by="Level", all=TRUE))
 
-            
-            ##             print("ICI1")
-            ##             print(date())
-            ##             t1 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, agg, by="Level", all=TRUE))
-            ##             print(date())
-            ##             print(t1)
-            ##             print("ICI2")            
-
-            
-            ##             print("verif1")
-            ##             print(which(profileCGH$profileValues$Smoothing!=profileCGH$profileValues$SmoothingBis))
-            ##             print("verif1 end")            
 
 ####################
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNL"))
+            profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),"ZoneGNL")]
             indexNormalLevel <- which(abs(profileCGH$profileValues$Smoothing-profileCGH$NormalRef)<=profileCGH$deltaN)
             profileCGH$profileValues$NormalRange <- profileCGH$profileValues$Level
             profileCGH$profileValues$NormalRange[indexNormalLevel] <- 0
@@ -257,24 +248,10 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
                             PACKAGE="GLAD")
 
             profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
-            ##             print("NEW2")
-
-            ##             print(MedianCluster[,c("ZoneGen","ZoneGNL")])
-
-            
-            ##             print("ICI3")
-            ##             print(date())
-            ##             t2 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, MedianCluster[,c("ZoneGen","ZoneGNL")], all=TRUE, by="ZoneGen"))
-            ##             print(date())
-            ##             print(t2)
-            ##             print("ICI4")            
 
 
-            ##             print("verif2")
-            ##             ind <- which(profileCGH$profileValues$ZoneGNLBis!=profileCGH$profileValues$ZoneGNL) 
-            ##             print(ind)
-            ##             print(profileCGH$profileValues[ind,c("ZoneGen","ZoneGNL","ZoneGNLBis")])
-            ##             print("verif2b")
+###             t2 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, MedianCluster[,c("ZoneGen","ZoneGNL")], all=TRUE, by="ZoneGen"))
+
 
 ### on force les gains et les pertes pour certaines valeur de smoothing
             indexForceGain <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$forceGL[2])
@@ -288,8 +265,10 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             indexDel <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$deletion)
             profileCGH$profileValues$ZoneGNL[indexDel] <- -10
             
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
-            profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))
+
+profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGen","NormalRange"))]
+##             profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
+##             profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))
 
             
 
@@ -307,6 +286,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
                                           amplicon=profileCGH$amplicon, deletion=profileCGH$deletion)
               }
 
+            if(profilage) Rprof(NULL)
           }
         
       }

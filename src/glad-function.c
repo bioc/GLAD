@@ -732,3 +732,98 @@ void make_BkpInfo(double *BkpInfo_Gap,
 	}
     }
 }
+
+
+/*******************************************/
+/* fonctions utilisées dans testMoveBkp.R  */
+/*******************************************/
+
+void loopTestBkpToMove(double *LogRatio,
+		       double *NextLogRatio,
+		       double *Smoothing,
+		       double *SmoothingNext,
+		       int *MoveBkp,
+		       int *NbBkp)
+{
+  int i;
+  int l=*NbBkp;
+
+  for (i=0;i<l;i++)
+    {
+      MoveBkp[i]=testSingle(LogRatio[i],NextLogRatio[i],Smoothing[i],SmoothingNext[i]);
+    }
+}
+
+
+int  testSingle(const double LogRatio,
+		const double NextLogRatio,
+		const double Smoothing,
+		const double SmoothingNext)
+{
+  int moveBkp=0;
+  // le créneau est plus bas à droite qu'à gauche
+  if (Smoothing > SmoothingNext)
+    {
+      if ((SmoothingNext <= LogRatio) && (LogRatio <= Smoothing))
+	{
+	  if((LogRatio-SmoothingNext) < (Smoothing-LogRatio))
+	    {
+	      // il faut déplacer le Bkp vers la gauche
+	      moveBkp=-1;
+	    }                        
+	}
+            
+      if ((SmoothingNext <= NextLogRatio) && (NextLogRatio <= Smoothing))
+	{
+	  if ( (NextLogRatio-SmoothingNext)>(Smoothing-NextLogRatio))
+	    {
+	      // il faut déplacer le Bkp vers la droite
+	      moveBkp=1;
+	    }
+                
+	}
+
+      if (LogRatio <= SmoothingNext)
+	{
+	  moveBkp=-1;
+	}
+
+      if (NextLogRatio>=Smoothing)
+	{
+	  moveBkp=1;
+	}
+    }
+  // le créneau est plus bas à gauche qu'à droite
+  else
+    {
+      if ((SmoothingNext >= LogRatio) && (LogRatio >= Smoothing))
+	{
+	  if ((SmoothingNext-LogRatio) < (LogRatio - Smoothing))
+	    {
+	      // il faut déplacer le Bkp vers la gauche
+	      moveBkp=-1;
+	    }
+	}
+
+      if ((SmoothingNext >= NextLogRatio) & (NextLogRatio >= Smoothing))
+	{
+	  if ((SmoothingNext-NextLogRatio) > (NextLogRatio-Smoothing))
+	    {
+	      // il faut déplacer le Bkp vers la droite
+	      moveBkp=1;
+	    }
+	}
+
+      if (LogRatio>=SmoothingNext)
+	{
+	  moveBkp=-1;
+	}
+
+      if (NextLogRatio<=Smoothing)
+	{
+	  moveBkp=1;
+	}
+    }
+  return(moveBkp);
+
+}

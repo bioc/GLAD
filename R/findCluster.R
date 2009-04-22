@@ -33,14 +33,24 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
     clusterRegion$VarLike[indexSingle] <- 1
     
     
-    zone <- rep(1, length(profileChr$profileValues$PosOrder))
+###    zone <- rep(1, length(profileChr$profileValues$PosOrder))
 
 
     if (length(clusterRegion[,1])==1) 	
       {	
         nbclasses <- 1
         profileChr$NbClusterOpt <- nbclasses
-        profileChr$profileValues$zone <- zone
+###        profileChr$profileValues$zone <- zone
+        if (genome==FALSE)
+          {
+            profileChr$profileValues$ZoneChr <- 1
+          }
+        else
+          {
+            profileChr$profileValues$ZoneGen <- 1
+          }
+        
+        profileChr$profileValues$zone <- 1        
       }	
     
     else	
@@ -65,8 +75,17 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
                      as.integer(lengthSrc),
                      PACKAGE="GLAD")
 
-        profileChr$profileValues$zone <- myzone$zone
+###        profileChr$profileValues$zone <- myzone$zone
 
+
+        if (genome==FALSE)
+          {
+            profileChr$profileValues$ZoneChr <- myzone$zone
+          }
+        else
+          {
+            profileChr$profileValues$ZoneGen <- myzone$zone
+          }
 
 
 ### jointure à optimiser
@@ -78,18 +97,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
       }	
 
     
-    if (genome==FALSE)
-      {
-        profileChr$profileValues$ZoneChr <- profileChr$profileValues$zone
-        profileChr$profileValues <- subset(profileChr$profileValues, select=-zone)
-      }
-    else
-      {
-        profileChr$profileValues$ZoneGen <- profileChr$profileValues$zone
-        profileChr$profileValues <- subset(profileChr$profileValues, select=-zone)
-
-      }
-
     
     if (verbose) print("findCluster: ending function")
     return(profileChr)

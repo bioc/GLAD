@@ -126,8 +126,9 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ### de l'étape chromosome par chromosome:
 ### ils portent à la fin la lettre C
 
-    if(profilage) Rprof("/tmp/Step02DataPreparation.dat")    
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
+    if(profilage) Rprof("/tmp/Step02DataPreparation.dat")
+    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),"Smoothing")]
+###    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
 
     namesprofile <- names(profileCGH$profileValues)
     namesprofile[which(namesprofile=="Level")] <- "LevelC"
@@ -169,20 +170,22 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         profileCGH$SigmaG <- IQRinfoG
 
 ### maintenant, le champ ChromosomeTrue ne sert plus à rien
-        profileCGH$profileValues$Chromosome <- profileCGH$profileValues$ChromosomeTrue
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ChromosomeTrue"))
+###        profileCGH$profileValues$Chromosome <- profileCGH$profileValues$ChromosomeTrue
+        namesprofile <- names(profileCGH$profileValues)
+        namesprofile[which(namesprofile=="ChromosomeTrue")] <- "Chromosome"        
+###        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ChromosomeTrue"))
         
 ### les champs Smoothing Level Region Breakpoints OutliersAws
 ### sont renommés pour qu'ils soient spécifiques
 ### de l'étape sur l'ensemble du génome:
 ### ils portent à la fin la lettre G
 
-
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Region"))
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Breakpoints"))
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MinPosOrder"))
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MaxPosOrder"))
+        profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("Smoothing","Region","Breakpoints","MinPosOrder","MaxPosOrder"))]
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Smoothing"))
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Region"))
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Breakpoints"))
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MinPosOrder"))
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MaxPosOrder"))
 
         namesprofile <- names(profileCGH$profileValues)
         namesprofile[which(namesprofile=="Level")] <- "LevelG"
@@ -241,7 +244,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
         profileCGH$NormalRef <- NormalRef
 
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelG"))
+        profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),"LevelG")]
+###        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelG"))
 
 
       }
@@ -255,15 +259,21 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
         if(profilage) Rprof("/tmp/Step03DataPreparation.dat")
         
-        profileCGH$profileValues$OutliersAws <- profileCGH$profileValues$OutliersAwsC
-        profileCGH$profileValues$OutliersMad <- profileCGH$profileValues$OutliersAws
-        profileCGH$profileValues$OutliersTot <- profileCGH$profileValues$OutliersAws
-        profileCGH$profileValues$MinPosOrder <- profileCGH$profileValues$MinPosOrderC
-        profileCGH$profileValues$MaxPosOrder <- profileCGH$profileValues$MaxPosOrderC
+##         profileCGH$profileValues$OutliersAws <- profileCGH$profileValues$OutliersAwsC
+##         profileCGH$profileValues$MinPosOrder <- profileCGH$profileValues$MinPosOrderC
+##         profileCGH$profileValues$MaxPosOrder <- profileCGH$profileValues$MaxPosOrderC
+
+        namesprofile <- names(profileCGH$profileValues)
+        namesprofile[which(namesprofile=="OutliersAwsC")] <- "OutliersAws"
+        namesprofile[which(namesprofile=="MinPosOrderC")] <- "MinPosOrder"
+        namesprofile[which(namesprofile=="MaxPosOrderC")] <- "MaxPosOrder"
         
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MinPosOrderC"))
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MaxPosOrderC"))
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"OutliersAwsC"))
+        profileCGH$profileValues$OutliersMad <- profileCGH$profileValues$OutliersAws
+        profileCGH$profileValues$OutliersTot <- profileCGH$profileValues$OutliersAws        
+        
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MinPosOrderC"))
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MaxPosOrderC"))
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"OutliersAwsC"))
 
         NormalRef <- 0
         profileCGH$NormalRef <- NormalRef
@@ -301,15 +311,23 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     class(profileCGH) <- "profileChr"
 
 
-    profileCGH$profileValues$Level <- profileCGH$profileValues$LevelC    
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelC"))
+    
 
 ### il faut le champ Breakpoints et Region
 ### mais on peut supprimer son utilisation dans removeLevel
-    profileCGH$profileValues$Breakpoints <- profileCGH$profileValues$BreakpointsC
-    profileCGH$profileValues$Region <- profileCGH$profileValues$RegionC
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"RegionC"))
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"BreakpointsC"))
+
+##     profileCGH$profileValues$Level <- profileCGH$profileValues$LevelC    
+##     profileCGH$profileValues$Breakpoints <- profileCGH$profileValues$BreakpointsC
+##     profileCGH$profileValues$Region <- profileCGH$profileValues$RegionC
+
+    namesprofile <- names(profileCGH$profileValues)
+    namesprofile[which(namesprofile=="LevelC")] <- "Level"
+    namesprofile[which(namesprofile=="BreakpointsC")] <- "Breakpoints"
+    namesprofile[which(namesprofile=="Region")] <- "RegionC"
+    
+##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"RegionC"))
+##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"BreakpointsC"))
+##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelC"))    
       
 
     indice <- 1:length(profileCGH$profileValues[,1])
@@ -384,7 +402,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     
 ### on prend comme référence ceux qui sont compris entre certaines valeurs
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
+    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),"ZoneGen")]
+#    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
     indexNormalLevel <- which(abs(profileCGH$profileValues$DiffBase)<=deltaN)
     profileCGH$profileValues$NormalRange <- profileCGH$profileValues$Level
     profileCGH$profileValues$NormalRange[indexNormalLevel] <- 0
@@ -548,9 +567,11 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
             if(profilage)Rprof(NULL)            
           }
 
-        profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"Side"))
-        profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"BkpToDel"))
-        profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"NextPosOrder"))
+
+        profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("Side","BkpToDel","NextPosOrder"))]
+##         profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"Side"))
+##         profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"BkpToDel"))
+##         profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"NextPosOrder"))
 
       }
 
@@ -560,10 +581,12 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     if (RecomputeGNL)
       {
         if(profilage) Rprof("/tmp/Step12RecomputeGNL.dat")                                                                           
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNL"))
-
         profileCGH$profileValues$DiffBase <- profileCGH$profileValues$Smoothing - profileCGH$profileValues$NormalRef
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
+
+
+        profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGNL","ZoneGen"))]
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNL"))        
+##         profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
         
         indexNormalLevel <- which(abs(profileCGH$profileValues$DiffBase)<=deltaN)
         profileCGH$profileValues$NormalRange <- profileCGH$profileValues$Level
@@ -631,8 +654,9 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion, assignGNLOut=assignGNLOut)
 
 
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))
-    profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
+    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("NormalRange","ZoneGen"))]
+##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))
+##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGen"))
 
 
 ### Récupération des informations sur l'analyse
@@ -694,7 +718,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     if (genomestep)
       {
         profileCGH$profileValues$NormalRef <- profileCGH$profileValues$ZoneGNLGen
-        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNLGen"))
+        profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),"ZoneGNLGen")]
+##        profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"ZoneGNLGen"))
       }
 
     
