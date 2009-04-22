@@ -50,7 +50,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
             profileChr$profileValues$ZoneGen <- 1
           }
         
-        profileChr$profileValues$zone <- 1        
       }	
     
     else	
