@@ -763,15 +763,19 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     if (is.data.frame(profileCGH$BkpInfo))
       {
-        profileCGH$BkpInfo <- merge(profileCGH$BkpInfo, profileCGH$profileValues[,c("PosOrder","NewPosOrder")],
-                                    by="PosOrder",all.x=TRUE)
+
+        profileCGH$BkpInfo <- merge(profileCGH$BkpInfo, profileCGH$profileValues[,c("PosOrder","NewPosOrder")], by="PosOrder",all.x=TRUE)
+
 ###        PosAux <- profileCGH$BkpInfo$PosOrder
-        namesprofile <- names(profileCGH$BkpInfo)
-        namesprofile[which(namesprofile=="NewPosOrder")] <- "PosOrder"
-        names(profileCGH$BkpInfo) <- namesprofile        
+        
         
 ###        profileCGH$BkpInfo$PosOrder <- profileCGH$BkpInfo$NewPosOrder
-        profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("SmoothingNext","NextLogRatio","MaxPosOrder","MinPosOrder","ZoneGNLnext"))]
+        profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("SmoothingNext","NextLogRatio","MaxPosOrder","MinPosOrder","ZoneGNLnext","PosOrder"))]
+
+        namesprofile <- names(profileCGH$BkpInfo)
+        namesprofile[which(namesprofile=="NewPosOrder")] <- "PosOrder"
+        names(profileCGH$BkpInfo) <- namesprofile
+
 ##         profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"NewPosOrder"))
 ##         profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"SmoothingNext"))
 ##         profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"NextLogRatio"))
@@ -787,13 +791,15 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     ### remettre les champs dans l'ordre
     
 ###    PosAux <- profileCGH$profileValues$PosOrder
+    
+###    profileCGH$profileValues$PosOrder <- profileCGH$profileValues$NewPosOrder
+
+    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("Sigma","DiffBase","Region","NextLogRatio","MaxPosOrder","MinPosOrder","PosOrder"))]
+
     namesprofile <- names(profileCGH$profileValues)
     namesprofile[which(namesprofile=="NewPosOrder")] <- "PosOrder"
     names(profileCGH$profileValues) <- namesprofile        
     
-###    profileCGH$profileValues$PosOrder <- profileCGH$profileValues$NewPosOrder
-
-    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("Sigma","DiffBase","Region","NextLogRatio","MaxPosOrder","MinPosOrder"))]
 ##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"-NewPosOrder"))
 ##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"Sigma"))
 ##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"DiffBase"))
