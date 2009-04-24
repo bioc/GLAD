@@ -296,8 +296,36 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
             names(MedianLevel) <- c("Level","MedianLevel")
             MedianLevel <- MedianLevel[order(MedianLevel$MedianLevel),]
             MedianLevel$Level <- as.numeric(as.character(MedianLevel$Level))
-            MedianLevel$LevelNewOrder <- min(MedianLevel$Level):max(MedianLevel$Level)            
-            subsetdata <- merge(subsetdata, MedianLevel, by="Level",all=TRUE)
+            MedianLevel$LevelNewOrder <- min(MedianLevel$Level):max(MedianLevel$Level)
+
+            lengthDest <- length(subsetdata$Level)
+            lengthSrc <- length(MedianLevel$Level)
+
+            myMedianLevel <- .C("my_merge_medianlevel",
+                                as.integer(subsetdata$Level),
+                                LevelNewOrder=integer(lengthDest),
+                                MedianLevel=double(lengthDest),
+                                as.integer(MedianLevel$Level),
+                                as.integer(MedianLevel$LevelNewOrder),
+                                as.double(MedianLevel$MedianLevel),
+                                as.integer(lengthDest),
+                                as.integer(lengthSrc),
+                                PACKAGE="GLAD")
+
+            subsetdata$LevelNewOrder <- myMedianLevel$LevelNewOrder
+            subsetdata$MedianLevel <- myMedianLevel$MedianLevel
+            
+##             t1 <- system.time(subsetdata <- merge(subsetdata, MedianLevel, by="Level",all=TRUE))
+##             print(t1)
+
+
+##             print("verif")
+##             print(which(subsetdata$LevelNewOrderBIS!=subsetdata$LevelNewOrder))
+##             print(which(subsetdata$MedianLevelBIS!=subsetdata$MedianLevel))
+##             print("end verif")
+
+
+            
 
 ###breakpoints detection
             rupture <- 0

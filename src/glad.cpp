@@ -37,7 +37,11 @@
 
 using namespace std;
 
-
+struct paire_double
+{
+  double value;
+  int index_add;
+};
 
 struct split_region
 {
@@ -398,6 +402,33 @@ extern "C"
 
   }
 
+  void my_merge_medianlevel(int *index_dest,
+			    int *index_dest_add,
+			    double *value_dest,
+			    int *index_src,
+			    int *index_src_add,
+			    double *value_src,
+			    int *length_dest,
+			    int *length_src)
+  {
+    int i;
+    map<int, paire_double > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i=0;i<*length_src;i++)
+      {
+	agg_data[index_src[i]].value=value_src[i];
+	agg_data[index_src[i]].index_add=index_src_add[i];
+      }
+
+    for (i=0;i<*length_dest;i++)
+      {
+	value_dest[i]=agg_data[index_dest[i]].value;
+	index_dest_add[i]=agg_data[index_dest[i]].index_add;
+      }
+
+  }
+
 
 
 
@@ -424,6 +455,78 @@ extern "C"
 
   }
 
+  void my_merge_int_forceGL(const int *index_dest,
+			    int *value_dest,
+			    const int *index_src,
+			    const int *value_src,
+			    const int *length_dest,
+			    const int *length_src,
+			    const double *Smoothing,
+			    const double *forceGL1Value,
+			    const double *forceGL2Value,
+			    const double *NormalRefValue,
+			    const double *ampliconValue,
+			    const double *deletionValue)
+  {
+    int i;
+    int *ZoneGNL=value_dest;
+    const double forceGL1=*forceGL1Value;
+    const double forceGL2=*forceGL2Value;
+    const double NormalRef=*NormalRefValue;
+    const double amplicon=*ampliconValue;
+    const double deletion=*deletionValue;
+    double Smoothing_moins_NormalRef;
+
+    map<int, int > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i=0;i<*length_src;i++)
+      {
+	agg_data[index_src[i]]=value_src[i];
+      }
+
+    for (i=0;i<*length_dest;i++)
+      {
+	value_dest[i]=agg_data[index_dest[i]];
+
+	if(NormalRef!=0)
+	  {
+	    Smoothing_moins_NormalRef=Smoothing[i]-NormalRef;
+	  }
+	else
+	  {
+	    Smoothing_moins_NormalRef=Smoothing[i];
+	  }
+
+	// Gain et Amplicon
+	if(Smoothing_moins_NormalRef>=forceGL2)
+	  {
+	    if(Smoothing_moins_NormalRef>=amplicon)
+	      {
+		ZoneGNL[i]=2;
+	      }
+	    else
+	      {
+		ZoneGNL[i]=1;
+	      }
+	  }
+	else
+	  {
+	    if(Smoothing_moins_NormalRef<=forceGL1)
+	      {
+		if(Smoothing_moins_NormalRef<=deletion)
+		  {
+		    ZoneGNL[i]=-10;
+		  }
+		else
+		  {
+		    ZoneGNL[i]=-1;
+		  }
+	      }
+	  }
+      }
+
+  }
 
 }
 

@@ -31,6 +31,7 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
         BPlag <- profileCGH$profileValues[indexBPplusun,c("Smoothing","ZoneGNL")]
         names(BPlag) <- c("Next","ZoneGNLnext")
         BP <- data.frame(BP,BPlag)
+        ### cette jointure ne prend pas trop de temps (0.02s)
         BP <- merge(BP, profileCGH$SigmaC)
         BP$Gap <- abs(BP$Smoothing-BP$Next)
         BP$Weight <- BP$Gap

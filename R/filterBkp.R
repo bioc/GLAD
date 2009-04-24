@@ -238,32 +238,39 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
             lengthDest <- length(profileCGH$profileValues$ZoneGen)
             lengthSrc <- length(MedianCluster$ZoneGen)
-            myZoneGNL <- .C("my_merge_int",
+            myZoneGNL <- .C("my_merge_int_forceGL",
                             as.integer(profileCGH$profileValues$ZoneGen),
                             ZoneGNL=integer(lengthDest),
                             as.integer(MedianCluster$ZoneGen),
                             as.integer(MedianCluster$ZoneGNL),
                             as.integer(lengthDest),
                             as.integer(lengthSrc),
+                            as.double(profileCGH$profileValues$Smoothing),
+                            as.double(profileCGH$forceGL[1]),
+                            as.double(profileCGH$forceGL[2]),
+                            as.double(profileCGH$NormalRef),
+                            as.double(profileCGH$amplicon),
+                            as.double(profileCGH$deletion),                                                                                    
                             PACKAGE="GLAD")
 
             profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
 
 
+            
 ###             t2 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, MedianCluster[,c("ZoneGen","ZoneGNL")], all=TRUE, by="ZoneGen"))
 
 
-### on force les gains et les pertes pour certaines valeur de smoothing
-            indexForceGain <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$forceGL[2])
-            profileCGH$profileValues$ZoneGNL[indexForceGain] <- 1
-            indexForceLost <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$forceGL[1])
-            profileCGH$profileValues$ZoneGNL[indexForceLost] <- -1
+## ### on force les gains et les pertes pour certaines valeur de smoothing
+##             indexForceGain <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$forceGL[2])
+##             profileCGH$profileValues$ZoneGNL[indexForceGain] <- 1
+##             indexForceLost <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$forceGL[1])
+##             profileCGH$profileValues$ZoneGNL[indexForceLost] <- -1
 
-### Amplicon et deletion
-            indexAmp <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$amplicon)
-            profileCGH$profileValues$ZoneGNL[indexAmp] <- 2
-            indexDel <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$deletion)
-            profileCGH$profileValues$ZoneGNL[indexDel] <- -10
+## ### Amplicon et deletion
+##             indexAmp <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) >= profileCGH$amplicon)
+##             profileCGH$profileValues$ZoneGNL[indexAmp] <- 2
+##             indexDel <- which((profileCGH$profileValues$Smoothing-profileCGH$NormalRef) <= profileCGH$deletion)
+##             profileCGH$profileValues$ZoneGNL[indexDel] <- -10
             
 
 

@@ -441,13 +441,19 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     lengthDest <- length(profileCGH$profileValues$ZoneGen)
     lengthSrc <- length(MedianCluster$ZoneGen)
-    myZoneGNL <- .C("my_merge_int",
+    myZoneGNL <- .C("my_merge_int_forceGL",
                     as.integer(profileCGH$profileValues$ZoneGen),
                     ZoneGNL=integer(lengthDest),
                     as.integer(MedianCluster$ZoneGen),
                     as.integer(MedianCluster$ZoneGNL),
                     as.integer(lengthDest),
                     as.integer(lengthSrc),
+                    as.double(profileCGH$profileValues$Smoothing),
+                    as.double(forceGL[1]),
+                    as.double(forceGL[2]),
+                    as.double(NormalRef),
+                    as.double(amplicon),
+                    as.double(deletion),                                                                                    
                     PACKAGE="GLAD")
 
     profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
@@ -456,17 +462,17 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ##     print(t1)
 
     
-### on force les gains et les pertes pour certaines valeur de smoothing
-    indexForceGain <- which(profileCGH$profileValues$Smoothing - NormalRef>=forceGL[2])
-    profileCGH$profileValues$ZoneGNL[indexForceGain] <- 1
-    indexForceLost <- which(profileCGH$profileValues$Smoothing - NormalRef<=forceGL[1])
-    profileCGH$profileValues$ZoneGNL[indexForceLost] <- -1
+## ### on force les gains et les pertes pour certaines valeur de smoothing
+##     indexForceGain <- which(profileCGH$profileValues$Smoothing - NormalRef>=forceGL[2])
+##     profileCGH$profileValues$ZoneGNL[indexForceGain] <- 1
+##     indexForceLost <- which(profileCGH$profileValues$Smoothing - NormalRef<=forceGL[1])
+##     profileCGH$profileValues$ZoneGNL[indexForceLost] <- -1
 
-### Amplicon et deletion
-    indexAmp <- which(profileCGH$profileValues$Smoothing - NormalRef>= amplicon)
-    profileCGH$profileValues$ZoneGNL[indexAmp] <- 2
-    indexDel <- which(profileCGH$profileValues$Smoothing - NormalRef<= deletion)
-    profileCGH$profileValues$ZoneGNL[indexDel] <- -10
+## ### Amplicon et deletion
+##     indexAmp <- which(profileCGH$profileValues$Smoothing - NormalRef>= amplicon)
+##     profileCGH$profileValues$ZoneGNL[indexAmp] <- 2
+##     indexDel <- which(profileCGH$profileValues$Smoothing - NormalRef<= deletion)
+##     profileCGH$profileValues$ZoneGNL[indexDel] <- -10
     
     if(profilage)Rprof(NULL)
 
@@ -654,8 +660,20 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     if (verbose) print("daglad - step OutliersGNL")
 
     if(profilage) Rprof("/tmp/Step13OutliersGNL.dat")                                                                               
+
     profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion, assignGNLOut=assignGNLOut)
 
+
+##     Outverif <- profileCGH$profileValue$OutliersTot
+##     GNLverif <- profileCGH$profileValue$ZoneGNL
+
+##     t1 <- system.time(profileCGH <- OutliersGNL2(profileCGH, alpha=alpha, sigma=Sigma, NormalRef=NormalRef, amplicon=amplicon, deletion=deletion, assignGNLOut=assignGNLOut))
+##     print(t1)
+
+##     print("verif")
+##     print(which(Outverif!=profileCGH$profileValue$OutliersTot))
+##     print(which(profileCGH$profileValue$ZoneGNL!=GNLverif))
+##     print("end verif")
 
     profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("NormalRange","ZoneGen"))]
 ##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"NormalRange"))

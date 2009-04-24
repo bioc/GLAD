@@ -98,6 +98,9 @@ testBkpToMove.profileCGH <- function(profileCGH, ...)
                     as.double(profileCGH$BkpInfo$NextLogRatio),
                     as.double(profileCGH$BkpInfo$Smoothing),
                     as.double(profileCGH$BkpInfo$SmoothingNext),
+                    as.integer(profileCGH$BkpInfo$PosOrder),
+                    as.integer(profileCGH$BkpInfo$MaxPosOrder),
+                    as.integer(profileCGH$BkpInfo$MinPosOrder),                                                            
                     MoveBkp=integer(NbBkp),
                     as.integer(NbBkp),
                     PACKAGE="GLAD")
@@ -108,15 +111,15 @@ testBkpToMove.profileCGH <- function(profileCGH, ...)
 ##     print(which(profileCGH$BkpInfo$MoveBkp!=myMoveBkp$MoveBkp))
 ##     print("end verif")
     
-    profileCGH$BkpInfo$NextPosOrder <- profileCGH$BkpInfo$PosOrder+1
-    profileCGH$BkpInfo$BeforePosOrder <- profileCGH$BkpInfo$PosOrder-1
-### on vérifie qu'on ne déplace pas des Bkp au niveau des extrémités
-    indexRight <- which(profileCGH$BkpInfo$MoveBkp==1 & profileCGH$BkpInfo$NextPosOrder==profileCGH$BkpInfo$MaxPosOrder)
-    profileCGH$BkpInfo$MoveBkp[indexRight] <- 0
-    indexLeft <- which(profileCGH$BkpInfo$MoveBkp==-1 & profileCGH$BkpInfo$BeforePosOrder==profileCGH$BkpInfo$MinPosOrder)
-    profileCGH$BkpInfo$MoveBkp[indexLeft] <- 0
+##     profileCGH$BkpInfo$NextPosOrder <- profileCGH$BkpInfo$PosOrder+1
+##     profileCGH$BkpInfo$BeforePosOrder <- profileCGH$BkpInfo$PosOrder-1
+## ### on vérifie qu'on ne déplace pas des Bkp au niveau des extrémités
+##     indexRight <- which(profileCGH$BkpInfo$MoveBkp==1 & profileCGH$BkpInfo$NextPosOrder==profileCGH$BkpInfo$MaxPosOrder)
+##     profileCGH$BkpInfo$MoveBkp[indexRight] <- 0
+##     indexLeft <- which(profileCGH$BkpInfo$MoveBkp==-1 & profileCGH$BkpInfo$BeforePosOrder==profileCGH$BkpInfo$MinPosOrder)
+##     profileCGH$BkpInfo$MoveBkp[indexLeft] <- 0
 
-    profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("NextPosOrder","BeforePosOrder"))]
+##     profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("NextPosOrder","BeforePosOrder"))]
 ##     profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"NextPosOrder"))
 ##     profileCGH$BkpInfo <- subset(profileCGH$BkpInfo, select=setdiff(names(profileCGH$BkpInfo),"BeforePosOrder"))
     return(profileCGH)
