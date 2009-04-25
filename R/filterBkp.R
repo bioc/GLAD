@@ -281,7 +281,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             
 
             class(profileCGH) <- "profileCGH"
-
             profileCGH$BkpInfo <- BkpInfo(profileCGH)
             
 ### Mise à jour du GNL des Outliers
@@ -307,4 +306,16 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
     
   }
 
+## Cette fonction n'est pas plus rapide que le order de R
+## myOrder <- function(x)
+##   {
+##     l <- length(x)
+##     res <- .C("my_order_int",
+##               sort=as.integer(x),
+##               order=1:l,
+##               as.integer(0),
+##               as.integer(l-1),              
+##               PACKAGE="GLAD")
 
+##     return(res)
+##   }

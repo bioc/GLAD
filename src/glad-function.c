@@ -1049,3 +1049,108 @@ void OutliersGNL(int * OutliersTot,
 
 }
 
+
+/*********************/
+/* fonctions de tri  */
+/*********************/
+
+void my_order_int(int* array, int *order, const int *leftValue, const int *rightValue)
+{
+  int left=*leftValue;
+  int right=*rightValue;
+
+  quicksort_int(array, order, left, right);
+
+}
+
+//Quicksort the array
+void quicksort_int(int* array, int *order, int left, const int right)
+{
+  if(left >= right)
+    return;
+ 
+  int index = partition(array, order, left, right);
+  quicksort_int(array, order, left, index - 1);
+  quicksort_int(array, order, index + 1, right);
+}
+ 
+//Partition the array into two halves and return the
+//index about which the array is partitioned
+int partition(int* array, int *order, int left, int right)
+{
+  //Makes the leftmost element a good pivot,
+  //specifically the median of medians
+  findMedianOfMedians(array, order, left, right);
+  int pivotIndex = left, pivotValue = array[pivotIndex], index = left, i;
+ 
+  swap(array, order, pivotIndex, right);
+  for(i = left; i < right; i++)
+    {
+      if(array[i] < pivotValue)
+        {
+	  swap(array, order, i, index);
+	  index += 1;
+        }
+    }
+  swap(array, order, right, index);
+ 
+  return index;
+}
+ 
+//Computes the median of each group of 5 elements and stores
+//it as the first element of the group. Recursively does this
+//till there is only one group and hence only one Median
+int findMedianOfMedians(int* array, int *order, int left, int right)
+{
+  if(left == right)
+    return array[left];
+ 
+  int i, shift = 1;
+  while(shift <= (right - left))
+    {
+      for(i = left; i <= right; i+=shift*5)
+        {
+	  int endIndex = (i + shift*5 - 1 < right) ? i + shift*5 - 1 : right;
+	  int medianIndex = findMedianIndex(array, order, i, endIndex, shift);
+ 
+	  swap(array, order, i, medianIndex);
+        }
+      shift *= 5;
+    }
+ 
+  return array[left];
+}
+ 
+//Find the index of the Median of the elements
+//of array that occur at every "shift" positions.
+int findMedianIndex(int* array, int *order, int left, int right, int shift)
+{
+  int i, groups = (right - left)/shift + 1, k = left + groups/2*shift;
+  for(i = left; i <= k; i+= shift)
+    {
+      int minIndex = i, minValue = array[minIndex], j;
+      for(j = i; j <= right; j+=shift)
+	if(array[j] < minValue)
+	  {
+	    minIndex = j;
+	    minValue = array[minIndex];
+	  }
+      swap(array, order, i, minIndex);
+    }
+ 
+  return k;
+}
+ 
+//Swap integer values by array indexes
+void swap(int *array, int *order, int a, int b)
+{
+  int tmp  = array[a];
+  int tmp_order=order[a];
+
+  array[a] = array[b];
+  array[b] = tmp;
+
+  order[a] = order[b];
+  order[b] = tmp_order;
+}
+
