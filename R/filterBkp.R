@@ -11,6 +11,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
     if (verbose) print("filterBkp: starting function")            
     if (is.data.frame(profileCGH$BkpInfo))
       {
+        
         profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
         RecomputeGNL <- FALSE
 
@@ -306,7 +307,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
     
   }
 
-## Cette fonction n'est pas plus rapide que le order de R
+### Cette fonction n'est pas plus rapide que le order de R
 ## myOrder <- function(x)
 ##   {
 ##     l <- length(x)

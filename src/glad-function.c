@@ -1,5 +1,4 @@
 /*****************************************************************************/
-/*                                                                           */
 /* Copyright (C) 2004 Institut Curie                                         */
 /* Author(s): Philippe Hupé (Institut Curie) 2004                            */
 /* Contact: bioinfo-staff@curie.fr                                           */
