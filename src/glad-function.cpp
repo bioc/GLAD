@@ -252,6 +252,7 @@ extern "C"
 	       int *nbregion,
 	       int *regionChr,
 	       int *rupture,
+	       int *bkp_detected,
 	       const int *l)
   {
 
@@ -338,6 +339,7 @@ extern "C"
 		    *nbregion=*nbregion+1;
 		    regionChr[j]=*nbregion;
 		    rupture[j]=1;
+		    *bkp_detected=1;
 		  }
 	      }
 

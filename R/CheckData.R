@@ -32,5 +32,8 @@ CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, smo
               }
           }
       }
+
+    if(!is.numeric(profileCGH$profileValues$Chromosome))
+      stop("Error: profileCGH$profileValues$Chromosome must be numeric")
     
   }

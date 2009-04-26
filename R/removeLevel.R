@@ -35,7 +35,6 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
     profileChr$profileValues$Region <- profileChr$profileValues$Level
 
 
-
     sigma <- profileChr$findClusterSigma
 
 

@@ -66,6 +66,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
     ChrIndice <- split(indice,profileCGH$profileValues$Chromosome)
     ChrName <- names(ChrIndice)
+    print(ChrName)
     if (is.numeric(profileCGH$profileValues$Chromosome[1]))
       {
         labelChr <- as.numeric(ChrName)
@@ -110,6 +111,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
     FieldOrder <- names(profileCGH$profileValues)
 
+    profileCGH$BkpDetected <- data.frame(Chromosome=as.integer(labelChr),BkpDetected=0)
     IQRvalue <- IQRChr <- NULL
     for (i in 1:NbChr)
       {
@@ -346,9 +348,13 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                          nbregion=as.integer(nbregion),
                          regionChr=as.integer(c(nbregion,rep(0,intl-1))),
                          rupture=as.integer(rep(0,intl)),
+                         BkpDetected=integer(1),
                          as.integer(intl),
                          PACKAGE="GLAD")
 
+            print(awsBkp$BkpDetected)
+
+            profileCGH$BkpDetected$BkpDetected[i] <- awsBkp$BkpDetected
             
             subsetdata$Breakpoints <- c(awsBkp$rupture[2:intl],0)
 ##             subsetdata$Region <- awsBkp$regionChr
