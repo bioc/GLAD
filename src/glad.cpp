@@ -80,14 +80,14 @@ struct agg
 
 extern "C" 
 {
-  void detectOutliers(double *LogRatio,
-		      int *Region,
+  void detectOutliers(const double *LogRatio,
+		      const int *Region,
 		      int *OutliersAws,
 		      int *OutliersMad,
 		      int *OutliersTot,
-		      int *msize,
-		      double *alpha,
-		      int *l)
+		      const int *msize,
+		      const double *alpha,
+		      const int *l)
   {
     int i;    
     const int vsize=*l;
@@ -168,18 +168,18 @@ extern "C"
 
 extern "C"
 {
-  void loopRemove(double *LogRatio,
+  void loopRemove(const double *LogRatio,
 		  int *Region,
 		  int *OutliersAws,
 		  int *OutliersMad,
 		  int *OutliersTot,
 		  int *Breakpoints,
-		  int *msize,
-		  double *alpha,
-		  double *lambda,
-		  double *d,
-		  double *sigma,
-		  int *l)
+		  const int *msize,
+		  const double *alpha,
+		  const double *lambda,
+		  const double *d,
+		  const double *sigma,
+		  const int *l)
   {
     const int nb=*l;
     int nb_loop=0;
@@ -334,16 +334,15 @@ extern "C"
 	  }
       }
   }
-}
 
 
 
-extern "C"
-{
-  void putLevel(double *Smoothing,
+
+
+  void putLevel(const double *Smoothing,
 		int *Level,
 		int *nblevel,
-		int *l)
+		const int *l)
   {
     int i;
     const int nb=*l;
@@ -379,12 +378,12 @@ extern "C"
 
   }
 
-  void my_merge(int *index_dest,
+  void my_merge(const int *index_dest,
 		double *value_dest,
-		int *index_src,
-		double *value_src,
-		int *length_dest,
-		int *length_src)
+		const int *index_src,
+		const double *value_src,
+		const int *length_dest,
+		const int *length_src)
   {
     int i;
     map<int, double > agg_data;
@@ -402,14 +401,14 @@ extern "C"
 
   }
 
-  void my_merge_medianlevel(int *index_dest,
+  void my_merge_medianlevel(const int *index_dest,
 			    int *index_dest_add,
 			    double *value_dest,
-			    int *index_src,
-			    int *index_src_add,
-			    double *value_src,
-			    int *length_dest,
-			    int *length_src)
+			    const int *index_src,
+			    const int *index_src_add,
+			    const double *value_src,
+			    const int *length_dest,
+			    const int *length_src)
   {
     int i;
     map<int, paire_double > agg_data;
@@ -432,12 +431,12 @@ extern "C"
 
 
 
-  void my_merge_int(int *index_dest,
+  void my_merge_int(const int *index_dest,
 		    int *value_dest,
-		    int *index_src,
-		    int *value_src,
-		    int *length_dest,
-		    int *length_src)
+		    const int *index_src,
+		    const int *value_src,
+		    const int *length_dest,
+		    const int *length_src)
   {
     int i;
     map<int, int > agg_data;
@@ -528,169 +527,171 @@ extern "C"
 
   }
 
-}
-
-
-/////////////////////////////////////////////////////////////
-//
-//   Fonctions statistiques
-//
-//////////////////////////////////////////////////////////////
-double median_vector_double(vector<double> vec)
-{
-
-  sort(vec.begin(),vec.end());
-  if(vec.size()%2!=0)
-    {
-      return(*(vec.begin() + ((vec.size()-1))*0.5));
-    }
-
-  else
-    {
-      return((*(vec.begin() + ((vec.size()))*0.5-1) + *(vec.begin() + ((vec.size()))*0.5))*0.5);
-    }
-
-}
-
-double mean_vector_double(vector<double> vec)
-{
-  return(accumulate(vec.begin(),vec.end(),0.0)/vec.size());
-
-}
-
-double mad_vector_double(vector<double> vec)
-{
-  double median=0;
-  int i;
-  const double constant = 1.4826;
-  const int vsize=vec.size();
-  vector<double> vaux(vsize);
-  median=median_vector_double(vec);
-
-
-  for (i=0;i<vsize;i++)
-    {
-      vaux[i]=fabs(vec[i]-median);
-    }
-
-  return(constant*median_vector_double(vaux));
-
-
-}
-
-double var_vector_double(vector<double> vec, int unbiased)
-{
-  double var=0;
-  double aux;
-  double mean;
-  int i;
-  const int vsize=vec.size();
-  vector<double> vaux(vsize);
-  mean=mean_vector_double(vec);
-
-  if (vsize==1)
-    return(0);
-
-  for (i=0;i<vsize;i++)
-    {
-      aux=vec[i]-mean;
-      aux*=aux;
-      var+=aux;
-    }
-
-  if (unbiased==0)
-    return(var/(vsize-1));
-  else
-    return(var/vsize);
-
-
-}
 
 
 
-double computeLike(vector<struct agg> agg_region, double lambda, double sumkernelpen)
-{
-  vector<struct agg>::iterator it_agg = agg_region.begin();
-  vector<struct agg>::iterator it_agg_end = agg_region.end();
+  /////////////////////////////////////////////////////////////
+  //
+  //   Fonctions statistiques
+  //
+  //////////////////////////////////////////////////////////////
+  double median_vector_double(vector<double> vec)
+  {
 
-  double logsigma=0;
-  double nbdata=0;
-  while(it_agg != it_agg_end)
-    {
-      logsigma+=log((*it_agg).VarLike)*(*it_agg).Card;
-      nbdata+=(*it_agg).Card;
-      it_agg++;
-    }
-  nbdata=log(nbdata);
-  return(logsigma+lambda*sumkernelpen*nbdata);
-}
+    sort(vec.begin(),vec.end());
+    if(vec.size()%2!=0)
+      {
+	return(*(vec.begin() + ((vec.size()-1))*0.5));
+      }
+
+    else
+      {
+	return((*(vec.begin() + ((vec.size()))*0.5-1) + *(vec.begin() + ((vec.size()))*0.5))*0.5);
+      }
+
+  }
+
+  double mean_vector_double(vector<double> vec)
+  {
+    return(accumulate(vec.begin(),vec.end(),0.0)/vec.size());
+
+  }
+
+  double mad_vector_double(vector<double> vec)
+  {
+    double median=0;
+    int i;
+    const double constant = 1.4826;
+    const int vsize=vec.size();
+    vector<double> vaux(vsize);
+    median=median_vector_double(vec);
+
+
+    for (i=0;i<vsize;i++)
+      {
+	vaux[i]=fabs(vec[i]-median);
+      }
+
+    return(constant*median_vector_double(vaux));
+
+
+  }
+
+  double var_vector_double(vector<double> vec, int unbiased)
+  {
+    double var=0;
+    double aux;
+    double mean;
+    int i;
+    const int vsize=vec.size();
+    vector<double> vaux(vsize);
+    mean=mean_vector_double(vec);
+
+    if (vsize==1)
+      return(0);
+
+    for (i=0;i<vsize;i++)
+      {
+	aux=vec[i]-mean;
+	aux*=aux;
+	var+=aux;
+      }
+
+    if (unbiased==0)
+      return(var/(vsize-1));
+    else
+      return(var/vsize);
+
+
+  }
+
+
+
+  double computeLike(vector<struct agg> agg_region, double lambda, double sumkernelpen)
+  {
+    vector<struct agg>::iterator it_agg = agg_region.begin();
+    vector<struct agg>::iterator it_agg_end = agg_region.end();
+
+    double logsigma=0;
+    double nbdata=0;
+    while(it_agg != it_agg_end)
+      {
+	logsigma+=log((*it_agg).VarLike)*(*it_agg).Card;
+	nbdata+=(*it_agg).Card;
+	it_agg++;
+      }
+    nbdata=log(nbdata);
+    return(logsigma+lambda*sumkernelpen*nbdata);
+  }
 
 
         
-
-double kernelpen(double x, double d)
-{
-  double k;
-  if (x>=d)
-    return(0);
-  else
-    {
-      k=x/d;
-      k=k*k*k;
-      k=1-k;
-      k=k*k*k;
-      return(k);
-    }
-}
-
+  double kernelpen(double x, const double d)
+  {
+    double k;
+    if (x>=d)
+      return(0);
+    else
+      {
+	k=x/d;
+	k=k*k*k;
+	k=1-k;
+	k=k*k*k;
+	return(k);
+      }
+  }
 
 
-double computeSumKernelPen(vector<struct agg> agg_region, double sigma, double d)
-{
-  vector<struct agg>::const_iterator it_agg_b = agg_region.begin();
-  vector<struct agg>::const_iterator it_agg_n = agg_region.begin();
-  vector<struct agg>::const_iterator it_agg_e = agg_region.end();
-  double diff=0;
-  double sum=0;
-  double const inv_sigma=1/sigma;
-  ++it_agg_n;
-  while(it_agg_n != it_agg_e)
-    {
-      diff=(*it_agg_n).Mean - (*it_agg_b).Mean;
-      diff*=inv_sigma;
-      diff=fabs(diff);
-      sum+=kernelpen(diff,d);  
-      it_agg_b++;
-      ++it_agg_n;
-    }
 
-  return(sum);
+
+  double computeSumKernelPen(vector<struct agg> agg_region, double sigma, double d)
+  {
+    vector<struct agg>::const_iterator it_agg_b = agg_region.begin();
+    vector<struct agg>::const_iterator it_agg_n = agg_region.begin();
+    vector<struct agg>::const_iterator it_agg_e = agg_region.end();
+    double diff=0;
+    double sum=0;
+    double const inv_sigma=1/sigma;
+    ++it_agg_n;
+    while(it_agg_n != it_agg_e)
+      {
+	diff=(*it_agg_n).Mean - (*it_agg_b).Mean;
+	diff*=inv_sigma;
+	diff=fabs(diff);
+	sum+=kernelpen(diff,d);  
+	it_agg_b++;
+	++it_agg_n;
+      }
+
+    return(sum);
   
 
-}
+  }
 
 
 
-void printagg(vector<struct agg> agg_region)
-{
-  vector<struct agg>::const_iterator b=agg_region.begin();
-  vector<struct agg>::const_iterator e=agg_region.end();
+  void printagg(vector<struct agg> agg_region)
+  {
+    vector<struct agg>::const_iterator b=agg_region.begin();
+    vector<struct agg>::const_iterator e=agg_region.end();
 
 
-  while(b !=e)
-    {
-      cout << "\tMean=";
-      cout <<(*b).Mean;
-      cout <<"\tVar=";
-      cout <<(*b).Var;
-      cout <<"\tVarLike=";
-      cout <<(*b).VarLike;
-      cout <<"\tCard=";
-      cout <<(*b).Card;
-      cout <<"\tLabelRegion=";
-      cout << (*b).LabelRegion;
-      cout << " " << endl;
-      b++;
-    }
+    while(b !=e)
+      {
+	cout << "\tMean=";
+	cout <<(*b).Mean;
+	cout <<"\tVar=";
+	cout <<(*b).Var;
+	cout <<"\tVarLike=";
+	cout <<(*b).VarLike;
+	cout <<"\tCard=";
+	cout <<(*b).Card;
+	cout <<"\tLabelRegion=";
+	cout << (*b).LabelRegion;
+	cout << " " << endl;
+	b++;
+      }
+
+  }
 
 }

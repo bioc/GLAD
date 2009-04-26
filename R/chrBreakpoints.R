@@ -312,8 +312,10 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                                 as.integer(lengthSrc),
                                 PACKAGE="GLAD")
 
-            subsetdata$LevelNewOrder <- myMedianLevel$LevelNewOrder
-            subsetdata$MedianLevel <- myMedianLevel$MedianLevel
+##             subsetdata$LevelNewOrder <- myMedianLevel$LevelNewOrder
+##             subsetdata$MedianLevel <- myMedianLevel$MedianLevel
+
+            subsetdata[,c("LevelNewOrder","MedianLevel")] <- myMedianLevel[c("LevelNewOrder","MedianLevel")]
             
 ##             t1 <- system.time(subsetdata <- merge(subsetdata, MedianLevel, by="Level",all=TRUE))
 ##             print(t1)
@@ -349,9 +351,10 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
             
             subsetdata$Breakpoints <- c(awsBkp$rupture[2:intl],0)
-            subsetdata$Region <- awsBkp$regionChr
-            subsetdata$Level <- awsBkp$Level
-            subsetdata$OutliersAws <- awsBkp$OutliersAws
+##             subsetdata$Region <- awsBkp$regionChr
+##             subsetdata$Level <- awsBkp$Level
+##             subsetdata$OutliersAws <- awsBkp$OutliersAws
+            subsetdata[,c("Region","Level","OutliersAws")] <- awsBkp[c("regionChr","Level","OutliersAws")]
             nbregion <- awsBkp$nbregion                        
 
           }
@@ -368,7 +371,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
           }
 
 
-        
         profileCGH$profileValues[indexChr,] <- subsetdata[,FieldOrder]
         
         

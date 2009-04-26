@@ -521,16 +521,36 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
                                       PACKAGE="GLAD")
 
 
-            profileCGH$BkpInfo$BkpToDel <- deleteContiguousBkp$BkpToDel
-            profileCGH$BkpInfo$Gap <- deleteContiguousBkp$Gap
-            profileCGH$BkpInfo$LogRatio <- deleteContiguousBkp$LogRatio
-            profileCGH$BkpInfo$NextPosOrder <- deleteContiguousBkp$NextPosOrder
-            profileCGH$BkpInfo$PosOrder <- deleteContiguousBkp$PosOrder
-            profileCGH$BkpInfo$Side <- deleteContiguousBkp$Side
-            profileCGH$BkpInfo$Sigma <- deleteContiguousBkp$Sigma
-            profileCGH$BkpInfo$Smoothing <- deleteContiguousBkp$Smoothing
-            profileCGH$BkpInfo$SmoothingNext <- deleteContiguousBkp$SmoothingNext
-            profileCGH$BkpInfo$Weight <- deleteContiguousBkp$Weight
+##             profileCGH$BkpInfo$BkpToDel <- deleteContiguousBkp$BkpToDel
+##             profileCGH$BkpInfo$Gap <- deleteContiguousBkp$Gap
+##             profileCGH$BkpInfo$LogRatio <- deleteContiguousBkp$LogRatio
+##             profileCGH$BkpInfo$NextPosOrder <- deleteContiguousBkp$NextPosOrder
+##             profileCGH$BkpInfo$PosOrder <- deleteContiguousBkp$PosOrder
+##             profileCGH$BkpInfo$Side <- deleteContiguousBkp$Side
+##             profileCGH$BkpInfo$Sigma <- deleteContiguousBkp$Sigma
+##             profileCGH$BkpInfo$Smoothing <- deleteContiguousBkp$Smoothing
+##             profileCGH$BkpInfo$SmoothingNext <- deleteContiguousBkp$SmoothingNext
+##             profileCGH$BkpInfo$Weight <- deleteContiguousBkp$Weight
+
+            profileCGH$BkpInfo[,c("BkpToDel",
+                                  "Gap",
+                                  "LogRatio",
+                                  "NextPosOrder",
+                                  "PosOrder",
+                                  "Side",
+                                  "Sigma",
+                                  "Smoothing",
+                                  "SmoothingNext",
+                                  "Weight")] <- deleteContiguousBkp[c("BkpToDel",
+                                                                      "Gap",
+                                                                      "LogRatio",
+                                                                      "NextPosOrder",
+                                                                      "PosOrder",
+                                                                      "Side",
+                                                                      "Sigma",
+                                                                      "Smoothing",
+                                                                      "SmoothingNext",
+                                                                      "Weight")]
             
             RecomputeGNL <- deleteContiguousBkp$RecomputeGNL
 

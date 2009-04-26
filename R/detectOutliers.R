@@ -17,7 +17,6 @@ detectOutliers.profileChr <- function(profileChr, region="Region", msize=5, alph
 
     if (verbose) print("detectOutliers: starting function")
     if (msize<1) stop("msize must be greater or equal to 1")
-
     if (alpha>1 || alpha <0)stop("alpha must be setted between 0 and 1")
     
 
@@ -36,9 +35,11 @@ detectOutliers.profileChr <- function(profileChr, region="Region", msize=5, alph
               as.integer(l),
               PACKAGE="GLAD")
 
-    profileChr$profileValues$OutliersMad <- res$OutliersMad
-    profileChr$profileValues$OutliersAws <- res$OutliersAws
-    profileChr$profileValues$OutliersTot <- res$OutliersTot
+##     profileChr$profileValues$OutliersMad <- res$OutliersMad
+##     profileChr$profileValues$OutliersAws <- res$OutliersAws
+##     profileChr$profileValues$OutliersTot <- res$OutliersTot
+
+    profileChr$profileValues[,c("OutliersMad","OutliersAws","OutliersTot")] <- res[c("OutliersMad","OutliersAws","OutliersTot")]
 
     if(verbose) print("detectOutliers: ending function")
 

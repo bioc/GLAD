@@ -67,10 +67,12 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
                       PACKAGE="GLAD")
     
 
-    profileChr$profileValues$Region <- updateBkpRL$Region
-    profileChr$profileValues$Breakpoints <- updateBkpRL$Breakpoints
-    profileChr$profileValues$NextLogRatio <- updateBkpRL$NextLogRatio
-    profileChr$profileValues$OutliersAws <- updateBkpRL$OutliersAws
+##     profileChr$profileValues$Region <- updateBkpRL$Region
+##     profileChr$profileValues$Breakpoints <- updateBkpRL$Breakpoints
+##     profileChr$profileValues$NextLogRatio <- updateBkpRL$NextLogRatio
+##     profileChr$profileValues$OutliersAws <- updateBkpRL$OutliersAws
+
+    profileChr$profileValues[,c("Region","Breakpoints","NextLogRatio","OutliersAws")] <- updateBkpRL[c("Region","Breakpoints","NextLogRatio","OutliersAws")]
         
     
     profileChr$profileValues$Level <- profileChr$profileValues$Region

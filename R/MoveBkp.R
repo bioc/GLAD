@@ -68,14 +68,28 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                       as.integer(l),
                       PACKAGE="GLAD")
 
-            profileCGH$profileValues$Breakpoints <- res$Breakpoints
-            profileCGH$profileValues$OutliersTot <- res$OutliersTot
-            profileCGH$profileValues$OutliersAws <- res$OutliersAws
-            profileCGH$profileValues$OutliersMad <- res$OutliersMad
-            profileCGH$profileValues[,region] <- res$Level
-            profileCGH$profileValues$Smoothing <- res$Smoothing
-            profileCGH$profileValues$ZoneGNL <- res$ZoneGNL
+##             profileCGH$profileValues$Breakpoints <- res$Breakpoints
+##             profileCGH$profileValues$OutliersTot <- res$OutliersTot
+##             profileCGH$profileValues$OutliersAws <- res$OutliersAws
+##             profileCGH$profileValues$OutliersMad <- res$OutliersMad
+##             profileCGH$profileValues[,region] <- res$Level
+##             profileCGH$profileValues$Smoothing <- res$Smoothing
+##             profileCGH$profileValues$ZoneGNL <- res$ZoneGNL
+
             
+            profileCGH$profileValues[,c("Breakpoints",
+                                        "OutliersTot",
+                                        "OutliersAws",
+                                        "OutliersMad",
+                                        region,
+                                        "Smoothing",
+                                        "ZoneGNL")] <- res[c("Breakpoints",
+                                                             "OutliersTot",
+                                                             "OutliersAws",
+                                                             "OutliersMad",
+                                                             "Level",
+                                                             "Smoothing",
+                                                             "ZoneGNL")]
 
           }
 
