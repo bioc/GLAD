@@ -66,7 +66,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
     ChrIndice <- split(indice,profileCGH$profileValues$Chromosome)
     ChrName <- names(ChrIndice)
-    print(ChrName)
+###    print(ChrName)
     if (is.numeric(profileCGH$profileValues$Chromosome[1]))
       {
         labelChr <- as.numeric(ChrName)
@@ -352,7 +352,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                          as.integer(intl),
                          PACKAGE="GLAD")
 
-            print(awsBkp$BkpDetected)
+##            print(awsBkp$BkpDetected)
 
             profileCGH$BkpDetected$BkpDetected[i] <- awsBkp$BkpDetected
             
