@@ -93,7 +93,7 @@ To create those objects you can use the function \emph{as.profileCGH}.
 
 \section{Analysis of array CGH profile}
 
-Two functions are available: \emph{glad} and \emph{daglad}. The second one is an improvment of of first one which was originally describes in \cite{hupe04}. We recommand to use the \emph{daglad} function.
+Two functions are available: \emph{glad} and \emph{daglad}. The second one is an improvment of of first one which was originally describes in \cite{hupe04}. We recommand to use the \emph{daglad} function. For fast computation use the option \emph{smoothfunc=haarseg}.
 
 \subsection{Segmentation algorithms}
 
