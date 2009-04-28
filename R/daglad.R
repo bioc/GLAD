@@ -344,16 +344,17 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     if(profilage) Rprof(NULL)
     print("Optimization of the Breakpoints")
-
+    
     if(profilage) Rprof("/tmp/Step05BkpOptimization.dat")        
     for (i in 1:NbChr)
       {
+        BkpDetected <- profileCGH$BkpDetected$BkpDetected[which(profileCGH$BkpDetected$Chromosome==i)]
         indexChr <- ChrIndice[[i]]
         subset <- profileCGH$profileValues[indexChr,]	
         profileChr <- list(profileValues=subset)	
         class(profileChr) <- "profileChr"
-	profileChr$findClusterSigma <- profileCGH$SigmaC$Value[i]
-        profileChr <- removeLevel(profileChr, lambda=lambdabreak, param=param, alpha=alpha, msize=msize, verbose=verbose)
+        profileChr$findClusterSigma <- profileCGH$SigmaC$Value[i]
+        profileChr <- removeLevel(profileChr, lambda=lambdabreak, param=param, alpha=alpha, msize=msize, verbose=verbose, BkpDetected=BkpDetected)
         profileCGH$profileValues[indexChr,] <- profileChr$profileValues[,FieldOrder]
       }
 
