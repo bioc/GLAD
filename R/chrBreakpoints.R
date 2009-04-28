@@ -61,7 +61,8 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
 
     ### on ordonne par position et chromosome
-    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$Chromosome,profileCGH$profileValues$PosOrder),]
+    ### c'est déjà ordonné
+###    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$Chromosome,profileCGH$profileValues$PosOrder),]
     indice <- 1:length(profileCGH$profileValues[,1])
 
     ChrIndice <- split(indice,profileCGH$profileValues$Chromosome)
@@ -250,7 +251,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
                 if (smoothfunc=="haarseg")
                   {
-                    awsres <- HaarSeg(subsetdata$LogRatio, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)$Segmented
+                    awsres <- HaarSegGLAD(subsetdata$LogRatio, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)$Segmented
 
                     if (is.null(awsres)==FALSE)
                       {

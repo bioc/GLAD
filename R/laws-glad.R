@@ -51,27 +51,36 @@ lawsglad <- function(y,x=NULL,qlambda=NULL,eta=0.5,lkern="Triangle",model="Poiss
     #print(length(kernl))
 
     n <- length(y)
-    ai <- bi <- rep(0,n)
 
-    z <- .C("iawsuni",
-            as.double(y),
-            as.integer(n),
-            as.double(hinit),
-            bi=as.double(bi),
-            ai=as.double(ai),
-            as.double(kernl),PACKAGE="GLAD")[c("bi","ai")]
-    bi <- z$bi
-    ai <- z$ai
-#      print("après iawsuni in glad")
-#      print(ai)
-#      print(bi)
+##     z <- .C("iawsuni",
+##             as.double(y),
+##             as.integer(n),
+##             as.double(hinit),
+##             bi=double(n),
+##             ai=double(n),
+##             as.double(kernl),PACKAGE="GLAD")[c("bi","ai")]
 
-    theta <- ai/bi
-
-#    print("lamakt")
-#    print(lamakt)
+##     bi <- z$bi
+##     ai <- z$ai
+##     theta <- ai/bi
     
-    Gaussian <- .C("gawsuni",
+##     Gaussian <- .C("gawsuni",
+##                    as.double(y),
+##                    as.integer(n),
+##                    as.double(hinit),
+##                    as.double(hincr),
+##                    as.double(hmax),
+##                    as.double(lamakt),
+##                    as.double(eta),
+##                    theta=as.double(theta),
+##                    as.double(bi),
+##                    as.double(ai),
+##                    as.double(kernl),
+##                    as.double(kerns),
+##                    as.double(bi),
+##                    PACKAGE="GLAD")$theta
+
+    Gaussian <- .C("lawsglad",
                    as.double(y),
                    as.integer(n),
                    as.double(hinit),
@@ -79,14 +88,15 @@ lawsglad <- function(y,x=NULL,qlambda=NULL,eta=0.5,lkern="Triangle",model="Poiss
                    as.double(hmax),
                    as.double(lamakt),
                    as.double(eta),
-                   theta=as.double(theta),
-                   as.double(bi),
-                   as.double(ai),
+                   theta=double(n),
+                   double(n),
+                   double(n),
                    as.double(kernl),
                    as.double(kerns),
-                   as.double(bi),
+                   double(n),
                    PACKAGE="GLAD")$theta
 
+    
     return(Gaussian)
 
   }

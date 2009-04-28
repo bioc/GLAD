@@ -18,7 +18,8 @@ void iawsuni (double *y,
 	      double *hinit,
 	      double *bi,
 	      double *ai,
-	      double *kern)
+	      double *kern,
+	      double *theta)
 {
 
   int i,j;
@@ -59,6 +60,7 @@ void iawsuni (double *y,
       i_moins_un=i-1;
       ai[i_moins_un]=swjy;
       bi[i_moins_un]=swj;
+      theta[i_moins_un]=swjy/swj;
     }
 
 }   
@@ -190,3 +192,24 @@ void gawsuni(double *y,
 }
 
  
+
+void lawsglad(double *y,
+	     int *n,
+	     double *hinit,
+	     double *hincr,
+	     double *hmax,
+	     double *lamakt,
+	     double *eta,
+	     double *theta,
+	     double *bi,
+	     double *ai,
+	     double *kernl,
+	     double *kerns,
+	     double *biold)
+{
+
+  iawsuni(y, n, hinit, bi, ai, kernl, theta);
+
+  gawsuni(y, n, hinit, hincr, hmax, lamakt, eta, theta, bi, ai, kernl, kerns, biold);
+
+}

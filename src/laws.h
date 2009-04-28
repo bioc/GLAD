@@ -1,37 +1,10 @@
-/* int max0(int N1, int N2); */
-
-/* int min0(int N1, int N2); */
-
-
-/* void lawsuni(double *y, */
-/* 	     const int n, */
-/* 	     double inv_hakt, */
-/* 	     int ih, */
-/* 	     const double lamakt, */
-/* 	     double *theta, */
-/* 	     double *bi, */
-/* 	     double *ai, */
-/* 	     double *kernl, */
-/* 	     double *kerns); */
-
-
-
-/* struct param */
-/* { */
-/*   double *y; */
-/*   int n; */
-/*   double *kerns; */
-/*   double *kernl; */
-/*   double *ai; */
-/*   double *bi; */
-/*   double *theta; */
-/* }; */
-
-
-/* void lawsuni(struct param *par, */
-/* 	     double inv_hakt, */
-/* 	     int ih, */
-/* 	     const double inv_lamakt); */
+void iawsuni (double *y,
+              int *n,
+	      double *hinit,
+	      double *bi,
+	      double *ai,
+	      double *kern,
+	      double *theta);
 
 void lawsuni(double *y,
 	     const int n,
@@ -59,3 +32,4 @@ void gawsuni(double *y,
 	     double *kernl,
 	     double *kerns,
 	     double *biold);
+

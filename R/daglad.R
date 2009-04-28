@@ -73,6 +73,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     profileCGH$profileValues$NewPosOrder <- profileCGH$profileValues$PosOrder
     profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$Chromosome,profileCGH$profileValues$PosOrder),]
     profileCGH$profileValues$PosOrder <- 1:length(profileCGH$profileValues[,1])
+    
 
     if(profilage)Rprof(NULL)
 
@@ -283,7 +284,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         profileCGH$profileValues$ZoneGen <- profileCGH$profileValues$PosOrder
 
 
-        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
+###        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
 
 
         if (is.null(sigma))
@@ -364,7 +365,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     if(profilage) Rprof("/tmp/Step06DataPreparation.dat")        
 ### Ajout le 23062006
-    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
+###    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
 ##     profileCGH$profileValues$Level <- .C("makeRegion",
 ##                                          as.integer(profileCGH$profileValues$Level),
 ##                                          as.integer(profileCGH$profileValues$Chromosome),
@@ -659,6 +660,9 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 ##         t1 <- system.time(profileCGH$profileValues <- merge(profileCGH$profileValues, MedianCluster[,c("ZoneGen","ZoneGNL")], all=TRUE, by="ZoneGen"))
 ##         print(t1)
 
+
+        ### ici aussi on peut encore optimiser
+        
 ### on force les gains et les pertes pour certaines valeur de smoothing
         indexForceGain <- which(profileCGH$profileValues$Smoothing - NormalRef>=forceGL[2])
         profileCGH$profileValues$ZoneGNL[indexForceGain] <- 1
