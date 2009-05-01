@@ -1,5 +1,5 @@
 Package: GLAD
-Version: 2.2.2
+Version: 2.2.3
 Date: 2009-04-27
 Title: Gain and Loss Analysis of DNA
 Depends: R (>= 1.8.0)

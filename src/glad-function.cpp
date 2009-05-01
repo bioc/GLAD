@@ -785,27 +785,6 @@ extern "C"
   }
 
 
-  /*************************************/
-  /* fonctions utilisées dans Kernel.R  */
-  /*************************************/
-
-
-  /*   double kernelpen(double value, const double d) */
-  /*   { */
-  /*     double tricubic; */
-  /*     if (value>d) */
-  /*       return(0); */
-
-  /*     // index <- which(x<=param["d"]) */
-  /*     // k[index] <- (1-(x[index]/param["d"])^3)^3 */
-
-  /*     tricubic=value/d; */
-  /*     tricubic=tricubic*tricubic*tricubic; */
-  /*     tricubic=1-tricubic; */
-
-  /*     return(tricubic*tricubic*tricubic); */
-
-  /*   } */
 
 
   /*************************************/
@@ -1321,7 +1300,7 @@ extern "C"
   }
 
   void compute_NormalRange(const double Smoothing[],
-			   const double NormalRef[],
+			   const double *NormalRef,
 			   const int Level[],
 			   int NormalRange[],
 			   const double *deltaN,
@@ -1333,7 +1312,7 @@ extern "C"
 
     for (i = 0; i < nb; i++)
       {
-	if(fabs(Smoothing[i] - NormalRef[i]) <= *deltaN)
+	if(fabs(Smoothing[i] - *NormalRef) <= *deltaN)
 	  {
 	    NormalRange[i] = 0;
 	  }

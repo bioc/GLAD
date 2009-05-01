@@ -151,7 +151,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             ## on prend comme référence ceux qui sont compris entre certaines valeurs            
             NormalRange <- .C("compute_NormalRange",
                               as.double(profileCGH$profileValues$Smoothing),
-                              as.double(profileCGH$profileValues$NormalRef),
+                              as.double(profileCGH$NormalRef),
                               as.integer(profileCGH$profileValues$Level),
                               NormalRange=integer(l),
                               as.double(profileCGH$deltaN),
@@ -281,7 +281,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             ## on prend comme référence ceux qui sont compris entre certaines valeurs            
             NormalRange <- .C("compute_NormalRange",
                               as.double(profileCGH$profileValues$Smoothing),
-                              as.double(profileCGH$profileValues$NormalRef),
+                              as.double(profileCGH$NormalRef),
                               as.integer(profileCGH$profileValues$Level),
                               NormalRange=integer(l),
                               as.double(profileCGH$deltaN),
