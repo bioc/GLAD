@@ -538,15 +538,41 @@ extern "C"
   double median_vector_double(vector<double> vec)
   {
 
-    sort(vec.begin(),vec.end());
-    if(vec.size()%2!=0)
+
+    //    sort(vec.begin(),vec.end());
+
+    if(vec.size() % 2)
       {
-	return(*(vec.begin() + ((vec.size()-1))*0.5));
+	// on a un nombre impair d'éléments
+	size_t indice = (vec.size() - 1) / 2;
+
+	nth_element(vec.begin(),
+		    vec.begin() + indice, 
+		    vec.end());
+
+	return vec[indice];
       }
 
     else
       {
-	return((*(vec.begin() + ((vec.size()))*0.5-1) + *(vec.begin() + ((vec.size()))*0.5))*0.5);
+	// on a un nombre pair d'éléments
+	size_t indice = vec.size() / 2;
+	double value_right;
+	double value_left;
+
+	nth_element(vec.begin(),
+		    vec.begin() + indice - 1, 
+		    vec.end());
+
+	value_left = vec[indice - 1];
+
+	nth_element(vec.begin(),
+		    vec.begin() + indice, 
+		    vec.end());
+
+	value_right = vec[indice];
+
+	return (value_left + value_right) / 2 ;
       }
 
   }

@@ -1,6 +1,6 @@
-# Copyright (C) 2003 Institut Curie
-# Author(s): Philippe Hupé (Institut Curie) 2003
-# Contact: glad@curie.fr
+## Copyright (C) 2003 Institut Curie
+## Author(s): Philippe Hupé (Institut Curie) 2003
+## Contact: glad@curie.fr
 
 findCluster <- function(...)
   {
@@ -33,14 +33,11 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
     clusterRegion$VarLike[indexSingle] <- 1
     
     
-###    zone <- rep(1, length(profileChr$profileValues$PosOrder))
-
-
     if (length(clusterRegion[,1])==1) 	
       {	
         nbclasses <- 1
         profileChr$NbClusterOpt <- nbclasses
-###        profileChr$profileValues$zone <- zone
+
         if (genome==FALSE)
           {
             profileChr$profileValues$ZoneChr <- 1
@@ -74,8 +71,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
                      as.integer(lengthSrc),
                      PACKAGE="GLAD")
 
-###        profileChr$profileValues$zone <- myzone$zone
-
 
         if (genome==FALSE)
           {
@@ -88,8 +83,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
 
       }	
 
-    
-    
     if (verbose) print("findCluster: ending function")
     return(profileChr)
 

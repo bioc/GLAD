@@ -30,5 +30,27 @@ extern "C"
 		      const double *alpha,
 		      const int *l);
 
+  void my_merge(const int *index_dest,
+		double *value_dest,
+		const int *index_src,
+		const double *value_src,
+		const int *length_dest,
+		const int *length_src);
+
+  void my_merge_int_forceGL(const int *index_dest,
+			    int *value_dest,
+			    const int *index_src,
+			    const int *value_src,
+			    const int *length_dest,
+			    const int *length_src,
+			    const double *Smoothing,
+			    const double *forceGL1Value,
+			    const double *forceGL2Value,
+			    const double *NormalRefValue,
+			    const double *ampliconValue,
+			    const double *deletionValue);
+
+
+
 
 }

@@ -12,6 +12,8 @@
 #include <string.h>
 #include <math.h>
 
+#include <map>
+
 #include "glad-function.h"
 #include "glad.h"
 
@@ -26,7 +28,7 @@
 #define MAXDOUBLE DBL_MAX
 #endif
 
-
+using namespace std;
 
 extern "C"
 {
@@ -85,6 +87,7 @@ extern "C"
   void updateLevel (const int *Chromosome,
 		    const int *Breakpoints,
 		    int *Level,
+		    //		    int *Region,
 		    const int *PosOrder,
 		    double *NextLogRatio,
 		    const double *LogRatio,
@@ -104,6 +107,7 @@ extern "C"
 	    if (Breakpoints[pos_moins_un]!=1)
 	      {
 		Level[pos]=Level[pos_moins_un];
+		//		Region[pos]=Region[pos_moins_un];
 	      }
 	    if (Breakpoints[pos_moins_un]==1)
 	      {
@@ -149,34 +153,63 @@ extern "C"
   /* fonctions utilisées dans MoveBkp */
   /*************************************/
 
-  void updateOutliersMoveBkp (int *OutliersAws,
-			      int *OutliersTot,
-			      int *Level,
-			      int *Breakpoints,
-			      double *Smoothing,
-			      int *ZoneGNL,
-			      const int *l)
+  void MoveBkp_updateOutliers (int OutliersAws[],
+			       int OutliersTot[],
+			       int Level[],
+			       int Region[],
+			       int Breakpoints[],
+			       double Smoothing[],
+			       int *ZoneGNL,
+			       const int *l)
   {
   
     int pos;
     int pos_moins_un;
-    const int nb=*l-1;
+    int last_bkp_pos = -1;
+    const int nb = *l - 1;
 
-    for (pos=1;pos<nb;pos++)
+    for (pos = 1; pos < nb; pos++)
       {
-	pos_moins_un=pos-1;      
-	if (Level[pos_moins_un]==Level[pos+1] && Level[pos_moins_un]!=Level[pos])
+	pos_moins_un = pos-1;      
+	if (Level[pos_moins_un] == Level[pos+1] && 
+	    Level[pos_moins_un] != Level[pos])
 	  {
-	    Level[pos]=Level[pos_moins_un];
-	    Breakpoints[pos_moins_un]=0;
-	    Breakpoints[pos]=0;
-	    OutliersAws[pos]=1;
-	    ZoneGNL[pos]=ZoneGNL[pos_moins_un];
-	    Smoothing[pos]=Smoothing[pos_moins_un];
+	    Level[pos] = Level[pos_moins_un];
+	    Region[pos] = Region[pos_moins_un];
+	    Breakpoints[pos_moins_un] = 0;
+	    Breakpoints[pos] = 0;
+	    OutliersAws[pos] = 1;
+	    OutliersTot[pos] = 1;
+	    ZoneGNL[pos] = ZoneGNL[pos_moins_un];
+	    Smoothing[pos] = Smoothing[pos_moins_un];
 	  }
 
+	if(Breakpoints[pos] == 1)
+	  {
+	    if(pos_moins_un == last_bkp_pos)
+	      {
+		if(pos > 1)
+		  {
+		    if (Smoothing[pos] > Smoothing[pos_moins_un])
+		      {            
+			OutliersAws[pos] = 1;
+			OutliersTot[pos] = 1;
+			Level[pos] = Level[pos_moins_un];
+			Region[pos] = Region[pos_moins_un];
+		      }
+		    else
+		      {
+			OutliersAws[pos] = -1;
+			OutliersTot[pos] = -1;
+			Level[pos] = Level[pos_moins_un];
+			Region[pos] = Region[pos_moins_un];
+		      }
+		    Breakpoints[pos_moins_un] = 0;
+		  }
+	      }
+	    last_bkp_pos=pos;
+	  }
       }
-
   }
 
 
@@ -259,34 +292,37 @@ extern "C"
     int j;
     int j_moins_un;
     int j_plus_un;
-    const int nb=*l;
-    const int nb_moins_un=*l-1;
+    int last_bkp_pos = -1;
+    const int nb = *l;
+    const int nb_moins_un = *l - 1;
 
-    for (j=1;j<nb;j++)
+    for (j = 1; j < nb; j++)
       {              
-	j_moins_un=j-1;
-	j_plus_un=j+1;
+	j_moins_un = j - 1;
+	j_plus_un = j + 1;
 	/*Outliers detection*/
 
-	if (Smoothing[j]!=Smoothing[j_moins_un] && Smoothing[j_plus_un]!=Smoothing[j] && Smoothing[j_plus_un]==Smoothing[j_moins_un] && j<nb_moins_un)
+	if (Smoothing[j_moins_un] != Smoothing[j] && 
+	    Smoothing[j] != Smoothing[j_plus_un] &&
+	    Smoothing[j_moins_un] == Smoothing[j_plus_un] &&
+	    j < nb_moins_un)
 	  {
-	    if (OutliersAws[j_moins_un]==0)
+	    if (OutliersAws[j_moins_un] == 0)
 	      {
-		if (Smoothing[j]>Smoothing[j_plus_un])
+		if (Smoothing[j] > Smoothing[j_plus_un])
 		  {
-		    OutliersAws[j]=1;
-		    Level[j]=Level[j_moins_un];
+		    OutliersAws[j] = 1;
+		    Level[j] = Level[j_moins_un];
 		  }
 
 		else
 		  {
-		    OutliersAws[j]=-1;
-		    Level[j]=Level[j_moins_un];
+		    OutliersAws[j] = -1;
+		    Level[j] = Level[j_moins_un];
 		  }
 	      }
                   
-	    regionChr[j]=*nbregion; /*en entrée, on a region[j==0]=*nbregion*/
-	    rupture[j]=0;
+	    regionChr[j] = *nbregion; /*en entrée, on a region[j==0]=*nbregion*/
 	  }
               
 	/* not Outliers*/
@@ -296,63 +332,88 @@ extern "C"
             
 	else
 	  {
-	    if (Smoothing[j]!=Smoothing[j_moins_un] && OutliersAws[j_moins_un]==0)
+	    if (Smoothing[j_moins_un] != Smoothing[j] &&
+		OutliersAws[j_moins_un] == 0)
 	      {
-		if (j==1 || j==nb_moins_un)
+		if (j == 1 || j == nb_moins_un)
 		  {
-		    regionChr[j]=*nbregion;
-		    rupture[j]=0;
+		    regionChr[j] = *nbregion;
 
-		    if (j==1)
+		    if (j == 1)
 		      {
-			if (Smoothing[0]>Smoothing[1])
+			if (Smoothing[0] > Smoothing[1])
 			  {
-			    OutliersAws[0]=1;
-			    Level[0]=Level[1];
+			    OutliersAws[0] = 1;
+			    Level[0] = Level[1];
 			  }
 
 			else
 			  {
-			    OutliersAws[0]=-1;
-			    Level[0]=Level[1];
+			    OutliersAws[0] = -1;
+			    Level[0] = Level[1];
 			  }
 		      }
                           
 		    else
 		      {
-			if (Smoothing[j]>Smoothing[j_moins_un])
+			if (Smoothing[j] > Smoothing[j_moins_un])
 			  {                                  
-			    OutliersAws[j]=1;
-			    Level[j]=Level[j_moins_un];
+			    OutliersAws[j] = 1;
+			    Level[j] = Level[j_moins_un];
 			  }
 
 			else
 			  {
-			    OutliersAws[j]=-1;
-			    Level[j]=Level[j_moins_un];
+			    OutliersAws[j] = -1;
+			    Level[j] = Level[j_moins_un];
 			  }
 		      }
 		  }
                       
 		else
 		  {
-		    *nbregion=*nbregion+1;
-		    regionChr[j]=*nbregion;
-		    rupture[j]=1;
-		    *bkp_detected=1;
+		    if (last_bkp_pos == j_moins_un)
+		      {
+			if (Smoothing[j_moins_un] > Smoothing[j_moins_un -1])
+			  {                                  
+			    OutliersAws[j_moins_un] = 1;
+			  }
+			else
+			  {
+			    OutliersAws[j_moins_un] = -1;
+			  }
+
+			// on supprime le Bkp précédent
+			rupture[j_moins_un] = 0;
+
+			Level[j_moins_un] = Level[j_moins_un - 1];
+			regionChr[j_moins_un] = regionChr[j_moins_un - 1];
+
+
+			// on ajoute un Bkp
+			// il ne faut pas incrémenter *nbregion car cela aura déjà été fait
+			regionChr[j] = *nbregion;
+			rupture[j] = 1;
+			last_bkp_pos=j;
+			*bkp_detected = 1;
+		      }
+		    else
+		      {
+			*nbregion = *nbregion + 1;
+			regionChr[j] = *nbregion;
+			rupture[j] = 1;
+			last_bkp_pos=j;
+			*bkp_detected = 1;
+		      }
 		  }
 	      }
 
 	    else
 	      {
-		regionChr[j]=*nbregion;
-		rupture[j]=0;
+		regionChr[j] = *nbregion;
 	      }
 	  }
-
       }
-
-
   }
 
   
@@ -437,66 +498,67 @@ extern "C"
 
 
 
-  void loopMoveBkp(int *subBkpInfo_MoveBkp,
-		   int *subBkpInfo_PosOrder,
-		   int *CGH_Breakpoints,
-		   int *CGH_OutliersTot,
-		   int *CGH_OutliersAws,
-		   int *CGH_OutliersMad,
-		   int *CGH_Level,
-		   double *CGH_Smoothing,
-		   int *CGH_GNL,
-		   const int *l)
+  void MoveBkp_Delete_Bkp(const int subBkpInfo_MoveBkp[],
+			  const int subBkpInfo_PosOrder[],
+			  int Breakpoints[],
+			  int OutliersTot[],
+			  int OutliersAws[],
+			  int OutliersMad[],
+			  int Level[],
+			  int Region[],
+			  double Smoothing[],
+			  int GNL[],
+			  const int *l)
   {
 
     int i;
     int indexPos;
     int indexPosNext;
     int indexPosBefore;
-    const int nb=*l;
+    const int nb = *l;
 
-    for (i=0;i<nb;i++)
+    for (i = 0; i < nb; i++)
       {
-
-
-	if (subBkpInfo_MoveBkp[i]==1)
+	if (subBkpInfo_MoveBkp[i] == 1)
 	  {
 	    // déplacement à droite
-	    indexPos=subBkpInfo_PosOrder[i]-1;
-	    indexPosNext=indexPos+1;
-	    CGH_Breakpoints[indexPos]=0;
-	    CGH_Breakpoints[indexPosNext]=1;
-	    CGH_OutliersTot[indexPosNext]=0;
-	    CGH_OutliersAws[indexPosNext]=0;
-	    CGH_OutliersMad[indexPosNext]=0;
-	    CGH_OutliersTot[indexPos]=0;
-	    CGH_OutliersAws[indexPos]=0;
-	    CGH_OutliersMad[indexPos]=0;
-	    CGH_Level[indexPosNext]=CGH_Level[indexPos];
-	    CGH_Smoothing[indexPosNext]=CGH_Smoothing[indexPos];
-	    CGH_GNL[indexPosNext]=CGH_GNL[indexPos];
-   
+	    indexPos = subBkpInfo_PosOrder[i] - 1;
+	    indexPosNext = indexPos + 1;
+	    Breakpoints[indexPos] = 0;
+	    Breakpoints[indexPosNext] = 1;
+	    OutliersTot[indexPosNext] = 0;
+	    OutliersAws[indexPosNext] = 0;
+	    OutliersMad[indexPosNext] = 0;
+	    OutliersTot[indexPos] = 0;
+	    OutliersAws[indexPos] = 0;
+	    OutliersMad[indexPos] = 0;
+	    Level[indexPosNext] = Level[indexPos];
+	    Region[indexPosNext] = Region[indexPos];
+	    Smoothing[indexPosNext] = Smoothing[indexPos];
+	    GNL[indexPosNext] = GNL[indexPos];
 	  }
-	if (subBkpInfo_MoveBkp[i]==-1)
+	else
 	  {
-	    // déplacement à gauche
-	    indexPos=subBkpInfo_PosOrder[i]-1;
-	    indexPosBefore=indexPos-1;
-	    indexPosNext=indexPos+1;
-	    CGH_Breakpoints[indexPos]=0;
-	    CGH_Breakpoints[indexPosBefore]=1;
-	    CGH_OutliersTot[indexPosBefore]=0;
-	    CGH_OutliersAws[indexPosBefore]=0;
-	    CGH_OutliersMad[indexPosBefore]=0;
-	    CGH_OutliersTot[indexPos]=0;
-	    CGH_OutliersAws[indexPos]=0;
-	    CGH_OutliersMad[indexPos]=0;
-	    CGH_Level[indexPos]=CGH_Level[indexPosNext];
-	    CGH_Smoothing[indexPos]=CGH_Smoothing[indexPosNext];
-	    CGH_GNL[indexPos]=CGH_GNL[indexPosNext];
-                    
+	    if (subBkpInfo_MoveBkp[i] == -1)
+	      {
+		// déplacement à gauche
+		indexPos = subBkpInfo_PosOrder[i] - 1;
+		indexPosBefore = indexPos - 1;
+		indexPosNext = indexPos + 1;
+		Breakpoints[indexPos] = 0;
+		Breakpoints[indexPosBefore] = 1;
+		OutliersTot[indexPosBefore] = 0;
+		OutliersAws[indexPosBefore] = 0;
+		OutliersMad[indexPosBefore] = 0;
+		OutliersTot[indexPos] = 0;
+		OutliersAws[indexPos] = 0;
+		OutliersMad[indexPos] = 0;
+		Level[indexPos] = Level[indexPosNext];
+		Region[indexPosNext] = Region[indexPos];
+		Smoothing[indexPos] = Smoothing[indexPosNext];
+		GNL[indexPos] = GNL[indexPosNext];
+	      }
 	  }
-                
       }
   }
 
@@ -565,10 +627,10 @@ extern "C"
   }
 
 
-  void updateGNL(int *ZoneGNL,
-		 const double *Smoothing,
-		 const int *OutliersTot,
-		 const int *l)
+  void MoveBkp_updateGNL(int ZoneGNL[],
+			 const double Smoothing[],
+			 const int OutliersTot[],
+			 const int *l)
   {
     double *minG;
     double *maxL;
@@ -585,30 +647,30 @@ extern "C"
     rangeGainLoss(Smoothing, ZoneGNL, OutliersTot, minG, maxL, minAmp, maxDel, l);
 
 
-    for (i=0; i<nb;i++)
+    for (i = 0; i < nb; i++)
       {
-	ZoneGNL[i]=0;
+	ZoneGNL[i] = 0;
 
-	if (Smoothing[i]>=*minG || Smoothing[i]>=*minAmp)
+	if (Smoothing[i] >= *minG || Smoothing[i] >= *minAmp)
 	  {
-	    ZoneGNL[i]=1;
+	    ZoneGNL[i] = 1;
 	 
-	    if(Smoothing[i]>=*minAmp)
+	    if(Smoothing[i] >= *minAmp)
 	      {
-		ZoneGNL[i]=2;
+		ZoneGNL[i] = 2;
 	      }
 
 	  }
 
 	else
 	  {
-	    if (Smoothing[i]<=*maxL || Smoothing[i]<=*maxDel)
+	    if (Smoothing[i] <= *maxL || Smoothing[i] <= *maxDel)
 	      {
 		ZoneGNL[i]=-1;
 
-		if(Smoothing[i]<=*maxDel)
+		if(Smoothing[i] <= *maxDel)
 		  {
-		    ZoneGNL[i]=-10;
+		    ZoneGNL[i] = -10;
 		  }
 	      }
 	  }
@@ -959,7 +1021,7 @@ extern "C"
 	    if(LogRatio_moins_NormalRef>seuilsup)
 	      {
 		// On a un Amplicon
-		if(LogRatio_moins_NormalRef>amplicon)
+		if(LogRatio_moins_NormalRef >= amplicon)
 		  {
 		    ZoneGNL[i]=2;
 		  }
@@ -1079,7 +1141,6 @@ extern "C"
 		  }
 	      }
 	  }
-
       }
 
     if (maxLost>minGain)
@@ -1091,115 +1152,202 @@ extern "C"
       {
 	printf("In function OutliersGNL: Inconsistency for smoothing values vs. GNL status has been corrected)\n");
       }
-
-
   }
 
 
 
 
-  /*********************/
-  /* fonctions de tri  */
-  /*********************/
+  /********************************************************************/
+  /* fonction pour faire une aggregation avec le calcul de la médian  */
+  /********************************************************************/
 
-  void my_order_int(int* array, int *order, const int *leftValue, const int *rightValue)
+
+  void compute_median_smoothing(const double LogRatio[],
+				const int ByValue[],
+				double Smoothing[],
+				const int *l)
   {
-    int left=*leftValue;
-    int right=*rightValue;
+    int i,j;
+    const int nb=*l;
+    double *median_ByValue;
+    int *unique_ByValue;
+    int nb_unique_ByValue;
 
-    quicksort_int(array, order, left, right);
+    map<int, vector<double> > agg_LogRatio;
+    map<int, vector<double> >::iterator it_agg_LogRatio;
 
-  }
-
-  //Quicksort the array
-  void quicksort_int(int* array, int *order, int left, const int right)
-  {
-    if(left >= right)
-      return;
- 
-    int index = partition(array, order, left, right);
-    quicksort_int(array, order, left, index - 1);
-    quicksort_int(array, order, index + 1, right);
-  }
- 
-  //Partition the array into two halves and return the
-  //index about which the array is partitioned
-  int partition(int* array, int *order, int left, int right)
-  {
-    //Makes the leftmost element a good pivot,
-    //specifically the median of medians
-    findMedianOfMedians(array, order, left, right);
-    int pivotIndex = left, pivotValue = array[pivotIndex], index = left, i;
- 
-    swap(array, order, pivotIndex, right);
-    for(i = left; i < right; i++)
+    for(i = 0; i < nb; i++)
       {
-	if(array[i] < pivotValue)
+	agg_LogRatio[ByValue[i]].push_back(LogRatio[i]);
+      }
+
+
+    median_ByValue = (double *)malloc(agg_LogRatio.size() * sizeof(double));
+    unique_ByValue = (int *)malloc(agg_LogRatio.size() * sizeof(int));
+    it_agg_LogRatio=agg_LogRatio.begin();
+
+    for (j = 0; j < agg_LogRatio.size(); j++)
+      {
+	median_ByValue[j] = median_vector_double(it_agg_LogRatio->second);
+	unique_ByValue[j] = it_agg_LogRatio->first;
+
+	it_agg_LogRatio++;
+
+      }
+
+    nb_unique_ByValue = (int)agg_LogRatio.size();
+    my_merge(ByValue,
+	     Smoothing,
+	     unique_ByValue,
+	     median_ByValue,
+	     l,
+	     &nb_unique_ByValue);
+
+
+
+
+    free(median_ByValue);
+    free(unique_ByValue);
+  }
+
+  /**********************************************************/
+  /* fonction pour le calcul des clusters Loss/Normal/Gain  */
+  /**********************************************************/
+
+
+  void compute_cluster_LossNormalGain(// variables pour faire la jointure
+				      const int ZoneGen[],
+				      int value_dest[],
+				      const int *length_dest,
+				      const double Smoothing[],
+				      const double *forceGL1Value,
+				      const double *forceGL2Value,
+				      const double *NormalRefValue,
+				      const double *ampliconValue,
+				      const double *deletionValue,
+				      //variables pour calcul la médiane par cluster
+				      const double LogRatio[],
+				      const int NormalRange[])
+  {
+
+    int i,j;
+    int nb = *length_dest;
+    int NormalCluster;
+    int NormalCluster_not_detected = 1;
+
+    int *MedianCluster_ZoneGen;
+    int *MedianCluster_ZoneGNL;
+    double *MedianCluster_Median;
+    int nb_unique_ZoneGen;
+
+    double RefNorm;
+    vector<int>::iterator it_new_end_NormalCluster;
+
+
+    map<int, vector<double> > agg_LogRatio;
+    map<int, vector<double> >::iterator it_agg_LogRatio;
+
+
+    // On récupére les valeurs de LogRatio pour chaque ZoneGen
+    for (i = 0; i < nb; i++)
+      {
+	agg_LogRatio[ZoneGen[i]].push_back(LogRatio[i]);
+
+	// le cluster correspondant au normal est celui qui comprend
+	// le NormalRange 0
+	if(NormalRange[i] == 0 && NormalCluster_not_detected)
 	  {
-	    swap(array, order, i, index);
-	    index += 1;
+	    NormalCluster = ZoneGen[i];
+	    NormalCluster_not_detected = 0;
 	  }
       }
-    swap(array, order, right, index);
- 
-    return index;
-  }
- 
-  //Computes the median of each group of 5 elements and stores
-  //it as the first element of the group. Recursively does this
-  //till there is only one group and hence only one Median
-  int findMedianOfMedians(int* array, int *order, int left, int right)
-  {
-    if(left == right)
-      return array[left];
- 
-    int i, shift = 1;
-    while(shift <= (right - left))
+
+    // On calcule la médiane par ZoneGen
+    MedianCluster_Median = (double *)malloc(agg_LogRatio.size() * sizeof(double));
+    MedianCluster_ZoneGen = (int *)malloc(agg_LogRatio.size() * sizeof(int));
+    MedianCluster_ZoneGNL = (int *)malloc(agg_LogRatio.size() * sizeof(int));
+    it_agg_LogRatio=agg_LogRatio.begin();
+
+    for (j = 0; j < agg_LogRatio.size(); j++)
       {
-	for(i = left; i <= right; i+=shift*5)
+	MedianCluster_Median[j] = median_vector_double(it_agg_LogRatio->second);
+	MedianCluster_ZoneGen[j] = it_agg_LogRatio->first;
+
+	if(NormalCluster == it_agg_LogRatio->first)
 	  {
-	    int endIndex = (i + shift*5 - 1 < right) ? i + shift*5 - 1 : right;
-	    int medianIndex = findMedianIndex(array, order, i, endIndex, shift);
- 
-	    swap(array, order, i, medianIndex);
+	    RefNorm = MedianCluster_Median[j];
 	  }
-	shift *= 5;
+
+	it_agg_LogRatio++;
+
       }
- 
-    return array[left];
-  }
- 
-  //Find the index of the Median of the elements
-  //of array that occur at every "shift" positions.
-  int findMedianIndex(int* array, int *order, int left, int right, int shift)
-  {
-    int i, groups = (right - left)/shift + 1, k = left + groups/2*shift;
-    for(i = left; i <= k; i+= shift)
+
+    for (j = 0; j < agg_LogRatio.size(); j++)
       {
-	int minIndex = i, minValue = array[minIndex], j;
-	for(j = i; j <= right; j+=shift)
-	  if(array[j] < minValue)
-	    {
-	      minIndex = j;
-	      minValue = array[minIndex];
-	    }
-	swap(array, order, i, minIndex);
+	MedianCluster_ZoneGNL[j] = 0;
+
+	if(MedianCluster_Median[j] > RefNorm)
+	  {
+	    MedianCluster_ZoneGNL[j] = 1;
+	  }
+	else
+	  {
+	    if(MedianCluster_Median[j] < RefNorm)
+	      {
+		MedianCluster_ZoneGNL[j] = -1;
+	      }
+	  }
       }
- 
-    return k;
+
+    nb_unique_ZoneGen = (int)agg_LogRatio.size();
+    my_merge_int_forceGL(ZoneGen,
+			 value_dest,
+			 MedianCluster_ZoneGen,
+			 MedianCluster_ZoneGNL,
+			 length_dest,
+			 &nb_unique_ZoneGen,
+			 Smoothing,
+			 forceGL1Value,
+			 forceGL2Value,
+			 NormalRefValue,
+			 ampliconValue,
+			 deletionValue);
+
+
+    free(MedianCluster_ZoneGen);
+    free(MedianCluster_Median);
+    free(MedianCluster_ZoneGNL);
+
   }
- 
-  //Swap integer values by array indexes
-  void swap(int *array, int *order, int a, int b)
+
+  void compute_NormalRange(const double Smoothing[],
+			   const double NormalRef[],
+			   const int Level[],
+			   int NormalRange[],
+			   const double *deltaN,
+			   const int *l)
   {
-    int tmp  = array[a];
-    int tmp_order=order[a];
 
-    array[a] = array[b];
-    array[b] = tmp;
+    int i;
+    const int nb = *l;
 
-    order[a] = order[b];
-    order[b] = tmp_order;
+    for (i = 0; i < nb; i++)
+      {
+	if(fabs(Smoothing[i] - NormalRef[i]) <= *deltaN)
+	  {
+	    NormalRange[i] = 0;
+	  }
+	else
+	  {
+	    NormalRange[i] = Level[i];
+	  }
+      }
+
   }
 
 }
+
+
+
+
+
