@@ -7,6 +7,8 @@ extern "C"
 
   double median_vector_double(vector<double> vec);
 
+  double median_fabs_double(const double value[], const int l);
+
   double mean_vector_double(vector<double> vec);
 
   double mad_vector_double(vector<double> vec);
@@ -51,6 +53,35 @@ extern "C"
 			    const double *deletionValue);
 
 
+  void loopRemove(const double *LogRatio,
+		  int *Region,
+		  int *OutliersAws,
+		  int *OutliersMad,
+		  int *OutliersTot,
+		  int *Breakpoints,
+		  const int *msize,
+		  const double *alpha,
+		  const double *lambda,
+		  const double *d,
+		  const double *sigma,
+		  const int *l);
 
+  void loop_chromosome_removeLevel(const double LogRatio[],
+				   double NextLogRatio[],
+				   const int PosOrder[],
+				   int Level[],
+				   int OutliersAws[],
+				   int OutliersMad[],
+				   int OutliersTot[],
+				   int Breakpoints[],
+				   const int *msize,
+				   const double *alpha,
+				   const double *lambda,
+				   const double *d,
+				   const double sigma[],
+				   const int *NbChr,   // Nombre de chromosome à analyser
+				   const int sizeChr[], // taille de chaque chromosome
+				   const int startChr[], // position pour le début des valeurs de chaque chromosome
+				   const int *BkpDetected[]);
 
 }

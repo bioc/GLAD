@@ -34,6 +34,7 @@
 #endif
 
 #include "glad.h"
+#include "glad-function.h"
 
 using namespace std;
 
@@ -126,17 +127,17 @@ extern "C"
 	    it_index_end=it_s_r->second.index.end();
 	    while(it_index != it_index_end)
 	      {
-		if (*it_LogRatio>median+seuil)
+		if (*it_LogRatio > median + seuil)
 		  {
-		    OutliersMad[*it_index]=1;
-		    OutliersTot[*it_index]=1;
+		    OutliersMad[*it_index] = 1;
+		    OutliersTot[*it_index] = 1;
 		  }
 		else
 		  {
-		    if (*it_LogRatio<median-seuil)
+		    if (*it_LogRatio < median - seuil)
 		      {
-			OutliersMad[*it_index]=-1;
-			OutliersTot[*it_index]=-1;
+			OutliersMad[*it_index] = -1;
+			OutliersTot[*it_index] = -1;
 		      }
 		  }
 
@@ -632,6 +633,23 @@ extern "C"
   }
 
 
+  double median_fabs_double(const double value[], const int l)
+  {
+    int i;
+    vector<double> value_vector;
+
+    for (i = 0; i < l; i++)
+      {
+	value_vector.push_back(fabs(*value));
+	value++;
+      }
+
+    return median_vector_double(value_vector);
+
+
+  }
+
+
 
   double computeLike(vector<struct agg> agg_region, double lambda, double sumkernelpen)
   {
@@ -718,6 +736,154 @@ extern "C"
 	b++;
       }
 
+  }
+
+  /////////////////////////////////////////////////
+  // Fonction Optimisation du nombre de Breakpoints
+  ////////////////////////////////////////////////
+
+
+  void OptmisationBreakpointsStep(double Smoothing[],
+				  int NormalRange[],
+				  const double *NormalRef,
+				  const double *deltaN,
+				  // variable pour loop_chromosome_removeLevel
+				  const double LogRatio[],
+				  double NextLogRatio[],
+				  const int PosOrder[],
+				  int Level[],
+				  int OutliersAws[],
+				  int OutliersMad[],
+				  int OutliersTot[],
+				  int Breakpoints[],
+				  const int *msize,
+				  const double *alpha,
+				  const double *lambda,
+				  const double *d,
+				  const double sigma[],
+				  const int *NbChr,   // Nombre de chromosome à analyser
+				  const int sizeChr[], // taille de chaque chromosome
+				  const int startChr[], // position pour le début des valeurs de chaque chromosome
+				  const int *BkpDetected[],
+				  const int *l) // nombre total de sondes
+  {
+    loop_chromosome_removeLevel(LogRatio,
+				NextLogRatio,
+				PosOrder,
+				Level,
+				OutliersAws,
+				OutliersMad,
+				OutliersTot,
+				Breakpoints,
+				msize,
+				alpha,
+				lambda,
+				d,
+				sigma,
+				NbChr,   
+				sizeChr,
+				startChr,
+				BkpDetected);
+
+    // calcul de la smoothing line
+    compute_median_smoothing(LogRatio,
+			     Level,
+			     Smoothing,
+			     l);
+
+    
+    // on prend comme référence les LogRatios qui sont compris entre certaines + ou - deltaN
+    compute_NormalRange(Smoothing,
+			NormalRef,
+			Level,
+			NormalRange,
+			deltaN,
+			l);
+
+  
+  }
+
+  ///////////////////////
+  // Fonction removeLevel
+  ///////////////////////
+
+  void loop_chromosome_removeLevel(const double LogRatio[],
+				   double NextLogRatio[],
+				   const int PosOrder[],
+				   int Level[],
+				   int OutliersAws[],
+				   int OutliersMad[],
+				   int OutliersTot[],
+				   int Breakpoints[],
+				   const int *msize,
+				   const double *alpha,
+				   const double *lambda,
+				   const double *d,
+				   const double sigma[],
+				   const int *NbChr,   // Nombre de chromosome à analyser
+				   const int sizeChr[], // taille de chaque chromosome
+				   const int startChr[], // position pour le début des valeurs de chaque chromosome
+				   const int *BkpDetected[])
+
+
+  {
+
+    int i, j;
+    int start, size;
+
+
+
+    for(i = 0; i < *NbChr; i++)
+      {
+	start = startChr[i];
+	size = sizeChr[i];
+
+
+	if(!BkpDetected[i])
+	  {
+	    detectOutliers(&LogRatio[start],
+			   &Level[start],
+			   &OutliersAws[start],
+			   &OutliersMad[start],
+			   &OutliersTot[start],
+			   msize,
+			   alpha,
+			   &size);
+	  }
+	else
+	  {
+	    // Optimisation des Breakpoints
+	    loopRemove(&LogRatio[start],
+		       &Level[start],
+		       &OutliersAws[start],
+		       &OutliersMad[start],
+		       &OutliersTot[start],
+		       &Breakpoints[start],
+		       msize,
+		       alpha,
+		       lambda,
+		       d,
+		       &sigma[i],
+		       &size);
+
+	    updateBkpRL(&Level[start],
+			&OutliersAws[start],
+			&Breakpoints[start],
+			&PosOrder[start],
+			&NextLogRatio[start],
+			&LogRatio[start],
+			&size);
+
+	    detectOutliers(&LogRatio[start],
+			   &Level[start],
+			   &OutliersAws[start],
+			   &OutliersMad[start],
+			   &OutliersTot[start],
+			   msize,
+			   alpha,
+			   &size);
+	  }
+      }
   }
 
 }

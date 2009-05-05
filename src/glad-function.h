@@ -33,4 +33,27 @@ extern "C"
 		       double *Smoothing,
                        const int *l);
 
+  void updateBkpRL (int *Region,
+		    int *OutliersAws,
+		    int *Breakpoints,
+		    const int *PosOrder,
+		    double *NextLogRatio,
+		    const double *LogRatio,
+		    const int *l);
+
+  void compute_median_smoothing(const double LogRatio[],
+				const int ByValue[],
+				double Smoothing[],
+				const int *l);
+
+  void compute_NormalRange(const double Smoothing[],
+			   const double *NormalRef,
+			   const int Level[],
+			   int NormalRange[],
+			   const double *deltaN,
+			   const int *l);
+
+
+
+
 }

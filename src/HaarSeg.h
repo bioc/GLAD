@@ -20,18 +20,30 @@
 #include <math.h>
 #include <stdlib.h>
 
- int HaarConv(const double * signal, const double * weight, int signalSize,  int stepHalfSize, double * result);
+extern "C"
+{
+  int HaarConv(const double * signal, const double * weight, int signalSize,  int stepHalfSize, double * result);
  
- int FindLocalPeaks(const double * signal, int signalSize, int * peakLoc);
+  int FindLocalPeaks(const double * signal, int signalSize, int * peakLoc);
  
- int HardThreshold(const double * signal, double threshold, int * peakLoc);
+  int HardThreshold(const double * signal, double threshold, int * peakLoc);
 
- int UnifyLevels(const int * baseLevel, const int * addonLevel, int windowSize, int signalSize, int * joinedLevel);
+  int UnifyLevels(const int * baseLevel, const int * addonLevel, int windowSize, int signalSize, int * joinedLevel);
  
- int CopyLocVec(const int * source, int * target);
+  int CopyLocVec(const int * source, int * target);
 
- int AdjustBreaks(const double * signal, int signalSize, const int * peakLoc, int * newPeakLoc);
+  int AdjustBreaks(const double * signal, int signalSize, const int * peakLoc, int * newPeakLoc);
  
- int StepConv(const double * signal, int signalSize, int pulseSize, double pulseHeight, double * result);
+  int StepConv(const double * signal, int signalSize, int pulseSize, double pulseHeight, double * result);
+
+  void rConvAndPeak(const double * signal,
+		    const int * signalSize,
+		    const int * stepHalfSize,
+		    double * convResult,
+		    int * peakLoc);
+
+  double FDRThres(const double *x, const double q, const double sdev, const int size);
+
  
+}
 #endif /*HAARSEG_H_*/
