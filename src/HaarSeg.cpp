@@ -390,7 +390,8 @@ extern "C"
 		   const int * signalSize,
 		   const int * stepHalfSize,
 		   double * convResult,
-		   int * peakLoc) 
+		   int * peakLoc,
+		   const double *breaksFdrQ)
   {
     double peakSigmaEst;
 
@@ -405,7 +406,7 @@ extern "C"
 
     printf("Dans C - peakSigmaEst: %f\n", peakSigmaEst);
 
-    FDRThres(signal, 1, 1, *signalSize);
+    printf("Dans C - FDRThres: %f\n", FDRThres(signal, *breaksFdrQ, peakSigmaEst, *signalSize));
 
     printf("Fin HaarSegGLAD\n");
   }//rConvAndPeak
@@ -422,11 +423,12 @@ extern "C"
 
   double FDRThres(const double *x, const double q, const double sdev, const int size)
   {
-    int i;
-    double *m;
+    int i, k = -1;
+    double m;
+    double p;
     vector<double> sortedX;
 
-    m = (double *)malloc(size * sizeof(double));
+    //    m = (double *)malloc(size * sizeof(double));
 
     if (size < 2)
       {
@@ -437,8 +439,6 @@ extern "C"
 	for(i = 0; i < size; i++)
 	  {
 	    sortedX.push_back(fabs(x[i]));
-
-	    *m = (i + 1) / size;
 	  }
 
 	// On trie le vecteur vec
@@ -447,12 +447,27 @@ extern "C"
 
     for(i = 0; i < size; i++)
       {
-	printf("S[%i]: %f - pnorm: %f\\n", i + 1, sortedX[i], gsl_cdf_gaussian_P (sortedX[i], 1));
+	printf("S[%i]: %f - pnorm: %f\n", i + 1, sortedX[i], gsl_cdf_gaussian_P (sortedX[i], 1));
+	m = (i + 1) / size;
+	p = 2 - 2 * gsl_cdf_gaussian_P (sortedX[i], sdev);
+	if (p <= m * q)
+	  {
+	    k++;
+	  }
 	//	gsl_cdf_gaussian_P (sortedX[i], 1);
       }
 
+    if(k == -1)
+      {
+	return sortedX[0] + 0.0000000000000001;
+      }
+    else
+      {
+	return sortedX[k];
+      }
 
-    free(m);
+
+    //    free(m);
 
 // FDRThres <- function(x, q, sdev)
 // {

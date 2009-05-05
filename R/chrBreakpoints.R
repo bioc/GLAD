@@ -5,8 +5,6 @@
 ### Contact: glad@curie.fr
 
 
-
-
 chrBreakpoints <- function(...)
   {    
     UseMethod("chrBreakpoints")
@@ -123,7 +121,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
 
 ### location  of data related to each chromosome
-
         indexChr <- ChrIndice[[i]]
         subsetdata <- profileCGH$profileValues[indexChr,FieldInit]
 

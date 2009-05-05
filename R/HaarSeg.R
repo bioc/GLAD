@@ -125,10 +125,8 @@ HaarSeg <- function(I,
         convMask = as.double(CFun$res >= 0.5);
         sigmaEst = (1-convMask)*peakSigmaEst + convMask*noisySigmaEst;
         T = FDRThres(convRes[peakLoc] / sigmaEst[peakLoc], breaksFdrQ, 1);
-        print(T)
       } else {
         T = FDRThres(convRes[peakLoc], breaksFdrQ, peakSigmaEst);
-                print(T)
       }
 
       unifyWin = as.integer(2^(level - 1));
@@ -138,9 +136,7 @@ HaarSeg <- function(I,
         convRes = convRes / sigmaEst;
       }
 
-      print("ici")
-      print(as.double(T))
-      print("la")
+
       CThres <- .C("rThresAndUnify", 
                    as.double(convRes), 
                    as.integer(length(y)), 
@@ -190,13 +186,7 @@ HaarSegGLAD <- function(I,
   allSize <- vector()
   allVal <- vector()
 
-  CFun <- .C("HaarSegGLAD", 
-             as.double(I), 
-             as.integer(ProbeNum), 
-             as.integer(1), 
-             convResult = double(ProbeNum), 
-             peakLoc = integer(ProbeNum),
-             PACKAGE="GLAD")
+  
 ## #####################################################  
   CFun <- .C("rConvAndPeak", 
              as.double(I), 
@@ -210,10 +200,26 @@ HaarSegGLAD <- function(I,
 
   peakSigmaEst <- median(abs(diffI)) / 0.6745
 
+## #######################################################
+
+  CFun <- .C("HaarSegGLAD", 
+             as.double(I), 
+             as.integer(ProbeNum), 
+             as.integer(1), 
+             convResult = double(ProbeNum), 
+             peakLoc = integer(ProbeNum),
+             as.double(breaksFdrQ),
+             PACKAGE="GLAD")
+
   print("peakSigmaEst")  
   print(peakSigmaEst)  
 
+
+  print("FDRThres")
+  print(FDRThres(I, breaksFdrQ, peakSigmaEst))
+  
 ## #######################################################
+  
   
   uniPeakLoc <- as.integer(-1)
   for (level in haarStartLevel:haarEndLevel)
