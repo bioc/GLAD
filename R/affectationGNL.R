@@ -36,7 +36,20 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
   aggZone$ZoneGNL[aggZone$Median<aggZone$MinMedian] <- -1
 
 
-  CGH <- merge(CGH,aggZone[,c("ZoneGen","ZoneGNL")], by="ZoneGen")
+  lengthDest <- length(CGH[,1])
+  lengthSrc <- length(aggZone$ZoneGNL)
+  myzoneGNL <- .C("my_merge_int",
+                  as.integer(CGH$ZoneGen),
+                  ZoneGNL=integer(lengthDest),
+                  as.integer(aggZone$ZoneGen),
+                  as.integer(aggZone$ZoneGNL),
+                  as.integer(lengthDest),
+                  as.integer(lengthSrc),
+                  PACKAGE="GLAD")
+
+  CGH$ZoneGNL <- myzoneGNL$ZoneGNL
+
+##  CGH <- merge(CGH,aggZone[,c("ZoneGen","ZoneGNL")], by="ZoneGen")
 
 
 

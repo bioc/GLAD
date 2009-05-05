@@ -16,7 +16,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
     if (is.data.frame(profileCGH$BkpInfo))
       {
 
-        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
+##        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
         RecomputeBkpInfo <- FALSE
 
         ZoneGNLAux <- profileCGH$profileValues$ZoneGNL
@@ -33,15 +33,15 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
         profileCGH$profileValues$ZoneGNL <- updateGNL$ZoneGNL
 
 
-        ## ###################################
+        ## ######################################
         ##
-        ## Déplacement des Bkp avec MoveBkp!=0
+        ## Déplacement des Bkp avec MoveBkp != 0
         ##
-        ## ###################################
+        ## ######################################
 
-        indexMoveBkp <- which(profileCGH$BkpInfo$MoveBkp!=0)
+        indexMoveBkp <- which(profileCGH$BkpInfo$MoveBkp != 0)
 
-        if (length(indexMoveBkp)>0)
+        if (length(indexMoveBkp) > 0)
           {
 
             
@@ -51,7 +51,9 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 
 
             if(region == "Region")
-              warning("Level and Region are the same vector: the code may not works")
+              {
+                warning("Level and Region are the same vector: the code may not works")
+              }
             
             l <- length(subBkpInfo[,1])            
             res <- .C("MoveBkp_Delete_Bkp",
@@ -96,23 +98,8 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 
             lengthDest <- length(profileCGH$profileValues$Level)
             l <- lengthDest             
+
             ## recalcul de la smoothing line
-            ##             agg <- aggregate(profileCGH$profileValues$LogRatio, list(Level=profileCGH$profileValues$Level), median)
-            ##             agg$Level <- as.numeric(as.character(agg$Level))
-            ##             names(agg) <- c("Level","Smoothing")
-
-
-            ##             lengthDest <- length(profileCGH$profileValues$Level)
-            ##             lengthSrc <- length(agg$Level)
-            ##             mySmoothing <- .C("my_merge",
-            ##                               as.integer(profileCGH$profileValues$Level),
-            ##                               Smoothing=double(lengthDest),
-            ##                               as.integer(agg$Level),
-            ##                               as.double(agg$Smoothing),
-            ##                               as.integer(lengthDest),
-            ##                               as.integer(lengthSrc),
-            ##                               PACKAGE="GLAD")
-
             mySmoothing <- .C("compute_median_smoothing",
                               as.double(profileCGH$profileValues$LogRatio),
                               as.integer(profileCGH$profileValues$Level),
@@ -136,11 +123,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                               as.integer(l),
                               PACKAGE="GLAD")
 
-            ## ICI on peut optimiser pour récupérer les valeurs
-            profileCGH$profileValues[,region] <- updateLevel$Level
-            profileCGH$profileValues$Breakpoints <- updateLevel$Breakpoints
-            profileCGH$profileValues$NextLogRatio <- updateLevel$NextLogRatio
-
+            profileCGH$profileValues[,c(region, "Breakpoints", "NextLogRatio")] <- updateLevel[c("Level", "Breakpoints", "NextLogRatio")]
             
             ## ##################
             ## Mise à jour du GNL
@@ -234,34 +217,10 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                  PACKAGE="GLAD")
 
 
-            ## ici on peut optimiser
-            profileCGH$profileValues[,region] <- updateOutliers$Level
-            profileCGH$profileValues$Region <- updateOutliers$Region
-            profileCGH$profileValues$Breakpoints <- updateOutliers$Breakpoints
-            profileCGH$profileValues$OutliersAws <- updateOutliers$OutliersAws
-            profileCGH$profileValues$OutliersTot <- updateOutliers$OutliersTot            
-            profileCGH$profileValues$Smoothing <- updateOutliers$Smoothing
-            profileCGH$profileValues$ZoneGNL <- updateOutliers$ZoneGNL
-
+            profileCGH$profileValues[,c(region,"Region","Breakpoints","OutliersAws","OutliersTot", "Smoothing", "ZoneGNL")] <-  updateOutliers[c("Level","Region","Breakpoints","OutliersAws","OutliersTot", "Smoothing", "ZoneGNL")]
 
 
             ## recalcul de la smoothing line
-            ##             agg <- aggregate(profileCGH$profileValues$LogRatio, list(Level=profileCGH$profileValues$Level), median)
-            ##             agg$Level <- as.numeric(as.character(agg$Level))
-            ##             names(agg) <- c("Level","Smoothing")
-
-
-            ##             lengthDest <- length(profileCGH$profileValues$Level)
-            ##             lengthSrc <- length(agg$Level)
-            ##             mySmoothing <- .C("my_merge",
-            ##                              as.integer(profileCGH$profileValues$Level),
-            ##                              Smoothing=double(lengthDest),
-            ##                              as.integer(agg$Level),
-            ##                              as.double(agg$Smoothing),
-            ##                              as.integer(lengthDest),
-            ##                              as.integer(lengthSrc),
-            ##                              PACKAGE="GLAD")
-
             mySmoothing <- .C("compute_median_smoothing",
                               as.double(profileCGH$profileValues$LogRatio),
                               as.integer(profileCGH$profileValues$Level),

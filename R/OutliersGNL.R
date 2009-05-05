@@ -132,7 +132,7 @@ OutliersGNL <- function(...)
 OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, amplicon, deletion, verbose=FALSE, assignGNLOut=TRUE, ...)
 {
 
-  if (verbose) print("OutliersGNL2: starting function")
+  if (verbose) print("OutliersGNL: starting function")
   if(!assignGNLOut)
     {
       print("GNL will not be assigned for outliers")
@@ -156,11 +156,10 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
                       as.integer(length(profileCGH$profileValues$Smoothing)),
                       PACKAGE="GLAD")
 
-  profileCGH$profileValues$OutliersTot <- myOutliersGNL$OutliersTot
-  profileCGH$profileValues$ZoneGNL <- myOutliersGNL$ZoneGNL
+  profileCGH$profileValues[,c("OutliersTot", "ZoneGNL")] <- myOutliersGNL[c("OutliersTot", "ZoneGNL")]
   
   
-  if (verbose) print("OutliersGNL2: ending function")
+  if (verbose) print("OutliersGNL: ending function")
   return(profileCGH)
   
 }

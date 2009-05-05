@@ -17,5 +17,6 @@
     print("For fast computation it is recommanded to use")
     print("the daglad function with smoothfunc=haarseg")
     print("")
+
     
 }

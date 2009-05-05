@@ -13,7 +13,7 @@ MoveBkpStep.profileCGH <- function(profileCGH, assignGNLOut=TRUE,...)
   {
     
     fin <- 0
-    maxiter <- 3
+    maxiter <- 2
     nbiter <- 0
 
     print("Check Breakpoints Position")
@@ -22,11 +22,11 @@ MoveBkpStep.profileCGH <- function(profileCGH, assignGNLOut=TRUE,...)
 
         FieldsBkp <- names(profileCGH$BkpInfo)
 
-        profileCGH$BkpInfo$MoveBkp <- rep(0,length(profileCGH$BkpInfo[,1]))
+        profileCGH$BkpInfo$MoveBkp <- 0
 
 
         profileCGH <- testBkpToMove(profileCGH)
-        indexMoveBkp <- which(profileCGH$BkpInfo$MoveBkp!=0)
+        indexMoveBkp <- which(profileCGH$BkpInfo$MoveBkp != 0)
        
 
         if (length(indexMoveBkp)>0)
@@ -41,14 +41,14 @@ MoveBkpStep.profileCGH <- function(profileCGH, assignGNLOut=TRUE,...)
         while (fin!=1)
           {
             nbiter <- nbiter + 1
-            profileCGH <- MoveBkp(profileCGH, assignGNLOut=assignGNLOut)
+            profileCGH <- MoveBkp(profileCGH, assignGNLOut = assignGNLOut)
 
             if (is.data.frame(profileCGH$BkpInfo))
               {
                 profileCGH$BkpInfo$MoveBkp <- 0
                 profileCGH <- testBkpToMove(profileCGH)
-                BkpInfo <- profileCGH$BkpInfo
-                indexMoveBkp <- which(BkpInfo$MoveBkp!=0)
+###                BkpInfo <- profileCGH$BkpInfo
+                indexMoveBkp <- which(profileCGH$BkpInfo$MoveBkp != 0)
                
 
                 if (length(indexMoveBkp)>0)

@@ -39,12 +39,6 @@ loopRemove.profileChr <- function(profileChr, sigma, lambda=10, type="tricubic",
               PACKAGE="GLAD")
 
 
-##     profileChr$profileValues$Region <- res$Region
-##     profileChr$profileValues$OutliersAws <- res$OutliersAws
-##     profileChr$profileValues$OutliersMad <- res$OutliersMad
-##     profileChr$profileValues$OutliersTot <- res$OutliersTot
-##     profileChr$profileValues$Breakpoints <- res$Breakpoints
-
     profileChr$profileValues[,c("Region","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")] <- res[c("Region","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")]
 
     return(profileChr)

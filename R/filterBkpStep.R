@@ -24,13 +24,12 @@ filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, assignGNLOut
     nbiter <- 0
     
 
-
     if (is.data.frame(profileCGH$BkpInfo))
       {
         BkpInfo <- profileCGH$BkpInfo
-        indexWeightToSmall <- which(BkpInfo$Weight<MinBkpWeight & BkpInfo$GNLchange==0 & BkpInfo$ZoneGNL!=2)
-        indexWeightToSmall <- c(indexWeightToSmall, which(BkpInfo$Weight==0))
-        indexWeightZero <- which(BkpInfo$Weight==0 & BkpInfo$GNLchange==1)        
+        indexWeightToSmall <- which(BkpInfo$Weight < MinBkpWeight & BkpInfo$GNLchange == 0 & BkpInfo$ZoneGNL != 2)
+        indexWeightToSmall <- c(indexWeightToSmall, which(BkpInfo$Weight == 0))
+        indexWeightZero <- which(BkpInfo$Weight == 0 & BkpInfo$GNLchange == 1)        
         if (length(indexWeightToSmall)>0 || length(indexWeightZero)>0)
           {
             fin <- 0
@@ -50,7 +49,7 @@ filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, assignGNLOut
                 BkpInfo <- profileCGH$BkpInfo
                 indexWeightToSmall <- which(BkpInfo$Weight<MinBkpWeight & BkpInfo$GNLchange==0 & BkpInfo$ZoneGNL!=2)
                 indexWeightZero <- which(BkpInfo$Weight==0 & BkpInfo$GNLchange==1)
-                if (length(indexWeightToSmall)>0 || length(indexWeightZero)>0)
+                if (length(indexWeightToSmall) > 0 || length(indexWeightZero) > 0)
                   {
                     fin <- 0
                   }
@@ -58,7 +57,7 @@ filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, assignGNLOut
                   {
                     fin <- 1
                   }
-                if(nbiter>maxiter)
+                if(nbiter > maxiter)
                   {
                     fin <- 1
                     print("There is something wrong in the loop calling filterBkp")
@@ -69,7 +68,6 @@ filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, assignGNLOut
                 fin <- 1
               }
           }
-
       }
 
 
