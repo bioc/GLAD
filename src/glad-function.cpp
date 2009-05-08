@@ -30,33 +30,36 @@
 
 using namespace std;
 
+
+
 extern "C"
 {
+
 
 
   /*************************************/
   /* fonctions utilisées dans filterBkp */
   /*************************************/
 
-  void updateFilterBkp(const int Chromosome[],
-		       int Breakpoints[],
-		       int Level[],
-		       const int PosOrder[],
-		       double NextLogRatio[],
-		       const double LogRatio[],
+  void updateFilterBkp(const int *Chromosome,
+		       int *Breakpoints,
+		       int *Level,
+		       const int *PosOrder,
+		       double *NextLogRatio,
+		       const double *LogRatio,
 		       const int *maxLevel,
 		       // ajout de variables pour updateOutliers
-		       int OutliersAws[],
-		       double Smoothing[],
+		       int *OutliersAws,
+		       double *Smoothing,
 		       // ajout de variables pour detectOutliers
-		       int OutliersMad[],
-		       int OutliersTot[],
+		       int *OutliersMad,
+		       int *OutliersTot,
 		       const int *msize,
 		       const double *alpha,
 		       const int *l,
 		       const double *NormalRef,
 		       const double *deltaN,
-		       int NormalRange[])
+		       int *NormalRange)
   {
 
     updateLevel(Chromosome,
@@ -173,12 +176,12 @@ extern "C"
   /* fonctions utilisées dans MoveBkp */
   /*************************************/
 
-  void MoveBkp_updateOutliers (int OutliersAws[],
-			       int OutliersTot[],
-			       int Level[],
-			       int Region[],
-			       int Breakpoints[],
-			       double Smoothing[],
+  void MoveBkp_updateOutliers (int *OutliersAws,
+			       int *OutliersTot,
+			       int *Level,
+			       int *Region,
+			       int *Breakpoints,
+			       double *Smoothing,
 			       int *ZoneGNL,
 			       const int *l)
   {
@@ -304,7 +307,7 @@ extern "C"
 	       int *Level,
 	       int *nbregion,
 	       int *regionChr,
-	       int *rupture,
+	       int *Breakpoints,
 	       int *bkp_detected,
 	       const int *l)
   {
@@ -313,8 +316,16 @@ extern "C"
     int j_moins_un;
     int j_plus_un;
     int last_bkp_pos = -1;
+
+    int *rupture;
+
     const int nb = *l;
     const int nb_moins_un = *l - 1;
+
+    rupture = (int *)calloc(nb, sizeof(int));
+
+    // initialisation de la première valeur de regionChr à nbregion
+    regionChr[0] = *nbregion;
 
     for (j = 1; j < nb; j++)
       {              
@@ -434,6 +445,10 @@ extern "C"
 	      }
 	  }
       }
+
+    memcpy(Breakpoints, &rupture[1], (nb - 1) * sizeof(int)); // <-> subsetdata$Breakpoints <- c(awsBkp$rupture[2:l],0)
+
+    free(rupture);
   }
 
   
@@ -530,16 +545,16 @@ extern "C"
 
 
 
-  void MoveBkp_Delete_Bkp(const int subBkpInfo_MoveBkp[],
-			  const int subBkpInfo_PosOrder[],
-			  int Breakpoints[],
-			  int OutliersTot[],
-			  int OutliersAws[],
-			  int OutliersMad[],
-			  int Level[],
-			  int Region[],
-			  double Smoothing[],
-			  int GNL[],
+  void MoveBkp_Delete_Bkp(const int *subBkpInfo_MoveBkp,
+			  const int *subBkpInfo_PosOrder,
+			  int *Breakpoints,
+			  int *OutliersTot,
+			  int *OutliersAws,
+			  int *OutliersMad,
+			  int *Level,
+			  int *Region,
+			  double *Smoothing,
+			  int *GNL,
 			  const int *l)
   {
 
@@ -659,9 +674,9 @@ extern "C"
   }
 
 
-  void MoveBkp_updateGNL(int ZoneGNL[],
-			 const double Smoothing[],
-			 const int OutliersTot[],
+  void MoveBkp_updateGNL(int *ZoneGNL,
+			 const double *Smoothing,
+			 const int *OutliersTot,
 			 const int *l)
   {
     double *minG;
@@ -1173,9 +1188,9 @@ extern "C"
   /********************************************************************/
 
 
-  void compute_median_smoothing(const double LogRatio[],
-				const int ByValue[],
-				double Smoothing[],
+  void compute_median_smoothing(const double *LogRatio,
+				const int *ByValue,
+				double *Smoothing,
 				const int *l)
   {
     int i,j;
@@ -1221,24 +1236,26 @@ extern "C"
     free(unique_ByValue);
   }
 
+
+
   /**********************************************************/
   /* fonction pour le calcul des clusters Loss/Normal/Gain  */
   /**********************************************************/
 
 
   void compute_cluster_LossNormalGain(// variables pour faire la jointure
-				      const int ZoneGen[],
-				      int value_dest[],
+				      const int *ZoneGen,
+				      int *value_dest,
 				      const int *length_dest,
-				      const double Smoothing[],
+				      const double *Smoothing,
 				      const double *forceGL1Value,
 				      const double *forceGL2Value,
 				      const double *NormalRefValue,
 				      const double *ampliconValue,
 				      const double *deletionValue,
 				      //variables pour calcul la médiane par cluster
-				      const double LogRatio[],
-				      const int NormalRange[])
+				      const double *LogRatio,
+				      const int *NormalRange)
   {
 
     int i,j;
@@ -1331,10 +1348,10 @@ extern "C"
 
   }
 
-  void compute_NormalRange(const double Smoothing[],
+  void compute_NormalRange(const double *Smoothing,
 			   const double *NormalRef,
-			   const int Level[],
-			   int NormalRange[],
+			   const int *Level,
+			   int *NormalRange,
 			   const double *deltaN,
 			   const int *l)
   {

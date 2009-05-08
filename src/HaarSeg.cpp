@@ -391,30 +391,138 @@ extern "C"
 		   const int * stepHalfSize,
 		   double * convResult,
 		   int * peakLoc,
-		   const double *breaksFdrQ)
-  {
-    double peakSigmaEst;
+		   const double *breaksFdrQ,
+		   const int *haarStartLevel,
+		   const int *haarEndLevel,
+		   double *segs)
 
-    printf("Début HaarSegGLAD\n");
+  {
+    double *convResult_tmp1;
+    double *fdr_tmp1;
+    double peakSigmaEst;
+    double T;
+
+    int unifyWin;
+    int level;
+    int stepHalfSize_tmp1;
+    int i;
+    int indice;
+
+    int *uniPeakLoc;
+    int *tmpPeakLoc;
+    int *breakpoints;
+    int *peakLoc_tmp1;
+
+    const int size = *signalSize;
+
+
+    convResult_tmp1 = (double *)calloc(size, sizeof(double));
+    peakLoc_tmp1 = (int *)calloc(size, sizeof(double));
+    uniPeakLoc = (int *)calloc(size, sizeof(double));
+    tmpPeakLoc = (int *)calloc(size, sizeof(double));
+
+    uniPeakLoc[0] = -1;
+
     rConvAndPeak(signal,
-		 signalSize,
+		 &size,
 		 stepHalfSize,
 		 convResult,
 		 peakLoc);
 
-    peakSigmaEst = median_fabs_double(convResult, *signalSize) / 0.6745;
+    peakSigmaEst = median_fabs_double(convResult, size) / 0.6745;
 
-    printf("Dans C - peakSigmaEst: %f\n", peakSigmaEst);
+    for (level = *haarStartLevel; level <= *haarEndLevel; level++)
+      {
+	stepHalfSize_tmp1 = (int) pow(2, (double)level);
 
-    printf("Dans C - FDRThres: %f\n", FDRThres(signal, *breaksFdrQ, peakSigmaEst, *signalSize));
 
-    printf("Fin HaarSegGLAD\n");
+	rConvAndPeak(signal,
+		     &size,
+		     &stepHalfSize_tmp1,
+		     convResult_tmp1,
+		     peakLoc_tmp1);
+
+
+	for (i = 0; i < size; i++)
+	  {
+	    if(peakLoc_tmp1[i] == -1)
+	      {
+		break;
+	      }
+	  }
+
+	indice = --i;
+
+
+	T = 0;
+	if (indice >= 0)
+	  {
+	    fdr_tmp1 = (double *)malloc((indice + 1) * sizeof(double));
+	    for(i = 0; i < (indice + 1); i++)
+	      {
+		fdr_tmp1[i] = convResult_tmp1[peakLoc_tmp1[i]];
+	      }
+
+	    T = FDRThres(fdr_tmp1, *breaksFdrQ, peakSigmaEst, indice + 1);
+	    free(fdr_tmp1);
+	  }
+
+
+	unifyWin = (int) pow(2, (double)(level - 1));
+
+	memcpy(tmpPeakLoc, uniPeakLoc, size * sizeof(int)); 
+	
+	for (i = 0; i < size; i++)
+	  {
+	    uniPeakLoc[i] = 0;
+	  }
+
+	rThresAndUnify(convResult_tmp1, 
+		       &size, 
+		       peakLoc_tmp1,
+		       tmpPeakLoc,
+		       &T,
+		       &unifyWin,
+		       uniPeakLoc);
+
+      } // fin de la boucle sur les levels
+
+    for (i = 0; i < size; i++)
+      {
+	if(uniPeakLoc[i] == -1)
+	  {
+	    break;
+	  }
+      }
+
+    indice = --i;
+
+    breakpoints = (int *)calloc((indice + 1), sizeof(int));
+    if (indice >= 0)
+      {
+ 	for(i = 0; i < (indice + 1); i++)
+ 	  {
+	    breakpoints[i] = uniPeakLoc[i]; // on ne fait pas "+1" pour avoir des indices qui commencent à 0 dans SegmentByPeaks
+ 	  }
+      }
+
+
+    SegmentByPeaks(signal,
+		   breakpoints,
+		   segs,
+		   size,
+		   indice + 1);
+
+
+    free(breakpoints);
+    free(convResult_tmp1);
+    free(peakLoc_tmp1);
+    free(uniPeakLoc);
+    free(tmpPeakLoc);
+
   }//rConvAndPeak
 
-//   bool greater(double a, double b)
-//   { 
-//     return a > b; 
-//   }
+
 
   bool plusgrand (double i,double j) 
   { 
@@ -428,7 +536,6 @@ extern "C"
     double p;
     vector<double> sortedX;
 
-    //    m = (double *)malloc(size * sizeof(double));
 
     if (size < 2)
       {
@@ -447,14 +554,13 @@ extern "C"
 
     for(i = 0; i < size; i++)
       {
-	printf("S[%i]: %f - pnorm: %f\n", i + 1, sortedX[i], gsl_cdf_gaussian_P (sortedX[i], 1));
-	m = (i + 1) / size;
+	m = (double)(i + 1) / size;
 	p = 2 - 2 * gsl_cdf_gaussian_P (sortedX[i], sdev);
-	if (p <= m * q)
+
+	if (p <= (m * q))
 	  {
-	    k++;
+	    k = i;
 	  }
-	//	gsl_cdf_gaussian_P (sortedX[i], 1);
       }
 
     if(k == -1)
@@ -465,34 +571,59 @@ extern "C"
       {
 	return sortedX[k];
       }
+  }
+
+  void SegmentByPeaks(const double *data,
+		      const int *peaks,
+		      double *segs,
+		      const int length_data,
+		      const int length_peaks)
+  {
+
+    // pour l'instant cette fonction ne prend pas en compte les poids
+    int i;
+    int k;
+    int *st;
+    int *ed;
+
+    double sum;
+
+    st = (int *)malloc((length_peaks + 1) * sizeof(int));
+    st[0] = 0;
+    memcpy(&st[1], peaks, length_peaks * sizeof(int));
+
+    ed = (int *)malloc((length_peaks + 1) * sizeof(int));
+    ed[length_peaks] = length_data - 1;
+
+    for(i = 0; i < length_peaks; i++)
+      {
+	ed[i] = peaks[i] - 1;
+      }
 
 
-    //    free(m);
+    for (k = 0; k <= length_peaks; k++ )
+      {
+	sum = 0;
+	for (i = st[k]; i <= ed[k]; i++)
+	  {
+	    sum += data[i];
+	  }
 
-// FDRThres <- function(x, q, sdev)
-// {
-//   M <- length(x);
-//   if (M < 2) { 
-//     T <- 0;
-//   }
-//   else
-//     {
-//       m = (1:M) / M;
-//       sortedX = sort(abs(x),decreasing = TRUE);	
-//       p = 2*(1 - pnorm(sortedX, sd = sdev));
-//       k = which(p <= m*q);
-//       k = k[length(k)];
-//       if (length(k) == 0)
-//         {
-//           T = sortedX[1] + 1e-16;  #2^-52 is like MATLAB "eps"
-//         }
-//       else
-//         {
-//           T = sortedX[k];
-//         }
-//     }
+	sum /= (double) (ed[k] - st[k] + 1);
+
+
+	for (i = st[k]; i <= ed[k]; i++)
+	  {
+	    segs[i] = sum;
+	  }
+      }
+
+
+    free(st);
+    free(ed);
 
   }
+
 
   /*****************************************/
   /*** contenu du fichier t_haarseg   ******/

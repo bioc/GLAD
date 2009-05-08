@@ -12,7 +12,7 @@
 
 \method{daglad}{profileCGH}(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
                   smoothfunc="lawsglad", lkern="Exponential", model="Gaussian",
-                  qlambda=0.999,  bandwidth=10, sigma=NULL, base=FALSE, round=1.5,
+                  qlambda=0.999,  bandwidth=10, sigma=NULL, base=FALSE, round=2,
                   lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
                   method="centroid", nmin=1, nmax=8,
                   amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
@@ -66,7 +66,7 @@
     to 10*\eqn{X_N} where \eqn{X_N} is the position of the last clone.}
 
   \item{round}{The smoothing results of either \code{\link[aws]{aws}}
-    or \code{\link[aws]{laws}} function are rounded or not depending on
+    \code{\link[aws]{laws}} or haarseg function are rounded or not depending on
     the \code{round} argument. The \code{round} value is passed to the
     argument \code{digits} of the \code{\link[base]{round}} function.}
 

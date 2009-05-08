@@ -205,6 +205,7 @@ extern "C"
     map<int, vector<double> >::const_iterator it_LogRatio_end;
 
 
+
     while(stop!=1)
       {
 	nb_loop++;
@@ -339,43 +340,97 @@ extern "C"
 
 
 
+//   void putLevel(const double *Smoothing,
+// 		int *Level,
+// 		int *nblevel,
+// 		const int *l)
+//   {
+//     int i;
+//     const int nb=*l;
+//     map<double, vector<int> > indexLevel;
+//     map<double, vector<int> >::iterator it_ind;
+//     map<double, vector<int> >::iterator it_ind_end;
+//     vector<int>::iterator it_vec;
+//     vector<int>::const_iterator it_vec_end;
 
-  void putLevel(const double *Smoothing,
+//     for (i=0; i<nb; i++)
+//       {
+// 	indexLevel[Smoothing[i]].push_back(i);
+//       }
+
+//     it_ind=indexLevel.begin();
+//     it_ind_end=indexLevel.end();
+
+//     while(it_ind != it_ind_end)
+//       {
+// 	*nblevel+=1;
+// 	it_vec=it_ind->second.begin();
+// 	it_vec_end=it_ind->second.end();
+
+// 	while(it_vec != it_vec_end)
+// 	  {
+// 	    Level[*it_vec]=*nblevel;
+// 	    it_vec++;
+// 	  }
+
+// 	it_ind++;
+//       }
+//   }
+
+
+
+  void putLevel(double *Smoothing,
+		const double *LogRatio,
 		int *Level,
 		int *nblevel,
 		const int *l)
   {
-    int i;
-    const int nb=*l;
-    map<double, vector<int> > indexLevel;
-    map<double, vector<int> >::iterator it_ind;
-    map<double, vector<int> >::iterator it_ind_end;
-    vector<int>::iterator it_vec;
-    vector<int>::const_iterator it_vec_end;
+    int i, j;
+    const int nb = *l;
+    double MedianValue;
+    double SmoothingValue;
 
-    for (i=0; i<nb; i++)
+    map<double, vector<double> > LogRatioLevel;
+    map<double, vector<double> >::iterator it_LogRatioLevel;
+    map<double, double> MedianLevel;
+    map<double, double>::iterator it_MedianLevel;
+    map<double, vector<int> > indexLevel;
+    vector<int>::iterator it_vec;
+
+    for (i = 0; i < nb; i++)
       {
 	indexLevel[Smoothing[i]].push_back(i);
+	LogRatioLevel[Smoothing[i]].push_back(LogRatio[i]);
       }
 
-    it_ind=indexLevel.begin();
-    it_ind_end=indexLevel.end();
 
-    while(it_ind != it_ind_end)
+    // avec la map, les levels seront ordonnés par ordre croissant de médiane
+    it_LogRatioLevel = LogRatioLevel.begin();
+    for (i = 0; i < LogRatioLevel.size(); i++)
       {
-	*nblevel+=1;
-	it_vec=it_ind->second.begin();
-	it_vec_end=it_ind->second.end();
+	MedianLevel[it_LogRatioLevel->first] = median_vector_double(it_LogRatioLevel->second);
+	it_LogRatioLevel++;
+      }
 
-	while(it_vec != it_vec_end)
+
+    it_MedianLevel = MedianLevel.begin();
+    for(i = 0; i < MedianLevel.size(); i++)
+      {
+	*nblevel += 1;
+
+	SmoothingValue = it_MedianLevel->first;
+	MedianValue = it_MedianLevel->second;
+
+	it_vec = indexLevel[SmoothingValue].begin();
+	for(j = 0; j < indexLevel[SmoothingValue].size(); j++)
 	  {
-	    Level[*it_vec]=*nblevel;
+	    Level[*it_vec] = *nblevel;
+	    Smoothing[*it_vec] = MedianValue;
 	    it_vec++;
 	  }
 
-	it_ind++;
+	it_MedianLevel++;
       }
-
 
   }
 
@@ -633,7 +688,7 @@ extern "C"
   }
 
 
-  double median_fabs_double(const double value[], const int l)
+  double median_fabs_double(const double *value, const int l)
   {
     int i;
     vector<double> value_vector;
@@ -743,28 +798,28 @@ extern "C"
   ////////////////////////////////////////////////
 
 
-  void OptmisationBreakpointsStep(double Smoothing[],
-				  int NormalRange[],
+  void OptmisationBreakpointsStep(double *Smoothing,
+				  int *NormalRange,
 				  const double *NormalRef,
 				  const double *deltaN,
 				  // variable pour loop_chromosome_removeLevel
-				  const double LogRatio[],
-				  double NextLogRatio[],
-				  const int PosOrder[],
-				  int Level[],
-				  int OutliersAws[],
-				  int OutliersMad[],
-				  int OutliersTot[],
-				  int Breakpoints[],
+				  const double *LogRatio,
+				  double *NextLogRatio,
+				  const int *PosOrder,
+				  int *Level,
+				  int *OutliersAws,
+				  int *OutliersMad,
+				  int *OutliersTot,
+				  int *Breakpoints,
 				  const int *msize,
 				  const double *alpha,
 				  const double *lambda,
 				  const double *d,
-				  const double sigma[],
+				  const double *sigma,
 				  const int *NbChr,   // Nombre de chromosome à analyser
-				  const int sizeChr[], // taille de chaque chromosome
-				  const int startChr[], // position pour le début des valeurs de chaque chromosome
-				  const int *BkpDetected[],
+				  const int *sizeChr, // taille de chaque chromosome
+				  const int *startChr, // position pour le début des valeurs de chaque chromosome
+				  const int *BkpDetected,
 				  const int *l) // nombre total de sondes
   {
     loop_chromosome_removeLevel(LogRatio,
@@ -807,23 +862,23 @@ extern "C"
   // Fonction removeLevel
   ///////////////////////
 
-  void loop_chromosome_removeLevel(const double LogRatio[],
-				   double NextLogRatio[],
-				   const int PosOrder[],
-				   int Level[],
-				   int OutliersAws[],
-				   int OutliersMad[],
-				   int OutliersTot[],
-				   int Breakpoints[],
+  void loop_chromosome_removeLevel(const double *LogRatio,
+				   double *NextLogRatio,
+				   const int *PosOrder,
+				   int *Level,
+				   int *OutliersAws,
+				   int *OutliersMad,
+				   int *OutliersTot,
+				   int *Breakpoints,
 				   const int *msize,
 				   const double *alpha,
 				   const double *lambda,
 				   const double *d,
-				   const double sigma[],
+				   const double *sigma,
 				   const int *NbChr,   // Nombre de chromosome à analyser
-				   const int sizeChr[], // taille de chaque chromosome
-				   const int startChr[], // position pour le début des valeurs de chaque chromosome
-				   const int *BkpDetected[])
+				   const int *sizeChr, // taille de chaque chromosome
+				   const int *startChr, // position pour le début des valeurs de chaque chromosome
+				   const int *BkpDetected)
 
 
   {

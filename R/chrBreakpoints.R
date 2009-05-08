@@ -48,6 +48,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
     roundglad <- function(x, digits=2)
       {
+## en C        return floor(n * pow(10., d) + .5) / pow(10., d);
         dec <- (digits-trunc(digits))
         if (dec==0)
           dec <- 1
@@ -55,6 +56,11 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
         r <- 10^(-trunc(digits))*dec
         x <- r*round(x/r)
         return(x)
+      }
+
+    roundtest <- function(x, d=2)
+      {
+        return(floor(x * 10^d + .5) / 10^d)
       }
 
 
@@ -103,12 +109,12 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
     ### Il ne faut pas les champs MedianLevel et LevelNewOrder
 ### pour la jointure entre subsetdata et MedianLevel
     ### par contre on en a besoin au momment du remplissage des données
-    FieldInit <- names(profileCGH$profileValues)
-    profileCGH$profileValues <- data.frame(profileCGH$profileValues,
-                                           MedianLevel=profileCGH$profileValues$Region,
-                                           LevelNewOrder=profileCGH$profileValues$Region)
+##    FieldInit <- names(profileCGH$profileValues)
+##     profileCGH$profileValues <- data.frame(profileCGH$profileValues,
+##                                            MedianLevel=profileCGH$profileValues$Region,
+##                                            LevelNewOrder=profileCGH$profileValues$Region)
 
-    FieldOrder <- names(profileCGH$profileValues)
+##    FieldOrder <- names(profileCGH$profileValues)
 
     
     profileCGH$BkpDetected <- data.frame(Chromosome=as.integer(labelChr),BkpDetected=0)
@@ -122,7 +128,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
 ### location  of data related to each chromosome
         indexChr <- ChrIndice[[i]]
-        subsetdata <- profileCGH$profileValues[indexChr,FieldInit]
+        subsetdata <- profileCGH$profileValues[indexChr,]
 
 ### information sur les bornes d'un chromosome
         PosOrderRange$Chromosome[i] <- labelChr[i]
@@ -251,10 +257,10 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
                 if (smoothfunc=="haarseg")
                   {
-                    awsres <- HaarSegGLAD(subsetdata$LogRatio, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)$Segmented
 
+                    awsres <- HaarSegGLADCPP(subsetdata$LogRatio, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)                    
 
-                    if (is.null(awsres)==FALSE)
+                    if (is.null(awsres) == FALSE)
                       {
                         subsetdata$Smoothing <- roundglad(awsres, round)
                       }
@@ -277,92 +283,38 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
             ## set label zone for each position along chromosome
             regionChr <- c(regionChr, nbregion)  #first BAC corresponds to nbregion
-            
 
-            l <- length(subsetdata$Smoothing)
+            l <- length(subsetdata$Smoothing)            
             putLevel <- .C("putLevel",
-                           as.double(subsetdata$Smoothing),
-                           Level=integer(l),
-                           nblevel=as.integer(nblevel),
+                           Smoothing = as.double(subsetdata$Smoothing),
+                           as.double(subsetdata$LogRatio),                              
+                           Level = integer(l),
+                           nblevel = as.integer(nblevel),
                            as.integer(l),
                            PACKAGE="GLAD")
 
-            subsetdata$Level <- putLevel$Level
+            subsetdata[,c("Smoothing", "Level")] <- putLevel[c("Smoothing", "Level")]
             nblevel <- putLevel$nblevel
-            
-            ###########################################"
-            ###########################################
-            ############################################
-            
-            ## les levels sont ordonnées par ordre croissant
-            ## ceci est important dans le cas de l'utilisation de la fonction removeLevel
-            MedianLevel <- aggregate(subsetdata$LogRatio, list(Level=subsetdata$Level),median)
-            names(MedianLevel) <- c("Level","MedianLevel")
-            MedianLevel <- MedianLevel[order(MedianLevel$MedianLevel),]
-            MedianLevel$Level <- as.numeric(as.character(MedianLevel$Level))
-            MedianLevel$LevelNewOrder <- min(MedianLevel$Level):max(MedianLevel$Level)
-
-            lengthDest <- length(subsetdata$Level)
-            lengthSrc <- length(MedianLevel$Level)
-
-            myMedianLevel <- .C("my_merge_medianlevel",
-                                as.integer(subsetdata$Level),
-                                LevelNewOrder=integer(lengthDest),
-                                MedianLevel=double(lengthDest),
-                                as.integer(MedianLevel$Level),
-                                as.integer(MedianLevel$LevelNewOrder),
-                                as.double(MedianLevel$MedianLevel),
-                                as.integer(lengthDest),
-                                as.integer(lengthSrc),
-                                PACKAGE="GLAD")
-
-##             subsetdata$LevelNewOrder <- myMedianLevel$LevelNewOrder
-##             subsetdata$MedianLevel <- myMedianLevel$MedianLevel
-
-            subsetdata[,c("LevelNewOrder","MedianLevel")] <- myMedianLevel[c("LevelNewOrder","MedianLevel")]
-            
-##             t1 <- system.time(subsetdata <- merge(subsetdata, MedianLevel, by="Level",all=TRUE))
-##             print(t1)
-
-
-##             print("verif")
-##             print(which(subsetdata$LevelNewOrderBIS!=subsetdata$LevelNewOrder))
-##             print(which(subsetdata$MedianLevelBIS!=subsetdata$MedianLevel))
-##             print("end verif")
-
 
             
-
-### il faut remettre les données dans l'ordre par position
-            subsetdata <- subsetdata[order(subsetdata$PosOrder),]
-
-
-            intl <- length(subsetdata$LogRatio)
             awsBkp <- .C("awsBkp",
-                         #as.double(roundglad(subsetdata$Smoothing,round)),
-                         as.double(subsetdata$Smoothing,round),
+                         as.double(subsetdata$Smoothing),
                          OutliersAws=as.integer(subsetdata$OutliersAws),
-                         Level=as.integer(subsetdata$LevelNewOrder),
+                         Level=as.integer(subsetdata$Level),
                          nbregion=as.integer(nbregion),
-                         regionChr=as.integer(c(nbregion,rep(0,intl-1))),
-                         rupture=as.integer(rep(0,intl)),
+                         regionChr=integer(l),
+                         Breakpoints=integer(l),
                          BkpDetected=integer(1),
-                         as.integer(intl),
+                         as.integer(l),
                          PACKAGE="GLAD")
 
 
-##            print(awsBkp$BkpDetected)
-
             profileCGH$BkpDetected$BkpDetected[i] <- awsBkp$BkpDetected
             
-            subsetdata$Breakpoints <- c(awsBkp$rupture[2:intl],0)
             
-##             subsetdata$Region <- awsBkp$regionChr
-##             subsetdata$Level <- awsBkp$Level
-##             subsetdata$OutliersAws <- awsBkp$OutliersAws
-            subsetdata[,c("Region","Level","OutliersAws")] <- awsBkp[c("regionChr","Level","OutliersAws")]
-            nbregion <- awsBkp$nbregion
+            subsetdata[,c("Region","Level","OutliersAws", "Breakpoints")] <- awsBkp[c("regionChr","Level","OutliersAws", "Breakpoints")]
 
+            nbregion <- awsBkp$nbregion
 
           }
 
@@ -378,27 +330,20 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
           }
 
 
-        profileCGH$profileValues[indexChr,] <- subsetdata[,FieldOrder]
-        
+        profileCGH$profileValues[indexChr,] <- subsetdata
+
         
         if (verbose) print(paste("chrBreakpoints: ending chromosome", labelChr[i]))
 
-      }
+      } ## fin de la boucle par chromosome
 
 
-    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("MedianLevel","LevelNewOrder"))]
-    
-##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"MedianLevel"))
-##     profileCGH$profileValues <- subset(profileCGH$profileValues, select=setdiff(names(profileCGH$profileValues),"LevelNewOrder"))
-    
-    nomdata <- names(profileCGH$profileValues)
-    nomdata <- nomdata[order(nomdata)]
-    profileCGH$profileValues <- profileCGH$profileValues[,nomdata]
+##    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("MedianLevel","LevelNewOrder"))]    
+##     nomdata <- names(profileCGH$profileValues)
+##     nomdata <- nomdata[order(nomdata)]
+##     profileCGH$profileValues <- profileCGH$profileValues[,nomdata]
 
-
-    
-### permutation des Champs Level et LevelTrue pour faciliter l'utilisation dans les test sur removeLevel
-
+   
 
     profileCGH$Sigma <- data.frame(Chromosome=IQRChr,Value=IQRvalue)
 

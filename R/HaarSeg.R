@@ -173,6 +173,29 @@ HaarSeg <- function(I,
 
 
 
+HaarSegGLADCPP <- function(I, 
+                           breaksFdrQ = 0.001,			  
+                           haarStartLevel = 1,
+                           haarEndLevel = 5)
+{
+  ProbeNum <- length(I)
+
+  resHaarSegGLAD <- .C("HaarSegGLAD", 
+                       as.double(I), 
+                       as.integer(ProbeNum), 
+                       as.integer(1), 
+                       double(ProbeNum), 
+                       integer(ProbeNum),
+                       as.double(breaksFdrQ),
+                       as.integer(haarStartLevel),
+                       as.integer(haarEndLevel),
+                       Segmented = double(ProbeNum), ## valeur de sortie
+                       PACKAGE="GLAD")  
+
+  return(resHaarSegGLAD[["Segmented"]])
+}
+
+
 HaarSegGLAD <- function(I, 
                         breaksFdrQ = 0.001,			  
                         haarStartLevel = 1,
@@ -200,30 +223,13 @@ HaarSegGLAD <- function(I,
 
   peakSigmaEst <- median(abs(diffI)) / 0.6745
 
-## #######################################################
-
-  CFun <- .C("HaarSegGLAD", 
-             as.double(I), 
-             as.integer(ProbeNum), 
-             as.integer(1), 
-             convResult = double(ProbeNum), 
-             peakLoc = integer(ProbeNum),
-             as.double(breaksFdrQ),
-             PACKAGE="GLAD")
-
-  print("peakSigmaEst")  
-  print(peakSigmaEst)  
-
-
-  print("FDRThres")
-  print(FDRThres(I, breaksFdrQ, peakSigmaEst))
-  
-## #######################################################
-  
-  
   uniPeakLoc <- as.integer(-1)
+
+    
+  
   for (level in haarStartLevel:haarEndLevel)
     {
+      
       stepHalfSize <- 2^(level)
       CFun <- .C("rConvAndPeak",
                  as.double(I),
@@ -235,10 +241,12 @@ HaarSegGLAD <- function(I,
       
       convRes <- CFun$convResult
       peakLocForC <- CFun$peakLoc
+
       peakLoc <- peakLocForC[1:match(-1,peakLocForC) - 1] + 1
 
 
       T <- FDRThres(convRes[peakLoc], breaksFdrQ, peakSigmaEst)
+
 
 
       unifyWin <- as.integer(2^(level - 1))
@@ -255,9 +263,12 @@ HaarSegGLAD <- function(I,
                    PACKAGE="GLAD")
 
       uniPeakLoc <- CThres$uniPeakLoc
+
     }# for level
-  
+
+
   breakpoints <- uniPeakLoc[1:match(-1,uniPeakLoc)-1] + 1
+
   
   segs <- SegmentByPeaks(I, breakpoints)
   
@@ -278,6 +289,7 @@ HaarSegGLAD <- function(I,
 
 FDRThres <- function(x, q, sdev)
 {
+
   M <- length(x);
   if (M < 2) { 
     T <- 0;
@@ -285,7 +297,7 @@ FDRThres <- function(x, q, sdev)
   else
     {
       m = (1:M) / M;
-      sortedX = sort(abs(x),decreasing = TRUE);	
+      sortedX = sort(abs(x),decreasing = TRUE);
       p = 2*(1 - pnorm(sortedX, sd = sdev));
       k = which(p <= m*q);
       k = k[length(k)];
@@ -299,7 +311,9 @@ FDRThres <- function(x, q, sdev)
         }
     }
 
-##  print(T)
+
+    return(T)
+
 }#FDRThres
 
 SegmentByPeaks <- function(data, peaks, weights = 0) {

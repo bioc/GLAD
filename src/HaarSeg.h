@@ -42,7 +42,21 @@ extern "C"
 		    double * convResult,
 		    int * peakLoc);
 
+  void rThresAndUnify(const double * addon,
+		      const int * signalSize,
+		      int * addonPeaks,
+		      const int * basePeaks,
+		      const double * threshold,
+		      const int * windowSize,
+		      int * uniPeaks);
+
   double FDRThres(const double *x, const double q, const double sdev, const int size);
+
+  void SegmentByPeaks(const double *data,
+		      const int *peaks,
+		      double *segs,
+		      const int length_data,
+		      const int length_peaks);
 
  
 }

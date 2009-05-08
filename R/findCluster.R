@@ -65,11 +65,11 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
         sigma <- profileChr$findClusterSigma
         dist <- dist(clusterRegion$Mean)
         t3 <- system.time(cluster.res <- hclustglad(dist, members=clusterRegion$Card, ...))
-        print("hclustglad")
-        print(t3)
+#        print("hclustglad")
+#        print(t3)
         t3 <- system.time(nbclasses <- clusterglad(cluster.res, region, clusterRegion, lambda, nmin, nmax, sigma, type, param))
-        print("clusterglad")
-        print(t3)
+#        print("clusterglad")
+#        print(t3)
         classes <- cutree(cluster.res, k=nbclasses)
         profileChr$NbClusterOpt <- nbclasses
         clusterRegion <- data.frame(clusterRegion, zone=classes)
@@ -85,8 +85,8 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
                      as.integer(lengthDest),
                      as.integer(lengthSrc),
                      PACKAGE="GLAD"))
-        print("merge")
-        print(t1)
+#        print("merge")
+#        print(t1)
 
 
         if (genome == FALSE)
@@ -96,8 +96,8 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
         else
           {
             t1 <- system.time(profileChr$profileValues[,"ZoneGen"] <- myzone$zone)
-            print("zone")
-            print(t1)
+ #           print("zone")
+#            print(t1)
           }
 
       }	
