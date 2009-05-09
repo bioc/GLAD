@@ -66,7 +66,7 @@
     to 10*\eqn{X_N} where \eqn{X_N} is the position of the last clone.}
 
   \item{round}{The smoothing results of either \code{\link[aws]{aws}}
-    \code{\link[aws]{laws}} or haarseg function are rounded or not depending on
+    or \code{\link[aws]{laws}} function are rounded or not depending on
     the \code{round} argument. The \code{round} value is passed to the
     argument \code{digits} of the \code{\link[base]{round}} function.}
 

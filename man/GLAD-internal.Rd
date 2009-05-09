@@ -39,6 +39,7 @@
 \alias{BkpInfo.profileCGH}
 \alias{HaarSeg}
 \alias{HaarSegGLAD}
+\alias{HaarSegGLADCPP}
 \alias{FDRThres}
 \alias{SegmentByPeaks}
 
