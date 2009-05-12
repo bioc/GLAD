@@ -114,10 +114,10 @@ extern "C"
 
     while(it_s_r != it_s_r_end)
       {
-	if (it_s_r->second.index.size()>=*msize)
+	if ((int)(it_s_r->second.index.size()) >= *msize)
 	  {
 
-	    median=median_vector_double(it_s_r->second.LogRatio);
+	    median=quantile_vector_double(it_s_r->second.LogRatio, 0.5);
 	    mad=mad_vector_double(it_s_r->second.LogRatio);
 	    seuil=mad * *alpha;
 
@@ -141,12 +141,12 @@ extern "C"
 		      }
 		  }
 
-		if (OutliersMad[*it_index]==0 & OutliersAws[*it_index]!=0)
+		if ((OutliersMad[*it_index] == 0) & (OutliersAws[*it_index] != 0))
 		  {
 		    OutliersAws[*it_index]=0;
 		  }
 
-		if (OutliersMad[*it_index]!=0 & OutliersAws[*it_index]!=0)
+		if ((OutliersMad[*it_index] != 0) & (OutliersAws[*it_index] != 0))
 		  {
 		    OutliersAws[*it_index]=0;
 		  }
@@ -192,8 +192,8 @@ extern "C"
     double likelihoodGLOBAL, likelihood;
     double barycentre, within, between;
     double min_likelihood;
-    int LabelRegionRemoved;
-    int LabelRegionRemovedNext;
+    int LabelRegionRemoved = 0;
+    int LabelRegionRemovedNext = 0;
     map<int, vector<int> > map_ind_reg;
     vector<int>::iterator it_map_vec;
     vector<int>::const_iterator it_map_vec_end;
@@ -406,15 +406,15 @@ extern "C"
 
     // avec la map, les levels seront ordonnés par ordre croissant de médiane
     it_LogRatioLevel = LogRatioLevel.begin();
-    for (i = 0; i < LogRatioLevel.size(); i++)
+    for (i = 0; i < (int)LogRatioLevel.size(); i++)
       {
-	MedianLevel[it_LogRatioLevel->first] = median_vector_double(it_LogRatioLevel->second);
+	MedianLevel[it_LogRatioLevel->first] = quantile_vector_double(it_LogRatioLevel->second, 0.5);
 	it_LogRatioLevel++;
       }
 
 
     it_MedianLevel = MedianLevel.begin();
-    for(i = 0; i < MedianLevel.size(); i++)
+    for(i = 0; i < (int)MedianLevel.size(); i++)
       {
 	*nblevel += 1;
 
@@ -422,7 +422,7 @@ extern "C"
 	MedianValue = it_MedianLevel->second;
 
 	it_vec = indexLevel[SmoothingValue].begin();
-	for(j = 0; j < indexLevel[SmoothingValue].size(); j++)
+	for(j = 0; j < (int)(indexLevel[SmoothingValue].size()); j++)
 	  {
 	    Level[*it_vec] = *nblevel;
 	    Smoothing[*it_vec] = MedianValue;
@@ -591,47 +591,139 @@ extern "C"
   //   Fonctions statistiques
   //
   //////////////////////////////////////////////////////////////
-  double median_vector_double(vector<double> vec)
+
+  double IQRdiff(vector<double> vec)
   {
+    int i;
+    double diffvalue;
+    double IQRdiff;
+    vector<double> diffvec;
 
-
-    //    sort(vec.begin(),vec.end());
-
-    if(vec.size() % 2)
+    for (i = 1; i < (int)(vec.size()); i++)
       {
-	// on a un nombre impair d'éléments
-	size_t indice = (vec.size() - 1) / 2;
-
-	nth_element(vec.begin(),
-		    vec.begin() + indice, 
-		    vec.end());
-
-	return vec[indice];
+	diffvalue = vec[i] - vec[i - 1];
+	diffvec.push_back(diffvalue);
       }
 
+    IQRdiff = IQR_vector_double(diffvec) / 1.908;
+
+    return IQRdiff;
+  }
+
+  double IQR_vector_double(vector<double> vec)
+  {
+    double quantile25;
+    double quantile75;
+
+    quantile25 = quantile_vector_double(vec, 0.25);
+    quantile75 = quantile_vector_double(vec, 0.75);
+
+    return quantile75 - quantile25;
+
+  }
+
+
+//   void test_quantile(double *x, const int *n, const double *quantile)
+//   {
+//     int i;
+//     vector<double> vec;
+//     double qvalue;
+
+//     for(i = 0; i < *n; i++)
+//       {
+// 	vec.push_back(x[i]);
+//       }
+
+//     qvalue = quantile_vector_double(vec, *quantile);
+//     printf("quantile: %f\n", qvalue);
+
+//   }
+
+  double quantile_vector_double(vector<double> vec, const double quantile)
+  {
+    const double index = (vec.size() - 1) * quantile;
+    double h;
+    double value_left, value_right;
+    double lo, hi;
+
+    lo = floor(index);
+    hi = ceil(index);
+    h = index - (double)lo;
+
+//     printf("index: %f\n", index);
+//     printf("lo: %f\n", lo);
+//     printf("hi: %f\n", hi);
+
+//    printf("h: %f\n", h);
+
+    nth_element(vec.begin(),
+		vec.begin() + (int)(lo), 
+		vec.end());
+
+    value_left = vec[(int)(lo)];
+    //    printf("left:%f\n", value_left);
+
+
+
+    if (h == 0)
+      {
+	return value_left;
+      }
     else
       {
-	// on a un nombre pair d'éléments
-	size_t indice = vec.size() / 2;
-	double value_right;
-	double value_left;
-
 	nth_element(vec.begin(),
-		    vec.begin() + indice - 1, 
+		    vec.begin() + (int)(hi), 
 		    vec.end());
 
-	value_left = vec[indice - 1];
+	value_right = vec[(int)(hi)];
+	//	printf("right:%f\n", value_right);
 
-	nth_element(vec.begin(),
-		    vec.begin() + indice, 
-		    vec.end());
-
-	value_right = vec[indice];
-
-	return (value_left + value_right) / 2 ;
+	return (1 - h) * value_left + h * value_right;
       }
 
   }
+
+//   double quantile_vector_double(vector<double> vec, const double quantile)
+//   {
+
+//     // cette fonctionne n'est applicable que pour le calcul
+//     // de la médiane quantile = 0.5
+//     // pour pour quantile = 0.25 et 0.75
+//     if(vec.size() % 2)
+//       {
+// 	// on a un nombre impair d'éléments pour quantile = 0.5
+// 	size_t indice = (vec.size() - 1) * quantile;
+
+// 	nth_element(vec.begin(),
+// 		    vec.begin() + indice, 
+// 		    vec.end());
+
+// 	return vec[indice];
+//       }
+
+//     else
+//       {
+// 	// on a un nombre pair d'éléments pour quantile = 0.5
+// 	size_t indice = vec.size() * quantile;
+// 	double value_right;
+// 	double value_left;
+
+// 	nth_element(vec.begin(),
+// 		    vec.begin() + indice - 1, 
+// 		    vec.end());
+
+// 	value_left = vec[indice - 1];
+
+// 	nth_element(vec.begin(),
+// 		    vec.begin() + indice, 
+// 		    vec.end());
+
+// 	value_right = vec[indice];
+
+// 	return (value_left * quantile + value_right * (1 - quantile))  ;
+//       }
+
+//   }
 
   double mean_vector_double(vector<double> vec)
   {
@@ -646,7 +738,7 @@ extern "C"
     const double constant = 1.4826;
     const int vsize=vec.size();
     vector<double> vaux(vsize);
-    median=median_vector_double(vec);
+    median=quantile_vector_double(vec, 0.5);
 
 
     for (i=0;i<vsize;i++)
@@ -654,7 +746,7 @@ extern "C"
 	vaux[i]=fabs(vec[i]-median);
       }
 
-    return(constant*median_vector_double(vaux));
+    return(constant*quantile_vector_double(vaux, 0.5));
 
 
   }
@@ -699,7 +791,7 @@ extern "C"
 	value++;
       }
 
-    return median_vector_double(value_vector);
+    return quantile_vector_double(value_vector, 0.5);
 
 
   }
@@ -883,7 +975,7 @@ extern "C"
 
   {
 
-    int i, j;
+    int i;
     int start, size;
 
 

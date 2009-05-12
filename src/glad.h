@@ -5,7 +5,11 @@ extern "C"
 {
   using namespace std;
 
-  double median_vector_double(vector<double> vec);
+  double IQRdiff(vector<double> vec);
+
+  double IQR_vector_double(vector<double> vec);
+
+  double quantile_vector_double(vector<double> vec, const double quantile);
 
   double median_fabs_double(const double *value, const int l);
 
@@ -83,5 +87,12 @@ extern "C"
 				   const int *sizeChr, // taille de chaque chromosome
 				   const int *startChr, // position pour le début des valeurs de chaque chromosome
 				   const int *BkpDetected);
+
+  void putLevel(double *Smoothing,
+		const double *LogRatio,
+		int *Level,
+		int *nblevel,
+		const int *l);
+
 
 }

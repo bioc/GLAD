@@ -58,6 +58,16 @@ extern "C"
 		      const int length_data,
 		      const int length_peaks);
 
+
+  void HaarSegGLAD(const double * signal,
+		   const int * signalSize,
+		   const int * stepHalfSize,
+		   double * convResult,
+		   int * peakLoc,
+		   const double *breaksFdrQ,
+		   const int *haarStartLevel,
+		   const int *haarEndLevel,
+		   double *segs);
  
 }
 #endif /*HAARSEG_H_*/

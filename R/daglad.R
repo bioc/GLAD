@@ -302,9 +302,11 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
 
     
     if(profilage) Rprof("/tmp/Step05BkpOptimization.dat")
+
     
     startChr <- profileCGH$PosOrderRange$MinPosOrder - 1 ### car on commence à compter à 0
     sizeChr <- profileCGH$PosOrderRange$MaxPosOrder - profileCGH$PosOrderRange$MinPosOrder + 1
+
 
     
     l <- length(profileCGH$profileValues$Level)

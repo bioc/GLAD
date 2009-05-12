@@ -16,6 +16,7 @@
 
 #include "glad-function.h"
 #include "glad.h"
+#include "HaarSeg.h"
 
 #ifdef IS_MAC_OS
 #include <limits.h>
@@ -301,8 +302,157 @@ extern "C"
   /*******************************************/
   /* fonctions utilisées dans chrBreakpoints */
   /*******************************************/
+  void chrBreakpoints(const double *LogRatio,
+		      const int *Chromosome,
+		      double *Smoothing,
+		      int *Level,
+		      int *OutliersAws,
+		      int *regionChr,
+		      int *Breakpoints,
+		      int *sizeChr, // taille de chaque chromosome
+		      int *startChr, // position pour le début des valeurs de chaque chromosome
+		      int *IQRChr, // numéro du chromosome pour le calcul de l'IQR
+		      double *IQRValue, // valeur de l'IQR
+		      int *BkpDetected,
+		      // paramètres pour Haarseg
+		      const double *breaksFdrQ,
+		      const int *haarStartLevel,
+		      const int *haarEndLevel,
+		      const int *NbChr, // nombre de chromosomes
+		      const int *l) // nombre de probes
+  {
+    int i;
+    int start, size;
+    int nblevel = 0;
+    int nbregion = 0;
+    int stepHalfSize;
+    int *peakLoc;
+    const int nb = *l;
+    double *convResult;
 
-  void awsBkp (const double *Smoothing,
+    map<int, vector<double> > LogRatio_byChr;
+    map<int, vector<double> >::iterator it_LogRatio_byChr;
+
+
+    // récupération des informations sur la taille des chromosomes
+    // et calcul de la variance par chromosome
+    for (i = 0; i < nb ; i++)
+      {
+	LogRatio_byChr[Chromosome[i]].push_back(LogRatio[i]);
+      }
+
+    startChr[0] = 0;
+    it_LogRatio_byChr = LogRatio_byChr.begin();
+    for (i = 0; i < *NbChr; i++)
+      {
+	sizeChr[i] = it_LogRatio_byChr->second.size();
+	IQRChr[i] = it_LogRatio_byChr->first;
+	IQRValue[i] = IQRdiff(it_LogRatio_byChr->second);
+
+	if(i > 0)
+	  {
+	    startChr[i] = startChr[i - 1] + sizeChr[i - 1];
+	    if (IQRChr[i] < IQRChr[i - 1])
+	      {
+		printf("WARNINGS: Chromosome are not correctly ordered\n");
+		printf("i:%i - i+1:%i\n", IQRChr[i], IQRChr[i - 1]);
+	      }
+	  }
+	it_LogRatio_byChr++;
+      }
+
+    // segmentation chromosome par chromosome
+    for (i = 0; i < *NbChr; i++)
+      {
+	start = startChr[i];
+	size = sizeChr[i];
+	stepHalfSize = 1;
+
+	convResult = (double *)calloc(size, sizeof(double));
+	peakLoc = (int *)calloc(size, sizeof(int));
+
+
+	HaarSegGLAD(&LogRatio[start],
+		    &size,
+		    &stepHalfSize,
+		    convResult,
+		    peakLoc,
+                    breaksFdrQ,
+                    haarStartLevel,
+                    haarEndLevel,
+		    &Smoothing[start]);
+
+
+	free(convResult);
+	free(peakLoc);
+
+	nbregion += 1;
+
+	putLevel_awsBkp(&Smoothing[start],
+                        &LogRatio[start],                              
+			&Level[start],  
+			&nblevel,       
+			&size,
+			&OutliersAws[start], 
+			&nbregion,           
+			&regionChr[start],   
+			&Breakpoints[start], 
+			&BkpDetected[i]);     
+
+
+//                 putLevel <- .C("putLevel_awsBkp",
+//                                ## variables pour putLevel
+//                                Smoothing = as.double(subsetdata$Smoothing),      ## valeur de sortie
+//                                as.double(subsetdata$LogRatio),                              
+//                                Level = integer(l),                               ## valeur de sortie
+//                                nblevel = as.integer(nblevel),                    ## valeur de sortie
+//                                as.integer(l),
+//                                ## variables pour awsBkp
+//                                OutliersAws = as.integer(subsetdata$OutliersAws), ## valeur de sortie
+//                                nbregion = as.integer(nbregion),                  ## valeur de sortie
+//                                regionChr = integer(l),                           ## valeur de sortie
+//                                Breakpoints = integer(l),                         ## valeur de sortie
+//                                BkpDetected = integer(1),                         ## valeur de sortie                           
+//                                PACKAGE="GLAD")
+
+
+      }
+
+  }
+
+  void putLevel_awsBkp(//variables pour putLevel
+		       double *Smoothing,
+		       const double *LogRatio,
+		       int *Level,
+		       int *nblevel,
+		       const int *l,
+		       // variables pour awsBkp
+		       int *OutliersAws,
+		       int *nbregion,
+		       int *regionChr,
+		       int *Breakpoints,
+		       int *bkp_detected)
+  {
+
+    putLevel(Smoothing,
+	     LogRatio,
+	     Level,
+	     nblevel,
+	     l);
+
+    awsBkp (Smoothing,
+	    OutliersAws,
+	    Level,
+	    nbregion,
+	    regionChr,
+	    Breakpoints,
+	    bkp_detected,
+	    l);
+
+
+  }
+
+  void awsBkp(const double *Smoothing,
 	       int *OutliersAws,
 	       int *Level,
 	       int *nbregion,
@@ -468,7 +618,7 @@ extern "C"
     int i;
     int i_moins_un;
     int i_plus_un;
-    int i_moins_deux;
+    //    int i_moins_deux;
     const int nb=*l;
     const int nb_moins_un=*l-1;
     const int nb_moins_deux=*l-2;
@@ -1212,9 +1362,9 @@ extern "C"
     unique_ByValue = (int *)malloc(agg_LogRatio.size() * sizeof(int));
     it_agg_LogRatio=agg_LogRatio.begin();
 
-    for (j = 0; j < agg_LogRatio.size(); j++)
+    for (j = 0; j < (int)agg_LogRatio.size(); j++)
       {
-	median_ByValue[j] = median_vector_double(it_agg_LogRatio->second);
+	median_ByValue[j] = quantile_vector_double(it_agg_LogRatio->second, 0.5);
 	unique_ByValue[j] = it_agg_LogRatio->first;
 
 	it_agg_LogRatio++;
@@ -1260,7 +1410,7 @@ extern "C"
 
     int i,j;
     int nb = *length_dest;
-    int NormalCluster;
+    int NormalCluster = 0;
     int NormalCluster_not_detected = 1;
 
     int *MedianCluster_ZoneGen;
@@ -1268,7 +1418,7 @@ extern "C"
     double *MedianCluster_Median;
     int nb_unique_ZoneGen;
 
-    double RefNorm;
+    double RefNorm = 0;
     vector<int>::iterator it_new_end_NormalCluster;
 
 
@@ -1296,9 +1446,9 @@ extern "C"
     MedianCluster_ZoneGNL = (int *)malloc(agg_LogRatio.size() * sizeof(int));
     it_agg_LogRatio=agg_LogRatio.begin();
 
-    for (j = 0; j < agg_LogRatio.size(); j++)
+    for (j = 0; j < (int)agg_LogRatio.size(); j++)
       {
-	MedianCluster_Median[j] = median_vector_double(it_agg_LogRatio->second);
+	MedianCluster_Median[j] = quantile_vector_double(it_agg_LogRatio->second, 0.5);
 	MedianCluster_ZoneGen[j] = it_agg_LogRatio->first;
 
 	if(NormalCluster == it_agg_LogRatio->first)
@@ -1310,7 +1460,7 @@ extern "C"
 
       }
 
-    for (j = 0; j < agg_LogRatio.size(); j++)
+    for (j = 0; j < (int)agg_LogRatio.size(); j++)
       {
 	MedianCluster_ZoneGNL[j] = 0;
 

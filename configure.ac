@@ -1,4 +1,5 @@
-AC_INIT([locmod])
+
+AC_INIT([GLAD])
 
 dnl Select include path for gsl
 AC_ARG_WITH([include-path], AC_HELP_STRING([--with-include-path], the location header files), [include_path=$withval])
@@ -19,6 +20,10 @@ GLAD_LIBS_PATH=$library_path
 GLAD_INCLUDE_PATH=$include_path
 GLAD_LIBS_OPTIONS=$library_options
 
+echo Syntax example to pass compilation options:
+echo 'R CMD INSTALL --configure-args='--with-library-path="-L/bioinfo/local/gsl/lib/ -L/opt/SUNWspro/lib" --with-link-options="-lgsl -lRblas"' '
+echo ""
+
 if test [ -z "$GLAD_LIBS_OPTIONS" ] ; then
 echo "No link option has been given"
 echo Default will be used: -lgsl -lblas
@@ -26,12 +31,12 @@ GLAD_LIBS_OPTIONS="-lgsl -lblas"
 fi
 
 if test [ -z "$GLAD_INCLUDE_PATH" ] ; then
-echo "No include path directoty have been given"
+echo "No include path directory have been given"
 echo "default include path will be used"
 fi
 
 if test [ -z "$GLAD_LIBS_PATH" ] ; then
-echo "No library path directoty have been given"
+echo "No library path directory have been given"
 echo "default library path will be used"
 fi
 

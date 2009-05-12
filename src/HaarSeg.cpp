@@ -43,14 +43,14 @@ extern "C"
   {
     int k;
     int highEnd, lowEnd;
-    double stepNorm;
-    double lowWeightSum;
-    double highWeightSum;
-    double lowSquareSum;
-    double highSquareSum;
-    double lowNonNormed;
-    double highNonNormed;
-    double totalNorm;
+    double stepNorm = 0;
+    double lowWeightSum = 0;
+    double highWeightSum = 0;
+    double lowSquareSum = 0;
+    double highSquareSum = 0;
+    double lowNonNormed = 0;
+    double highNonNormed = 0;
+    //    double totalNorm;
 
     if (stepHalfSize > signalSize) {
       return ERROR_HAARSEG; /* TODO: handle this endcase */
@@ -113,7 +113,7 @@ extern "C"
    */
   int FindLocalPeaks(const double * signal, int signalSize, int * peakLoc)
   {
-    int k,j;
+    int k;
     int maxSuspect, minSuspect;
     int peakLocInd;
 	 
@@ -133,11 +133,11 @@ extern "C"
 	  if (maxSuspect != NOT_VALID) {
 	    peakLoc[peakLocInd] = maxSuspect;
 	    peakLocInd++;
-	    /*
-	      for (j = maxSuspect; j <= k; j++) {
-	      peakLoc[peakLocInd] = j;
-	      peakLocInd++;
-	      }/* for j */
+
+// 	      for (j = maxSuspect; j <= k; j++) {
+// 	      peakLoc[peakLocInd] = j;
+// 	      peakLocInd++;
+// 	      }
 	    maxSuspect = NOT_VALID;					 
 	  }
 	}
@@ -157,11 +157,11 @@ extern "C"
 	  if(minSuspect != NOT_VALID) {
 	    peakLoc[peakLocInd] = minSuspect;
 	    peakLocInd++;
-	    /*
-	      for (j = minSuspect; j <= k; j++) {
-	      peakLoc[peakLocInd] = j;
-	      peakLocInd++;
-	      }/* for j */
+// 	    /*
+// 	      for (j = minSuspect; j <= k; j++) {
+// 	      peakLoc[peakLocInd] = j;
+// 	      peakLocInd++;
+// 	      }/* for j */
 	    minSuspect = NOT_VALID;					 
 	  }
 	}
