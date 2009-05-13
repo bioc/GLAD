@@ -11,15 +11,15 @@ clusterglad <- function(...)
 
 
 
-clusterglad <- function(Cluster, region, clusterRegion, lambda, nmin, nmax, sigma, ...)
+clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NULL, nmin = NULL, nmax = NULL, sigma = NULL, ...)
 {
 
-  if(class(Cluster)!="hclust")stop("wrong type for Cluster")
-  if(nmin>nmax)stop("nmin greater than nmax")
+  if(class(Cluster) != "hclust")stop("wrong type for Cluster")
+  if(nmin > nmax)stop("nmin greater than nmax")
 
-  if (nmin==nmax)
+  if (nmin == nmax)
     {
-      nmin <- min(length(Cluster$order),nmin)
+      nmin <- min(length(Cluster$order), nmin)
       return(nmin)
     }
 
@@ -28,22 +28,22 @@ clusterglad <- function(Cluster, region, clusterRegion, lambda, nmin, nmax, sigm
   mergeLike <- function(data)
     {
       nbobs <- sum(data$Card)
-      barycentre <- sum(data$Mean*data$Card)
-      barycentre <- barycentre/nbobs
-      within <- sum(data$Card*data$Var)
-      within <- within/nbobs
-      between <- sum(data$Card*(data$Mean-barycentre)^2)
-      between <- between/nbobs
+      barycentre <- sum(data$Mean * data$Card)
+      barycentre <- barycentre / nbobs
+      within <- sum(data$Card * data$Var)
+      within <- within / nbobs
+      between <- sum(data$Card * (data$Mean - barycentre)^2)
+      between <- between / nbobs
       variance <- within + between
 
-      if (nbobs==1)
+      if (nbobs == 1)
         {
-          res <- data.frame(logVar=0,Mean=barycentre)
+          res <- data.frame(logVar = 0,Mean = barycentre)
         }
       else
         {
-          logVar <- nbobs*(log(variance) + (1+log(2*pi)))
-          res <- data.frame(logVar,Mean=barycentre)
+          logVar <- nbobs * (log(variance) + (1+log(2 * pi)))
+          res <- data.frame(logVar, Mean = barycentre)
         }
       
       return(res)
@@ -61,16 +61,16 @@ clusterglad <- function(Cluster, region, clusterRegion, lambda, nmin, nmax, sigm
     }
 
   
-  logLike <- rep(0,nmax-nmin+1)
+  logLike <- rep(0, nmax - nmin + 1)
 
   for (i in nmin:nmax)
     {
       
-      Classe <- data.frame(Classe=cutree(Cluster, k=i), Region=clusterRegion$Region)
-      newtab <- merge(x=clusterRegion, y=Classe, by="Region")
-      newtab <- by(newtab,newtab$Classe,mergeLike)
-      Aux <- rep(0,attr(newtab,"dim"))
-      newtabAux <- data.frame(logVar=Aux,Mean=Aux)
+      Classe <- data.frame(Classe = cutree(Cluster, k = i), Region = clusterRegion$Region)
+      newtab <- merge(x = clusterRegion, y = Classe, by = "Region")
+      newtab <- by(newtab, newtab$Classe, mergeLike)
+      Aux <- rep(0,attr(newtab, "dim"))
+      newtabAux <- data.frame(logVar = Aux, Mean = Aux)
 
       for (l in 1:i)
         {
@@ -79,13 +79,13 @@ clusterglad <- function(Cluster, region, clusterRegion, lambda, nmin, nmax, sigm
       
       newtabAux <- newtabAux[order(newtabAux$Mean),]
 
-      deltaoversigma <- abs(diff(newtabAux$Mean)/sigma)
+      deltaoversigma <- abs(diff(newtabAux$Mean) / sigma)
 
-      logLike[i-nmin+1] <- sum(newtabAux$logVar) + lambda*sum(kernelpen(deltaoversigma, ...))*log(NbTotObs)
+      logLike[i - nmin + 1] <- sum(newtabAux$logVar) + lambda * sum(kernelpen(deltaoversigma, ...)) * log(NbTotObs)
       
     }
 
 
-  return(nmin+which(logLike==min(logLike))[1]-1)
+  return(nmin + which(logLike == min(logLike))[1] - 1)
 
 }

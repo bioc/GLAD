@@ -36,7 +36,8 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
     fieldinput <- setdiff(fieldinput,fieldstodel)
     profileCGH$profileValues <- profileCGH$profileValues[,fieldinput]
 
-    
+
+    profileCGH$method <- method
     
     if (verbose)
       {
@@ -118,7 +119,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
             nmin <- 2
           }
 
-        
+        profileChr$method <- method
         profileChr <- findCluster(profileChr, method=method, genome=FALSE,
                                   lambda=lambdacluster, nmin=1, nmax=nmax,type=type,
                                   param=param, verbose=verbose)

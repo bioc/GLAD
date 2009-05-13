@@ -233,7 +233,7 @@ extern "C"
 	while(it_LogRatio != it_LogRatio_end)
 	  {
 	    agg_aux.Mean=mean_vector_double(it_LogRatio->second);
-	    agg_aux.Var=var_vector_double(it_LogRatio->second,1);
+	    agg_aux.Var=var_vector_double(it_LogRatio->second, 1);
 	    agg_aux.Card=it_LogRatio->second.size();
 	    agg_aux.LabelRegion=it_LogRatio->first;
 
@@ -753,26 +753,27 @@ extern "C"
 
   double var_vector_double(vector<double> vec, int unbiased)
   {
-    double var=0;
+    double var = 0;
     double aux;
     double mean;
     int i;
     const int vsize=vec.size();
     vector<double> vaux(vsize);
-    mean=mean_vector_double(vec);
 
-    if (vsize==1)
-      return(0);
+    mean = mean_vector_double(vec);
 
-    for (i=0;i<vsize;i++)
+    if (vsize == 1)
+      return 0;
+
+    for (i = 0; i < vsize; i++)
       {
-	aux=vec[i]-mean;
-	aux*=aux;
-	var+=aux;
+	aux = vec[i] - mean;
+	aux *= aux;
+	var += aux;
       }
 
-    if (unbiased==0)
-      return(var/(vsize-1));
+    if (unbiased == 0)
+      return var / (vsize - 1);
     else
       return(var/vsize);
 
@@ -1033,4 +1034,65 @@ extern "C"
       }
   }
 
+
+  ///////////////////////
+  // Fonction findCluster
+  ///////////////////////
+
+  void findCluster(const double *LogRatio,
+		   const int *Region,
+		   const int *OutliersTot,
+		   const int *l)
+  {
+
+    int i;
+    const int nb = *l;
+
+    map<int, vector<double> > map_Region_LogRatio;
+    map<int, vector<double> >::iterator it_map_Region_LogRatio;
+    map<int, agg> map_clusterRegion;
+
+    for(i = 0; i < nb; i++)
+      {
+	if(OutliersTot[i] == 0)
+	  {
+	    map_Region_LogRatio[Region[i]].push_back(LogRatio[i]);
+	  }
+      }
+
+    it_map_Region_LogRatio = map_Region_LogRatio.begin();
+    for (i = 0; i < map_Region_LogRatio.size(); i++)
+      {
+	// on pourrait avoir une fonction qui renvoie Mean et Var pour éviter de calculer 2 fois Mean
+	map_clusterRegion[it_map_Region_LogRatio->first].Mean =  mean_vector_double(it_map_Region_LogRatio->second);
+	map_clusterRegion[it_map_Region_LogRatio->first].Var = var_vector_double(it_map_Region_LogRatio->second, 1);
+	map_clusterRegion[it_map_Region_LogRatio->first].Card = (int)(it_map_Region_LogRatio->second.size());
+	map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion = it_map_Region_LogRatio->first;
+
+	// cas des régions avec un seul élément
+	if(it_map_Region_LogRatio->second.size() == 1)
+	  {
+	    map_clusterRegion[it_map_Region_LogRatio->first].Var = 0;
+	    map_clusterRegion[it_map_Region_LogRatio->first].VarLike = 1;
+	  }
+	else
+	  {
+	    map_clusterRegion[it_map_Region_LogRatio->first].VarLike = map_clusterRegion[it_map_Region_LogRatio->first].Var;
+	  }
+
+	printf("Mean: %f\n", map_clusterRegion[it_map_Region_LogRatio->first].Mean);
+	printf("Var: %f\n", map_clusterRegion[it_map_Region_LogRatio->first].Var);
+	printf("VarLike: %f\n", map_clusterRegion[it_map_Region_LogRatio->first].VarLike);
+	printf("Card: %i\n", map_clusterRegion[it_map_Region_LogRatio->first].Card);
+	printf("LabelRegion: %i\n", map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion);
+
+	it_map_Region_LogRatio++;
+      }
+
+  }
+
 }
+
+
+
+
