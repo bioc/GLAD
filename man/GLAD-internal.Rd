@@ -10,6 +10,7 @@
 \alias{chrBreakpoints.profileCGH}
 \alias{cluster}
 \alias{clusterglad}
+\alias{clusterglad.hclust}
 \alias{detectOutliers}
 \alias{detectOutliers.profileChr}  
 \alias{filterBkp}
