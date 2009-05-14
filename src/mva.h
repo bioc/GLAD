@@ -20,35 +20,37 @@
 #include <R.h>
 #include <Rinternals.h>
 
-void dblcen(double *a, int *na);
+extern "C"
+{
+  void dblcen(double *a, int *na);
 
-void R_distance(double *x, int *nr, int *nc, double *d, int *diag, int *method);
-
-
-
-double R_euclidean(double *x, int nr, int nc, int i1, int i2);
-double R_maximum  (double *x, int nr, int nc, int i1, int i2);
-double R_manhattan(double *x, int nr, int nc, int i1, int i2);
-double R_canberra (double *x, int nr, int nc, int i1, int i2);
-double R_dist_binary(double *x, int nr, int nc, int i1, int i2);
-double R_pearson(double *x, int nr, int nc, int i1, int i2);
-double R_correlation(double *x, int nr, int nc, int i1, int i2);
+  void R_distance(double *x, int *nr, int *nc, double *d, int *diag, int *method);
 
 
 
-
-
-SEXP R_cutree(SEXP merge, SEXP which);
-
-
-
-int ioffst(int n,int i,int j);
-
-void hcass2( int *n, int *ia,  int *ib,int *iorder, int *iia, int *iib);
-
-int hcluster(double *x, int *nr, int *nc, int *diag, int *method, int *iopt ,int *ia , int *ib,int *iorder,double *crit,double *membr, int *result);
+  double R_euclidean(double *x, int nr, int nc, int i1, int i2);
+  double R_maximum  (double *x, int nr, int nc, int i1, int i2);
+  double R_manhattan(double *x, int nr, int nc, int i1, int i2);
+  double R_canberra (double *x, int nr, int nc, int i1, int i2);
+  double R_dist_binary(double *x, int nr, int nc, int i1, int i2);
+  double R_pearson(double *x, int nr, int nc, int i1, int i2);
+  double R_correlation(double *x, int nr, int nc, int i1, int i2);
 
 
 
-int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *crit,double *membr,double *diss, int *result);
 
+  // SEXP R_cutree(SEXP merge, SEXP which);
+
+
+
+  int ioffst(int n,int i,int j);
+
+  void hcass2( int *n, int *ia,  int *ib,int *iorder, int *iia, int *iib);
+
+  int hcluster(double *x, int *nr, int *nc, int *diag, int *method, int *iopt ,int *ia , int *ib,int *iorder,double *crit,double *membr, int *result);
+
+
+
+  int hclust(int *n,int *len, int *iopt ,int *ia , int *ib,int *iorder,double *crit,double *membr,double *diss, int *result);
+
+}

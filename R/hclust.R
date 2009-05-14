@@ -44,7 +44,9 @@ hclustglad <-  function (d, method = "complete", members = NULL)
       members <- rep(1, n)
     if (length(members) != n) 
       stop("Invalid length of members")
+
     ## Ajout Philippe Hupé
+    ## modification lorsque ward est utilisé
     if (method == 1)
       {
       	coeff <- matrix(rep(members,n),n,n)
@@ -52,8 +54,8 @@ hclustglad <-  function (d, method = "complete", members = NULL)
 	d <- as.dist(as.matrix(d*d)*coeff)
       }
 
-    print("method")
-    print(method)
+##     print("method")
+##     print(method)
     
     hcl <- .C("hclust",
               n = as.integer(n),

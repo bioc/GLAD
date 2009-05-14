@@ -19,7 +19,7 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
                  "median", "centroid")
     method <- pmatch(profileChr$method, METHODS)
 
-    print(profileChr$method)
+#    print(profileChr$method)
     if (is.na(method)) 
       stop("invalid clustering method")
     if (method == -1) 
@@ -27,7 +27,7 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
     
 
 
-    print(match.call())
+#    print(match.call())
 
     nbregion <- length(unique(profileChr$profileValues[,region]))
     
@@ -61,8 +61,8 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
 
         t1.subset <- Sys.time()
 
-        print("subset")
-        print(t1.subset - t0.start)
+#        print("subset")
+#        print(t1.subset - t0.start)
 
         sagg <- split(subsetdata$LogRatio,subsetdata[,region])
         Mean <- sapply(sagg,mean)
@@ -78,20 +78,27 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
 
 
 
-### test ###
-        print(clusterRegion)
-        l <- length(profileChr$profileValues$LogRatio)
-        res <- .C("findCluster",
-                  as.double(profileChr$profileValues$LogRatio),
-                  as.integer(profileChr$profileValues[,region]),              
-                  as.integer(profileChr$profileValues$OutliersTot),
-                  as.integer(l),
-                  PACKAGE = "GLAD")
-### fin test ###
+
+##         ## test  aggregation ###
+## #        print(clusterRegion)
+##         l <- length(profileChr$profileValues$LogRatio)
+##         res <- .C("findCluster",
+##                   as.double(profileChr$profileValues$LogRatio),
+##                   as.integer(profileChr$profileValues[,region]),              
+##                   as.integer(profileChr$profileValues$OutliersTot),
+##                   ## paramètres pour clusterglad
+##                   as.double(profileChr$findClusterSigma),
+##                   as.integer(nbregion),
+##                   as.integer(l),
+##                   PACKAGE = "GLAD")
+
+##         ## fin test ###
+
+        
         t2.agg <- Sys.time()
         
-        print("aggregation")
-        print(t2.agg - t1.subset)
+##         print("aggregation")
+##         print(t2.agg - t1.subset)
 
         
         sigma <- profileChr$findClusterSigma
@@ -99,30 +106,32 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
         cluster.res <- hclustglad(dist, members = clusterRegion$Card, ...)
 
         t3.hclust <- Sys.time()
-        print("hclust")
-        print(t3.hclust - t2.agg)
+##         print("hclust")
+##         print(t3.hclust - t2.agg)
 
 
         nbclasses <- clusterglad(Cluster = cluster.res, clusterRegion = clusterRegion, lambda = lambda, nmin = nmin, nmax = nmax, sigma = sigma, type = type, param = param)
 
         t4.cluster <- Sys.time()
-        print("cluster")
-        print(t4.cluster - t3.hclust)
+##         print("cluster")
+##         print(t4.cluster - t3.hclust)
         
         classes <- cutree(cluster.res, k=nbclasses)
 
-        ## test
-        nbelt <- length(clusterRegion$Mean)
-        res.test <- .C("R_cutree",
-                       as.integer(cluster.res$merge),
-                       as.integer(nbclasses),
-                       classes = integer(nbelt), ## valeur de sortie
-                       as.integer(nbelt),
-                       PACKAGE = "GLAD")
-        print("VERIF")
-        print(which(res.test[["classes"]] != classes))
-        print("END VERIF")
-        ## fin test
+##         ## ###########
+##         ## test cutree
+##         nbelt <- length(clusterRegion$Mean)
+##         res.test <- .C("R_cutree",
+##                        as.integer(cluster.res$merge),
+##                        as.integer(nbclasses),
+##                        classes = integer(nbelt), ## valeur de sortie
+##                        as.integer(nbelt),
+##                        PACKAGE = "GLAD")
+##         print("VERIF")
+##         print(which(res.test[["classes"]] != classes))
+##         print("END VERIF")
+##         ## fin test
+##         ## ###########
         
         profileChr$NbClusterOpt <- nbclasses
         clusterRegion <- data.frame(clusterRegion, zone = classes)
@@ -150,16 +159,16 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
           }
 
         t5.merge <- Sys.time()
-        print("merge")
-        print(t5.merge - t4.cluster)
+##         print("merge")
+##         print(t5.merge - t4.cluster)
 
       }	
 
     t.end <- Sys.time()
-    print("clustering")
-    print(t.end - t5.merge)
+##     print("clustering")
+##     print(t.end - t5.merge)
 
-    print(paste("Temps findCluster:", t.end - t0.start))
+##     print(paste("Temps findCluster:", t.end - t0.start))
     
     if (verbose) print("findCluster: ending function")
     return(profileChr)

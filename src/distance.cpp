@@ -28,94 +28,96 @@
 #include <R_ext/Error.h>
 #include "mva.h"
 
-double R_euclidean(double *x, int nr, int nc, int i1, int i2)
+extern "C"
 {
+  double R_euclidean(double *x, int nr, int nc, int i1, int i2)
+  {
     double dev, dist;
     int count, j;
 
     count= 0;
     dist = 0;
     for(j = 0 ; j < nc ; j++) {
-	if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
-	    dev = (x[i1] - x[i2]);
-	    dist += dev * dev;
-	    count++;
-	}
-	i1 += nr;
-	i2 += nr;
+      if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
+	dev = (x[i1] - x[i2]);
+	dist += dev * dev;
+	count++;
+      }
+      i1 += nr;
+      i2 += nr;
     }
     if(count == 0) return NA_REAL;
     if(count != nc) dist /= ((double)count/nc);
     return sqrt(dist);
-}
+  }
 
-double R_maximum(double *x, int nr, int nc, int i1, int i2)
-{
+  double R_maximum(double *x, int nr, int nc, int i1, int i2)
+  {
     double dev, dist;
     int count, j;
 
     count = 0;
     dist = -DBL_MAX;
     for(j = 0 ; j < nc ; j++) {
-	if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
-	    dev = fabs(x[i1] - x[i2]);
-	    if(dev > dist)
-		dist = dev;
-	    count++;
-	}
-	i1 += nr;
-	i2 += nr;
+      if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
+	dev = fabs(x[i1] - x[i2]);
+	if(dev > dist)
+	  dist = dev;
+	count++;
+      }
+      i1 += nr;
+      i2 += nr;
     }
     if(count == 0) return NA_REAL;
     return dist;
-}
+  }
 
-double R_manhattan(double *x, int nr, int nc, int i1, int i2)
-{
+  double R_manhattan(double *x, int nr, int nc, int i1, int i2)
+  {
     double dist;
     int count, j;
 
     count = 0;
     dist = 0;
     for(j = 0 ; j < nc ; j++) {
-	if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
-	    dist += fabs(x[i1] - x[i2]);
-	    count++;
-	}
-	i1 += nr;
-	i2 += nr;
+      if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
+	dist += fabs(x[i1] - x[i2]);
+	count++;
+      }
+      i1 += nr;
+      i2 += nr;
     }
     if(count == 0) return NA_REAL;
     if(count != nc) dist /= ((double)count/nc);
     return dist;
-}
+  }
 
-double R_canberra(double *x, int nr, int nc, int i1, int i2)
-{
+  double R_canberra(double *x, int nr, int nc, int i1, int i2)
+  {
     double dist, sum, diff;
     int count, j;
 
     count = 0;
     dist = 0;
     for(j = 0 ; j < nc ; j++) {
-	if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
-	    sum = fabs(x[i1] + x[i2]);
-	    diff = fabs(x[i1] - x[i2]);
-	    if (sum > DBL_MIN || diff > DBL_MIN) {
-		dist += diff/sum;
-		count++;
-	    }
+      if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
+	sum = fabs(x[i1] + x[i2]);
+	diff = fabs(x[i1] - x[i2]);
+	if (sum > DBL_MIN || diff > DBL_MIN) {
+	  dist += diff/sum;
+	  count++;
 	}
-	i1 += nr;
-	i2 += nr;
+      }
+      i1 += nr;
+      i2 += nr;
     }
     if(count == 0) return NA_REAL;
     if(count != nc) dist /= ((double)count/nc);
     return dist;
-}
+  }
 
-double R_dist_binary(double *x, int nr, int nc, int i1, int i2)
-{
+  double R_dist_binary(double *x, int nr, int nc, int i1, int i2)
+  {
     int total, count, dist;
     int j;
 
@@ -124,28 +126,28 @@ double R_dist_binary(double *x, int nr, int nc, int i1, int i2)
     dist = 0;
 
     for(j = 0 ; j < nc ; j++) {
-	if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
-	    if(x[i1] || x[i2]){
-		count++;
-		if( ! (x[i1] && x[i2]) ) dist++;
-	    }
-	    total++;
+      if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
+	if(x[i1] || x[i2]){
+	  count++;
+	  if( ! (x[i1] && x[i2]) ) dist++;
 	}
-	i1 += nr;
-	i2 += nr;
+	total++;
+      }
+      i1 += nr;
+      i2 += nr;
     }
 
     if(total == 0) return NA_REAL;
     if(count == 0) return 0;
     return (double) dist / count;
-}
+  }
 
-/* Pearson / Pearson centered (correlation)
- * Added by A. Lucas
- */
+  /* Pearson / Pearson centered (correlation)
+   * Added by A. Lucas
+   */
 
-double R_pearson(double *x, int nr, int nc, int i1, int i2)
-{
+  double R_pearson(double *x, int nr, int nc, int i1, int i2)
+  {
     double num,sum1,sum2, dist;
     int count,j;
 
@@ -155,23 +157,23 @@ double R_pearson(double *x, int nr, int nc, int i1, int i2)
     sum2 = 0;
 
     for(j = 0 ; j < nc ; j++) {
-	if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
-	    num += (x[i1] * x[i2]);
-	    sum1 += (x[i1] * x[i1]);
-	    sum2 += (x[i2] * x[i2]);
-	    count++;
-	}
-	i1 += nr;
-	i2 += nr;
+      if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
+	num += (x[i1] * x[i2]);
+	sum1 += (x[i1] * x[i1]);
+	sum2 += (x[i2] * x[i2]);
+	count++;
+      }
+      i1 += nr;
+      i2 += nr;
     }
     if(count == 0) return NA_REAL;
     dist = 1 - ( num / sqrt(sum1 * sum2) );
     return dist;
-}
+  }
 
 
-double R_correlation(double *x, int nr, int nc, int i1, int i2)
-{
+  double R_correlation(double *x, int nr, int nc, int i1, int i2)
+  {
     double num,denum,sumx,sumy,sumxx,sumyy,sumxy;
     int count,j;
 
@@ -184,66 +186,67 @@ double R_correlation(double *x, int nr, int nc, int i1, int i2)
 
 
     for(j = 0 ; j < nc ; j++) {
-	if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
-	    sumxy += (x[i1] * x[i2]);
-	    sumx += x[i1];
-	    sumy += x[i2];
-	    sumxx += x[i1] * x[i1];
-	    sumyy += x[i2] * x[i2];
-	    count++;
-	}
-	i1 += nr;
-	i2 += nr;
+      if(R_FINITE(x[i1]) && R_FINITE(x[i2])) {
+	sumxy += (x[i1] * x[i2]);
+	sumx += x[i1];
+	sumy += x[i2];
+	sumxx += x[i1] * x[i1];
+	sumyy += x[i2] * x[i2];
+	count++;
+      }
+      i1 += nr;
+      i2 += nr;
     }
     if(count == 0) return NA_REAL;
     num = sumxy - ( sumx*sumy /count );
     denum = sqrt( (sumxx - (sumx*sumx /count ) )* (sumyy - (sumy*sumy /count ) ) );
     return 1 - (num / denum);
-}
+  }
 
-enum { EUCLIDEAN=1, MAXIMUM, MANHATTAN, CANBERRA, BINARY ,PEARSON, CORRELATION};
-/* == 1,2,..., defined by order in the R function dist */
+  enum { EUCLIDEAN=1, MAXIMUM, MANHATTAN, CANBERRA, BINARY ,PEARSON, CORRELATION};
+  /* == 1,2,..., defined by order in the R function dist */
 
-void R_distance(double *x, int *nr, int *nc, double *d, int *diag, int *method)
-{
+  void R_distance(double *x, int *nr, int *nc, double *d, int *diag, int *method)
+  {
     int dc, i, j, ij;
     double (*distfun)(double*, int, int, int, int) = NULL;
 
     switch(*method) {
     case EUCLIDEAN:
-	distfun = R_euclidean;
-	break;
+      distfun = R_euclidean;
+      break;
     case MAXIMUM:
-	distfun = R_maximum;
-	break;
+      distfun = R_maximum;
+      break;
     case MANHATTAN:
-	distfun = R_manhattan;
-	break;
+      distfun = R_manhattan;
+      break;
     case CANBERRA:
-	distfun = R_canberra;
-	break;
+      distfun = R_canberra;
+      break;
     case BINARY:
-	distfun = R_dist_binary;
-	break;
+      distfun = R_dist_binary;
+      break;
     case PEARSON:
-	distfun = R_pearson;
-	break;
+      distfun = R_pearson;
+      break;
     case CORRELATION:
-	distfun = R_correlation;
-	break;
+      distfun = R_correlation;
+      break;
 
     default:
-	error("distance(): invalid distance");
+      error("distance(): invalid distance");
     }
 
     dc = (*diag) ? 0 : 1; /* diag=1:  we do the diagonal */
     ij = 0;
     for(j = 0 ; j <= *nr ; j++)
-	for(i = j+dc ; i < *nr ; i++)
-	    d[ij++] = distfun(x, *nr, *nc, i, j);
+      for(i = j+dc ; i < *nr ; i++)
+	d[ij++] = distfun(x, *nr, *nc, i, j);
+  }
+
+
+
+
+
 }
-
-
-
-
-

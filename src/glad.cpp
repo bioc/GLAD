@@ -35,6 +35,7 @@
 
 #include "glad.h"
 #include "glad-function.h"
+#include "mva.h"
 
 using namespace std;
 
@@ -1042,16 +1043,26 @@ extern "C"
   void findCluster(const double *LogRatio,
 		   const int *Region,
 		   const int *OutliersTot,
+		   // paramètres pour clusterglad
+		   const double *sigma,
+		   const int *nbregion,
 		   const int *l)
   {
 
     int i;
+    int nc = 1;
+    int diag = 0;
+    int dist_method = 1;
+    int NBR = *nbregion;
     const int nb = *l;
+    double *x_Mean;
+    double *dist;
 
     map<int, vector<double> > map_Region_LogRatio;
     map<int, vector<double> >::iterator it_map_Region_LogRatio;
     map<int, agg> map_clusterRegion;
 
+    // récupération des logratios par région
     for(i = 0; i < nb; i++)
       {
 	if(OutliersTot[i] == 0)
@@ -1060,11 +1071,15 @@ extern "C"
 	  }
       }
 
+    // calcul des informations par région
+    x_Mean = (double *)malloc(*nbregion * sizeof(double));
     it_map_Region_LogRatio = map_Region_LogRatio.begin();
-    for (i = 0; i < map_Region_LogRatio.size(); i++)
+
+    for (i = 0; i < (int)map_Region_LogRatio.size(); i++)
       {
 	// on pourrait avoir une fonction qui renvoie Mean et Var pour éviter de calculer 2 fois Mean
 	map_clusterRegion[it_map_Region_LogRatio->first].Mean =  mean_vector_double(it_map_Region_LogRatio->second);
+	x_Mean[i] = map_clusterRegion[it_map_Region_LogRatio->first].Mean;
 	map_clusterRegion[it_map_Region_LogRatio->first].Var = var_vector_double(it_map_Region_LogRatio->second, 1);
 	map_clusterRegion[it_map_Region_LogRatio->first].Card = (int)(it_map_Region_LogRatio->second.size());
 	map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion = it_map_Region_LogRatio->first;
@@ -1089,6 +1104,20 @@ extern "C"
 	it_map_Region_LogRatio++;
       }
 
+    // calcul de la matrice de distance
+    dist = (double *)calloc(*nbregion * (*nbregion - 1) / 2, sizeof(double));
+
+
+    R_distance(x_Mean,
+	       &NBR,
+	       &nc, 
+	       dist, 
+	       &diag , 
+	       &dist_method);
+
+
+    free(x_Mean);
+    free(dist);
   }
 
 }

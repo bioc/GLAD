@@ -32,8 +32,8 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
         BP <- data.frame(BP,BPlag)
 ### cette jointure ne prend pas trop de temps (0.02s)
         t1 <- system.time(BP <- merge(BP, profileCGH$SigmaC))
-        print("jointure BkpInfo")
-        print(t1)
+##         print("jointure BkpInfo")
+##         print(t1)
         BP$Gap <- abs(BP$Smoothing - BP$Next)
         BP$Weight <- BP$Gap
         BP$GNLchange <- 0

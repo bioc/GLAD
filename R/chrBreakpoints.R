@@ -373,7 +373,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
       }
     else
       {
-        print("On fait la boucle en C")
+#        print("On fait la boucle en C")
 
         NbChr <- length(unique(profileCGH$profileValues$Chromosome))
         l <- length(profileCGH$profileValues$LogRatio)        
