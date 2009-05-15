@@ -694,6 +694,145 @@ extern "C"
   }
 
 
+  void MoveBkp_Step1(const int *subBkpInfo_MoveBkp,
+		     const int *subBkpInfo_PosOrder,
+		     const double *LogRatio,
+		     double *NextLogRatio,
+		     const int *Chromosome,
+		     const int *PosOrder,
+		     int *Breakpoints,
+		     int *OutliersTot,
+		     int *OutliersAws,
+		     int *OutliersMad,
+		     int *Level,
+		     int *Region,
+		     double *Smoothing,
+		     int *GNL,
+		     int *NormalRange,
+		     const double *NormalRef,
+		     const double *deltaN,
+		     const int *lensubBkp,
+		     const int *l)
+  {
+
+    int i;
+    int max_Level = -MAXINT;
+
+    MoveBkp_Delete_Bkp(subBkpInfo_MoveBkp,
+		       subBkpInfo_PosOrder,
+		       Breakpoints,
+		       OutliersTot,
+		       OutliersAws,
+		       OutliersMad,
+		       Level,
+		       Region,
+		       Smoothing,
+		       GNL,
+		       lensubBkp);
+
+
+    // recalcul de la smoothing line
+    compute_median_smoothing(LogRatio,
+			     Level,
+			     Smoothing,
+			     l);
+
+
+    for (i = 0; i < *l; i++)
+      {
+	if(Level[i] > max_Level)
+	  {
+	    max_Level = Level[i];
+	  }
+      }
+
+
+    updateLevel(Chromosome,
+		Breakpoints,
+		Level,
+		PosOrder,
+		NextLogRatio,
+		LogRatio,
+		&max_Level,
+		l);
+
+
+    compute_NormalRange(Smoothing,
+			NormalRef,
+			Level,
+			NormalRange,
+			deltaN,
+			l);
+                           
+
+
+  }
+
+
+  void MoveBkp_Step2(int *OutliersAws,
+		     int *OutliersTot,
+		     int *Level,
+		     int *Region,
+		     int *Breakpoints,
+		     // variables pour faire la jointure
+		     int *ZoneGNL,
+		     int *value_dest,
+		     const int *length_dest,
+		     double *Smoothing,
+		     const double *forceGL1Value,
+		     const double *forceGL2Value,
+		     const double *NormalRefValue,
+		     const double *ampliconValue,
+		     const double *deletionValue,
+		     const double *deltaN,
+		     //variables pour calcul la médiane par cluster
+		     const double *LogRatio,
+		     int *NormalRange)
+  {
+
+    const int *l = length_dest;
+
+
+    compute_cluster_LossNormalGain(// variables pour faire la jointure
+				   ZoneGNL,
+				   value_dest,
+				   length_dest,
+				   Smoothing,
+				   forceGL1Value,
+				   forceGL2Value,
+				   NormalRefValue,
+				   ampliconValue,
+				   deletionValue,
+				   //variables pour calcul la médiane par cluster
+				   LogRatio,
+				   NormalRange);
+
+    // Mise à jour des outliers
+    MoveBkp_updateOutliers(OutliersAws,
+			   OutliersTot,
+			   Level,
+			   Region,
+			   Breakpoints,
+			   Smoothing,
+			   ZoneGNL,
+			   l);
+
+    // recalcul de la smoothing line
+    compute_median_smoothing(LogRatio,
+			     Level,
+			     Smoothing,
+			     l);
+
+
+
+    compute_NormalRange(Smoothing,
+			NormalRefValue,
+			Level,
+			NormalRange,
+			deltaN,
+			l);
+  }
+
 
   void MoveBkp_Delete_Bkp(const int *subBkpInfo_MoveBkp,
 			  const int *subBkpInfo_PosOrder,
@@ -772,16 +911,16 @@ extern "C"
 		     const int *l)
   {
     int i;
-    const int nb=*l;
+    const int nb = *l;
 
-    *minG=MAXDOUBLE;
-    *minAmp=MAXDOUBLE;
-    *maxL=-MAXDOUBLE;
-    *maxDel=-MAXDOUBLE;
+    *minG = MAXDOUBLE;
+    *minAmp = MAXDOUBLE;
+    *maxL = -MAXDOUBLE;
+    *maxDel = -MAXDOUBLE;
 
-    for (i=0;i<nb;i++)
+    for (i = 0; i < nb; i++)
       {
-	if (OutliersTot[i]==0)
+	if (OutliersTot[i] == 0)
 	  {
 
 	    switch(ZoneGNL[i])
@@ -792,28 +931,28 @@ extern "C"
 	      case 1:
 		if(Smoothing[i] < *minG)
 		  {
-		    *minG=Smoothing[i];
+		    *minG = Smoothing[i];
 		  }
 		break;
 
 	      case -1:
 		if (Smoothing[i] > *maxL)
 		  { 
-		    *maxL=Smoothing[i]; 
+		    *maxL = Smoothing[i]; 
 		  }
 		break;
 
 	      case 2:
 		if(Smoothing[i] < *minAmp)
 		  {
-		    *minAmp=Smoothing[i];
+		    *minAmp = Smoothing[i];
 		  }
 		break;
 
 	      case -10:
 		if(Smoothing[i] > *maxDel)
 		  {
-		    *maxDel=Smoothing[i];
+		    *maxDel = Smoothing[i];
 		  }
 		break;
 

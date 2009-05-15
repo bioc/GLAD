@@ -528,58 +528,58 @@ extern "C"
 			    const double *deletionValue)
   {
     int i;
-    int *ZoneGNL=value_dest;
-    const double forceGL1=*forceGL1Value;
-    const double forceGL2=*forceGL2Value;
-    const double NormalRef=*NormalRefValue;
-    const double amplicon=*ampliconValue;
-    const double deletion=*deletionValue;
+    int *ZoneGNL = value_dest;
+    const double forceGL1 = *forceGL1Value;
+    const double forceGL2 = *forceGL2Value;
+    const double NormalRef = *NormalRefValue;
+    const double amplicon = *ampliconValue;
+    const double deletion = *deletionValue;
     double Smoothing_moins_NormalRef;
 
     map<int, int > agg_data;
 
     // construction de la map pour les données aggrégées
-    for(i=0;i<*length_src;i++)
+    for(i = 0; i < *length_src; i++)
       {
-	agg_data[index_src[i]]=value_src[i];
+	agg_data[index_src[i]] = value_src[i];
       }
 
-    for (i=0;i<*length_dest;i++)
+    for (i = 0; i < *length_dest; i++)
       {
-	value_dest[i]=agg_data[index_dest[i]];
+	value_dest[i] = agg_data[index_dest[i]];
 
 	if(NormalRef!=0)
 	  {
-	    Smoothing_moins_NormalRef=Smoothing[i]-NormalRef;
+	    Smoothing_moins_NormalRef = Smoothing[i] - NormalRef;
 	  }
 	else
 	  {
-	    Smoothing_moins_NormalRef=Smoothing[i];
+	    Smoothing_moins_NormalRef = Smoothing[i];
 	  }
 
 	// Gain et Amplicon
-	if(Smoothing_moins_NormalRef>=forceGL2)
+	if(Smoothing_moins_NormalRef >= forceGL2)
 	  {
-	    if(Smoothing_moins_NormalRef>=amplicon)
+	    if(Smoothing_moins_NormalRef >= amplicon)
 	      {
-		ZoneGNL[i]=2;
+		ZoneGNL[i] = 2;
 	      }
 	    else
 	      {
-		ZoneGNL[i]=1;
+		ZoneGNL[i] = 1;
 	      }
 	  }
 	else
 	  {
-	    if(Smoothing_moins_NormalRef<=forceGL1)
+	    if(Smoothing_moins_NormalRef <= forceGL1)
 	      {
-		if(Smoothing_moins_NormalRef<=deletion)
+		if(Smoothing_moins_NormalRef <= deletion)
 		  {
-		    ZoneGNL[i]=-10;
+		    ZoneGNL[i] = -10;
 		  }
 		else
 		  {
-		    ZoneGNL[i]=-1;
+		    ZoneGNL[i] = -1;
 		  }
 	      }
 	  }
@@ -1258,7 +1258,6 @@ extern "C"
 
     map<int, struct agg>::iterator it_map_clusterRegion;
 
-    printf("suis dans clusterglad C\n");
 
   if(nmin > nmax)
     {
@@ -1269,12 +1268,10 @@ extern "C"
     {
       if(NBR > nmin)
 	{
-	  printf("FIN dans clusterglad C\n");
 	  return nmin;
 	}
       else
 	{
-	  printf("FIN dans clusterglad C\n");
 	  return NBR;
 	}
     }
@@ -1382,9 +1379,6 @@ extern "C"
     {
       if(min_logLike == vec_logLike[i])
 	{
-
-	  printf("le min c'est: %i\n", nmin + i);
-	  printf("FIN dans clusterglad C\n");
 	  return nmin + i;
 	}
     }
