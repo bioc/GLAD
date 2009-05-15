@@ -32,9 +32,11 @@ clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NU
       barycentre <- barycentre / nbobs
       within <- sum(data$Card * data$Var)
       within <- within / nbobs
+      print(data$Mean - barycentre)
       between <- sum(data$Card * (data$Mean - barycentre)^2)
       between <- between / nbobs
       variance <- within + between
+
 
       if (nbobs == 1)
         {
@@ -53,8 +55,6 @@ clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NU
   
   NbTotObs <- sum(clusterRegion$Card)
 
-  print("NbTotObs")  
-  print(NbTotObs)
   
 
   if (nmax>length(clusterRegion[,1]))
@@ -69,17 +69,21 @@ clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NU
     {
       
       Classe <- data.frame(Classe = cutree(Cluster, k = i), Region = clusterRegion$Region)
-      print("classe")
-      print(Classe)
       newtab <- merge(x = clusterRegion, y = Classe, by = "Region")
       newtab <- by(newtab, newtab$Classe, mergeLike)
       Aux <- rep(0,attr(newtab, "dim"))
       newtabAux <- data.frame(logVar = Aux, Mean = Aux)
 
+      print("newtabAux: ICI1")
+      print(newtabAux)
+
       for (l in 1:i)
         {
           newtabAux[l,] <- newtab[[l]]
         }
+
+      print("newtabAux: ICI2")
+      print(newtabAux)
       
       newtabAux <- newtabAux[order(newtabAux$Mean),]
 

@@ -1108,12 +1108,12 @@ extern "C"
 	    map_clusterRegion[it_map_Region_LogRatio->first].VarLike = map_clusterRegion[it_map_Region_LogRatio->first].Var;
 	  }
 
-	printf("Mean: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].Mean);
-	printf("Var: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].Var);
-	printf("VarLike: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].VarLike);
-	printf("Card: %i\t", map_clusterRegion[it_map_Region_LogRatio->first].Card);
-	printf("LabelRegion: %i\t", map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion);
-	printf("\n");
+// 	printf("Mean: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].Mean);
+// 	printf("Var: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].Var);
+// 	printf("VarLike: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].VarLike);
+// 	printf("Card: %i\t", map_clusterRegion[it_map_Region_LogRatio->first].Card);
+// 	printf("LabelRegion: %i\t", map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion);
+// 	printf("\n");
 
 	it_map_Region_LogRatio++;
       }
@@ -1128,10 +1128,10 @@ extern "C"
 	       &diag , 
 	       &dist_method);
 
-    for (i = 0; i < *nbregion * (*nbregion - 1) / 2; i++)
-      {
-	printf("d = %f\n", dist[i]);
-      }
+//     for (i = 0; i < *nbregion * (*nbregion - 1) / 2; i++)
+//       {
+// 	printf("d = %f\n", dist[i]);
+//       }
 
     free(x_Mean);
 
@@ -1154,10 +1154,10 @@ extern "C"
 	   &res);
 
 
-    for (i = 0; i < NBR; i++)
-      {
-	printf("ia: %i - ib: %i - crit: %f\n", ia[i], ib[i], crit[i]);
-      }
+//     for (i = 0; i < NBR; i++)
+//       {
+// 	printf("ia: %i - ib: %i - crit: %f\n", ia[i], ib[i], crit[i]);
+//       }
 
     free(dist);
     free(members);
@@ -1171,11 +1171,11 @@ extern "C"
     free(ia);
     free(ib);
 
-    printf("NBR: %i\n", NBR);
-    for (i = 0; i < (2 * NBR - 2); i++)
-      {
-	printf("tree: %i \n", treemerge[i]);
-      }
+//     printf("NBR: %i\n", NBR);
+//     for (i = 0; i < (2 * NBR - 2); i++)
+//       {
+// 	printf("tree: %i \n", treemerge[i]);
+//       }
 
     clusterglad(map_clusterRegion,
 		treemerge,
@@ -1197,7 +1197,13 @@ extern "C"
     int nmin = min;
     int nmax = max;
     int NbTotObs = 0;
-    int *classes;
+    int *classe;
+    double logVar;
+    double Mean;
+    double logLike;
+    vector<double> vec_logVar;
+    vector<double> vec_Mean;
+    vector<double> vec_logLike;
 
     map<int, struct agg>::iterator it_map_clusterRegion;
     vector<double> logLike;
@@ -1213,10 +1219,12 @@ extern "C"
     {
       if(NBR > nmin)
 	{
+	  printf("FIN dans clusterglad C\n");
 	  return nmin;
 	}
       else
 	{
+	  printf("FIN dans clusterglad C\n");
 	  return NBR;
 	}
     }
@@ -1235,40 +1243,60 @@ extern "C"
       it_map_clusterRegion++;
     }
 
-  printf("NbTotObs: %i\n", NbTotObs);
+  //  printf("NbTotObs: %i\n", NbTotObs);
 
 
-  classes = (int *) malloc(NBR * sizeof(int));
+  classe = (int *) malloc(NBR * sizeof(int));
   for (i = nmin; i <= nmax; i++)
     {
+
+      logLike = 0;
+
       R_cutree(treemerge,
 	       &i,
-	       classes,
+	       classe,
 	       &NBR);
 
-      printf("classes\n");
-      for (j = 0; j < NBR; j++)
-	{
-	  printf("%i\t", classes[j]);
-	}
-      printf("\n");
+//       printf("classe[%i]\n", i);
+//       for (j = 0; j < NBR; j++)
+// 	{
+// 	  printf("%i\t", classe[j]);
+// 	}
+//       printf("\n");
 
-// ##         ## test cutree
-// ##         nbelt <- length(clusterRegion$Mean)
-// ##         res.test <- .C("R_cutree",
-// ##                        as.integer(cluster.res$merge),
-// ##                        as.integer(nbclasses),
-// ##                        classes = integer(nbelt), ## valeur de sortie
-// ##                        as.integer(nbelt),
-// ##                        PACKAGE = "GLAD")
-// ##         print("VERIF")
-// ##         print(which(res.test[["classes"]] != classes))
-// ##         print("END VERIF")
-// ##         ## fin test
+      for (j = 1; j <= i; j++)
+	{
+	  mergeLike(map_clusterRegion,
+		    &logVar,
+		    &Mean,
+		    classe,
+		    j);
+
+	  vec_logVar.push_back(logVar);
+	  vec_Mean.push_back(Mean);
+	}
+
+//       for (j = 0; j < (int)vec_logVar.size(); j++)
+// 	{
+// 	  printf("logVar: %f - Mean: %f\n", vec_logVar[j], vec_Mean[j]);
+// 	}
+
+
+      logLike =;
+
+//       newtabAux <- newtabAux[order(newtabAux$Mean),]
+
+//       deltaoversigma <- abs(diff(newtabAux$Mean) / sigma)
+
+//       logLike[i - nmin + 1] <- sum(newtabAux$logVar) + lambda * sum(kernelpen(deltaoversigma, ...)) * log(NbTotObs)
+
+      vec_logVar.erase(vec_logVar.begin(), vec_logVar.end());
+      vec_Mean.erase(vec_Mean.begin(), vec_Mean.end());
+
 
     }
 
-  free(classes);
+  free(classe);
 
   printf("FIN dans clusterglad C\n");
 
@@ -1280,7 +1308,9 @@ extern "C"
 
   void mergeLike(map<int, struct agg> map_clusterRegion,
 		 double *logVar,
-		 double *Mean)
+		 double *Mean,
+		 const int *classe,
+		 const int which_classe)
   {
     int nbobs = 0;
     double barycentre = 0;
@@ -1294,10 +1324,17 @@ extern "C"
     it_map_clusterRegion = map_clusterRegion.begin();
     for (i = 0; i < (int)map_clusterRegion.size(); i++)
       {
-	nbobs += it_map_clusterRegion->second.Card;
-	barycentre += it_map_clusterRegion->second.Card * it_map_clusterRegion->second.Mean;
-	within += it_map_clusterRegion->second.Card * it_map_clusterRegion->second.Var;
-	it_map_clusterRegion++;
+	if (classe[i] == which_classe)
+	  {
+	    nbobs += it_map_clusterRegion->second.Card;
+	    barycentre += it_map_clusterRegion->second.Card * it_map_clusterRegion->second.Mean;
+	    within += it_map_clusterRegion->second.Card * it_map_clusterRegion->second.Var;
+	    it_map_clusterRegion++;
+	  }
+	else
+	  {
+	    it_map_clusterRegion++;
+	  }
       }
 
     barycentre /= nbobs;
@@ -1306,14 +1343,23 @@ extern "C"
     it_map_clusterRegion = map_clusterRegion.begin();
     for (i = 0; i < (int)map_clusterRegion.size(); i++)
       {
-	tmp_between = it_map_clusterRegion->second.Mean - barycentre;
-	tmp_between = tmp_between * tmp_between;
-	between += it_map_clusterRegion->second.Card * tmp_between;
+	if (classe[i] == which_classe)
+	  {
+	    tmp_between = it_map_clusterRegion->second.Mean - barycentre;
+	    tmp_between = tmp_between * tmp_between;
+	    between += (it_map_clusterRegion->second.Card * tmp_between);
+	    it_map_clusterRegion++;
+	  }
+	else
+	  {
+	    it_map_clusterRegion++;
+	  }
       }
 
     between /= nbobs;
 
     variance = within + between;
+
 
     if (nbobs == 0)
       {
@@ -1325,37 +1371,8 @@ extern "C"
 	*logVar = nbobs * (log(variance) + (1 + log(2 * pi)));
 	*Mean = barycentre;
       }
-
   }
   
-//   mergeLike <- function(data)
-//     {
-//       print("mergeLike")
-//       print(data)
-//       nbobs <- sum(data$Card)
-//       barycentre <- sum(data$Mean * data$Card)
-//       barycentre <- barycentre / nbobs
-//       within <- sum(data$Card * data$Var)
-//       within <- within / nbobs
-//       between <- sum(data$Card * (data$Mean - barycentre)^2)
-//       between <- between / nbobs
-//       variance <- within + between
-
-//       if (nbobs == 1)
-//         {
-//           res <- data.frame(logVar = 0,Mean = barycentre)
-//         }
-//       else
-//         {
-//           logVar <- nbobs * (log(variance) + (1+log(2 * pi)))
-//           res <- data.frame(logVar, Mean = barycentre)
-//         }
-
-//       print("res")
-//       print(res)
-//       return(res)
-      
-//     }
 
 
 

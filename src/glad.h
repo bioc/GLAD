@@ -99,5 +99,11 @@ extern "C"
 		  const int min,
 		  const int max);
 
+  void mergeLike(map<int, struct agg> map_clusterRegion,
+		 double *logVar,
+		 double *Mean,
+		 const int *classe,
+		 const int which_classe);
+
 
 }
