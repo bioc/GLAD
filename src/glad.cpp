@@ -1389,9 +1389,7 @@ extern "C"
 	}
     }
 
-
-
-
+  return;
   }
 
   void mergeLike(map<int, struct agg> map_clusterRegion,
