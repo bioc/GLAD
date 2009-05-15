@@ -53,6 +53,8 @@ clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NU
   
   NbTotObs <- sum(clusterRegion$Card)
 
+  print("NbTotObs")  
+  print(NbTotObs)
   
 
   if (nmax>length(clusterRegion[,1]))
@@ -67,6 +69,8 @@ clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NU
     {
       
       Classe <- data.frame(Classe = cutree(Cluster, k = i), Region = clusterRegion$Region)
+      print("classe")
+      print(Classe)
       newtab <- merge(x = clusterRegion, y = Classe, by = "Region")
       newtab <- by(newtab, newtab$Classe, mergeLike)
       Aux <- rep(0,attr(newtab, "dim"))

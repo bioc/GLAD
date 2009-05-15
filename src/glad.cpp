@@ -1188,12 +1188,12 @@ extern "C"
 
 
   int clusterglad(map<int, struct agg> map_clusterRegion,
-		  const int *treemerge,
+		  int *treemerge,
 		  const int min,
 		  const int max)
   {
     int i, j;
-    const int NBR = (int)map_clusterRegion.size();
+    int NBR = (int)map_clusterRegion.size();
     int nmin = min;
     int nmax = max;
     int NbTotObs = 0;
@@ -1249,7 +1249,7 @@ extern "C"
       printf("classes\n");
       for (j = 0; j < NBR; j++)
 	{
-	  printf("%i\t", classes[i]);
+	  printf("%i\t", classes[j]);
 	}
       printf("\n");
 
@@ -1270,9 +1270,11 @@ extern "C"
 
   free(classes);
 
+  printf("FIN dans clusterglad C\n");
+
   return 0;
 
-  printf("FIN dans clusterglad C\n");
+
 
   }
 

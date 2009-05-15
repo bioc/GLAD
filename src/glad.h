@@ -95,7 +95,7 @@ extern "C"
 		const int *l);
 
   int clusterglad(map<int, struct agg> map_clusterRegion,
-		  const int *treemerge,
+		  int *treemerge,
 		  const int min,
 		  const int max);
 

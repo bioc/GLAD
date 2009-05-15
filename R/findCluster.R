@@ -79,18 +79,27 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
 
 
 
-##         ## test  aggregation ###
-## #        print(clusterRegion)
-##         l <- length(profileChr$profileValues$LogRatio)
-##         res <- .C("findCluster",
-##                   as.double(profileChr$profileValues$LogRatio),
-##                   as.integer(profileChr$profileValues[,region]),              
-##                   as.integer(profileChr$profileValues$OutliersTot),
-##                   ## paramètres pour clusterglad
-##                   as.double(profileChr$findClusterSigma),
-##                   as.integer(nbregion),
-##                   as.integer(l),
-##                   PACKAGE = "GLAD")
+        ## test  aggregation ###
+#        print(clusterRegion)
+        l <- length(profileChr$profileValues$LogRatio)
+        print("nbregion")
+        print(nbregion)
+        print("nmin")
+        print(nmin)
+        print("nmax")
+        print(nmax)
+        res <- .C("findCluster",
+                  as.double(profileChr$profileValues$LogRatio),
+                  as.integer(profileChr$profileValues[,region]),              
+                  as.integer(profileChr$profileValues$OutliersTot),
+                  as.integer(method),
+                  ## paramètres pour clusterglad
+                  as.double(profileChr$findClusterSigma),
+                  as.integer(nmin),
+                  as.integer(nmax),
+                  as.integer(nbregion),
+                  as.integer(l),
+                  PACKAGE = "GLAD")
 
 ##         ## fin test ###
 
