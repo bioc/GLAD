@@ -94,10 +94,15 @@ extern "C"
 		int *nblevel,
 		const int *l);
 
+
   int clusterglad(map<int, struct agg> map_clusterRegion,
 		  int *treemerge,
 		  const int min,
-		  const int max);
+		  const int max,
+		  const double sigma,
+		  const double d,
+		  const double lambda);
+
 
   void mergeLike(map<int, struct agg> map_clusterRegion,
 		 double *logVar,

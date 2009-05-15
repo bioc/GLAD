@@ -731,7 +731,7 @@ extern "C"
 
   double mean_vector_double(vector<double> vec)
   {
-    return(accumulate(vec.begin(),vec.end(),0.0)/vec.size());
+    return accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
 
   }
 
@@ -825,15 +825,15 @@ extern "C"
   double kernelpen(double x, const double d)
   {
     double k;
-    if (x>=d)
-      return(0);
+    if (x >= d)
+      return 0;
     else
       {
-	k=x/d;
-	k=k*k*k;
-	k=1-k;
-	k=k*k*k;
-	return(k);
+	k = x / d;
+	k = k * k * k;
+	k = 1 - k;
+	k = k * k * k;
+	return k;
       }
   }
 
@@ -845,23 +845,22 @@ extern "C"
     vector<struct agg>::const_iterator it_agg_b = agg_region.begin();
     vector<struct agg>::const_iterator it_agg_n = agg_region.begin();
     vector<struct agg>::const_iterator it_agg_e = agg_region.end();
-    double diff=0;
-    double sum=0;
-    double const inv_sigma=1/sigma;
+    double diff = 0;
+    double sum = 0;
+    double const inv_sigma = 1 / sigma;
     ++it_agg_n;
     while(it_agg_n != it_agg_e)
       {
-	diff=(*it_agg_n).Mean - (*it_agg_b).Mean;
-	diff*=inv_sigma;
-	diff=fabs(diff);
-	sum+=kernelpen(diff,d);  
+	diff = (*it_agg_n).Mean - (*it_agg_b).Mean;
+	diff *= inv_sigma;
+	diff = fabs(diff);
+	sum += kernelpen(diff,d);  
 	it_agg_b++;
 	++it_agg_n;
       }
 
-    return(sum);
+    return sum;
   
-
   }
 
 
@@ -1046,11 +1045,15 @@ extern "C"
   void findCluster(const double *LogRatio,
 		   const int *Region,
 		   const int *OutliersTot,
+		   int *zone,
 		   int *method,
 		   // paramètres pour clusterglad
 		   const double *sigma,
+		   const double *d,
+		   const double *lambda,
 		   const int *nmin,
 		   const int *nmax,
+		   int *nbclasses,
 		   int *nbregion,
 		   const int *l)
   {
@@ -1062,7 +1065,7 @@ extern "C"
     int NBR = *nbregion;
     int taille = NBR * (NBR - 1) / 2;
     int res = 0;
-    int *ia, *ib, *order, *treemerge;
+    int *ia, *ib, *order, *treemerge, *classe, *clusterRegion_Region;
     const int nb = *l;
     double *x_Mean;
     double *dist;
@@ -1085,6 +1088,7 @@ extern "C"
     // calcul des informations par région
     x_Mean = (double *)malloc(*nbregion * sizeof(double));
     members = (double *)malloc(*nbregion * sizeof(double));
+    clusterRegion_Region = (int *)malloc(NBR * sizeof(int));
     it_map_Region_LogRatio = map_Region_LogRatio.begin();
 
     for (i = 0; i < (int)map_Region_LogRatio.size(); i++)
@@ -1096,6 +1100,7 @@ extern "C"
 	map_clusterRegion[it_map_Region_LogRatio->first].Card = (int)(it_map_Region_LogRatio->second.size());
 	members[i] = (double)map_clusterRegion[it_map_Region_LogRatio->first].Card;
 	map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion = it_map_Region_LogRatio->first;
+	clusterRegion_Region[i] = it_map_Region_LogRatio->first;
 
 	// cas des régions avec un seul élément
 	if(it_map_Region_LogRatio->second.size() == 1)
@@ -1177,12 +1182,52 @@ extern "C"
 // 	printf("tree: %i \n", treemerge[i]);
 //       }
 
-    clusterglad(map_clusterRegion,
-		treemerge,
-		*nmin,
-		*nmax);
+
+// calcul du nombre de classes
+    *nbclasses = clusterglad(map_clusterRegion,
+			     treemerge,
+			     *nmin,
+			     *nmax,
+			     *sigma,
+			     *d,
+			     *lambda);
+
+    classe = (int *)malloc(NBR * sizeof(int));
+
+    R_cutree(treemerge,
+	     nbclasses,
+	     classe,
+	     &NBR);
 
     free(treemerge);
+
+
+    my_merge_int(Region,
+		 zone,
+                 clusterRegion_Region,
+                 classe,
+                 l,
+		 &NBR);
+
+//         profileChr$NbClusterOpt <- nbclasses
+//         clusterRegion <- data.frame(clusterRegion, zone = classes)
+
+
+//         lengthDest <- length(profileChr$profileValues[,region])
+//         lengthSrc <- length(clusterRegion$Region)
+//         myzone <- .C("my_merge_int",
+//                      as.integer(profileChr$profileValues[,region]),
+//                      zone = integer(lengthDest),
+//                      as.integer(clusterRegion$Region),
+//                      as.integer(clusterRegion$zone),
+//                      as.integer(lengthDest),
+//                      as.integer(lengthSrc),
+//                      PACKAGE="GLAD")
+
+
+    free(classe);
+    free(clusterRegion_Region);
+
 
   }
 
@@ -1190,7 +1235,10 @@ extern "C"
   int clusterglad(map<int, struct agg> map_clusterRegion,
 		  int *treemerge,
 		  const int min,
-		  const int max)
+		  const int max,
+		  const double sigma,
+		  const double d,
+		  const double lambda)
   {
     int i, j;
     int NBR = (int)map_clusterRegion.size();
@@ -1201,12 +1249,14 @@ extern "C"
     double logVar;
     double Mean;
     double logLike;
+    double min_logLike;
+    double sum_kernelpen;
     vector<double> vec_logVar;
     vector<double> vec_Mean;
     vector<double> vec_logLike;
+    vector<double> vec_deltaoversigma;
 
     map<int, struct agg>::iterator it_map_clusterRegion;
-    vector<double> logLike;
 
     printf("suis dans clusterglad C\n");
 
@@ -1250,7 +1300,6 @@ extern "C"
   for (i = nmin; i <= nmax; i++)
     {
 
-      logLike = 0;
 
       R_cutree(treemerge,
 	       &i,
@@ -1281,26 +1330,65 @@ extern "C"
 // 	  printf("logVar: %f - Mean: %f\n", vec_logVar[j], vec_Mean[j]);
 // 	}
 
+      sort(vec_Mean.begin(), vec_Mean.end());
 
-      logLike =;
+      // calcul de deltaoversigma
+      for (j = 1; j < (int)vec_Mean.size(); j++)
+	{
+	  vec_deltaoversigma.push_back(fabs(vec_Mean[j] - vec_Mean[j - 1]) / sigma);
+	  //	  printf("deltaoversigma: %f\n", vec_deltaoversigma[j - 1]);
+	}
 
-//       newtabAux <- newtabAux[order(newtabAux$Mean),]
+      // calcul de sum_kernelpen
+      if((int)vec_Mean.size() == 1)
+	{
+	  sum_kernelpen = 1;
+	}
+      else
+	{
+	  sum_kernelpen = 0;
+	}
 
-//       deltaoversigma <- abs(diff(newtabAux$Mean) / sigma)
+      for (j = 0; j < (int)vec_deltaoversigma.size(); j++)
+	{
+	  sum_kernelpen += kernelpen(vec_deltaoversigma[j], d);
+	}
 
-//       logLike[i - nmin + 1] <- sum(newtabAux$logVar) + lambda * sum(kernelpen(deltaoversigma, ...)) * log(NbTotObs)
+      logLike = 0;
+      logLike += lambda * sum_kernelpen * log(NbTotObs);
+      logLike += accumulate(vec_logVar.begin(), vec_logVar.end(), 0.0);
+
+
+      vec_logLike.push_back(logLike);
+
+      //      printf("logLike[%i]: %f\n", i, logLike);
+
 
       vec_logVar.erase(vec_logVar.begin(), vec_logVar.end());
       vec_Mean.erase(vec_Mean.begin(), vec_Mean.end());
-
+      vec_deltaoversigma.erase(vec_deltaoversigma.begin(), vec_deltaoversigma.end());
 
     }
 
   free(classe);
 
-  printf("FIN dans clusterglad C\n");
 
-  return 0;
+  min_logLike = *min_element(vec_logLike.begin(), vec_logLike.end());
+
+  //  printf("minlogLike: %f\n", min_logLike);
+  //  return(nmin + which(logLike == min(logLike))[1] - 1)
+
+  for (i = 0; i < (int)vec_logLike.size(); i++)
+    {
+      if(min_logLike == vec_logLike[i])
+	{
+
+	  printf("le min c'est: %i\n", nmin + i);
+	  printf("FIN dans clusterglad C\n");
+	  return nmin + i;
+	}
+    }
+
 
 
 
@@ -1347,7 +1435,7 @@ extern "C"
 	  {
 	    tmp_between = it_map_clusterRegion->second.Mean - barycentre;
 	    tmp_between = tmp_between * tmp_between;
-	    between += (it_map_clusterRegion->second.Card * tmp_between);
+	    between += it_map_clusterRegion->second.Card * tmp_between;
 	    it_map_clusterRegion++;
 	  }
 	else
@@ -1371,10 +1459,7 @@ extern "C"
 	*logVar = nbobs * (log(variance) + (1 + log(2 * pi)));
 	*Mean = barycentre;
       }
-  }
-  
-
-
+  }  
 
 }
 

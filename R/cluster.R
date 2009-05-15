@@ -32,7 +32,7 @@ clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NU
       barycentre <- barycentre / nbobs
       within <- sum(data$Card * data$Var)
       within <- within / nbobs
-      print(data$Mean - barycentre)
+##      print(data$Mean - barycentre)
       between <- sum(data$Card * (data$Mean - barycentre)^2)
       between <- between / nbobs
       variance <- within + between
@@ -74,25 +74,42 @@ clusterglad.hclust <- function(Cluster = NULL, clusterRegion = NULL, lambda = NU
       Aux <- rep(0,attr(newtab, "dim"))
       newtabAux <- data.frame(logVar = Aux, Mean = Aux)
 
-      print("newtabAux: ICI1")
-      print(newtabAux)
+##       print("newtabAux: ICI1")
+##       print(newtabAux)
 
       for (l in 1:i)
         {
           newtabAux[l,] <- newtab[[l]]
         }
 
-      print("newtabAux: ICI2")
-      print(newtabAux)
+##       print("newtabAux: ICI2")
+##       print(newtabAux)
       
       newtabAux <- newtabAux[order(newtabAux$Mean),]
 
       deltaoversigma <- abs(diff(newtabAux$Mean) / sigma)
 
-      logLike[i - nmin + 1] <- sum(newtabAux$logVar) + lambda * sum(kernelpen(deltaoversigma, ...)) * log(NbTotObs)
+
+##       print("deltaoversigma")
+##       print(deltaoversigma)
+##       print("sum kernelpen")
+##       print(sum(kernelpen(deltaoversigma, ...)))
+
+      if (i == 1)
+        {
+          sumkernelpen <- 1
+        }
+      else
+        {
+          sumkernelpen <- sum(kernelpen(deltaoversigma, ...))
+        }
+
+      logLike[i - nmin + 1] <- sum(newtabAux$logVar) + lambda * sumkernelpen * log(NbTotObs)
       
     }
 
+##   print("logLike")
+##   print(logLike)
 
   return(nmin + which(logLike == min(logLike))[1] - 1)
 
