@@ -111,7 +111,6 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             profileCGH$profileValues$Smoothing <- mySmoothing$Smoothing
 
             
-
             updateLevel <- .C("updateLevel",
                               as.integer(profileCGH$profileValues$Chromosome),
                               Breakpoints=as.integer(profileCGH$profileValues$Breakpoints),
@@ -150,35 +149,6 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                       lambda=profileCGH$lambdaclusterGen,
                                       nmin=profileCGH$NbClusterOpt, nmax=profileCGH$NbClusterOpt)
 
-            ## le cluster correspondant au normal est celui qui comprend
-            ## le NormalRange 0
-            ##             indexNormalRange <- which(profileCGH$profileValues$NormalRange==0)
-            ##             NormalCluster <- unique(profileCGH$profileValues$ZoneGen[indexNormalRange])
-            ##             MedianCluster <- aggregate(profileCGH$profileValues$LogRatio, list(ZoneGen=profileCGH$profileValues$ZoneGen),median,na.rm=TRUE)
-            ##             MedianCluster$ZoneGen <- as.numeric(as.character(MedianCluster$ZoneGen))
-            ##             names(MedianCluster) <- c("ZoneGen","Median")
-            ##             RefNorm <- MedianCluster$Median[which(MedianCluster$ZoneGen==NormalCluster)]
-            ##             MedianCluster$ZoneGNL <- 0
-            ##             indexClusterGain <- which(MedianCluster$Median>RefNorm)
-            ##             MedianCluster$ZoneGNL[indexClusterGain] <- 1
-            ##             indexClusterLost <- which(MedianCluster$Median<RefNorm)
-            ##             MedianCluster$ZoneGNL[indexClusterLost] <- -1
-
-            ##             lengthSrc <- length(MedianCluster$ZoneGen)
-            ##             myZoneGNL <- .C("my_merge_int_forceGL",
-            ##                             as.integer(profileCGH$profileValues$ZoneGen),
-            ##                             ZoneGNL=integer(lengthDest),
-            ##                             as.integer(MedianCluster$ZoneGen),
-            ##                             as.integer(MedianCluster$ZoneGNL),
-            ##                             as.integer(lengthDest),
-            ##                             as.integer(lengthSrc),
-            ##                             as.double(profileCGH$profileValues$Smoothing),
-            ##                             as.double(profileCGH$forceGL[1]),
-            ##                             as.double(profileCGH$forceGL[2]),
-            ##                             as.double(profileCGH$NormalRef),
-            ##                             as.double(profileCGH$amplicon),
-            ##                             as.double(profileCGH$deletion),                                                                                    
-            ##                             PACKAGE="GLAD")
 
             lengthDest <- length(profileCGH$profileValues$ZoneGen)
             myZoneGNL <- .C("compute_cluster_LossNormalGain",
@@ -191,12 +161,11 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                             as.double(profileCGH$forceGL[2]),
                             as.double(profileCGH$NormalRef),
                             as.double(profileCGH$amplicon),
-                            as.double(profileCGH$deletion),                                                                                    
+                            as.double(profileCGH$deletion),
                             ## variables pour le calcul de la médiane par cluster
                             as.double(profileCGH$profileValues$LogRatio),
                             as.integer(profileCGH$profileValues$NormalRange),
                             PACKAGE="GLAD")
-
             
 
             profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
@@ -224,7 +193,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             mySmoothing <- .C("compute_median_smoothing",
                               as.double(profileCGH$profileValues$LogRatio),
                               as.integer(profileCGH$profileValues$Level),
-                              Smoothing=double(l),
+                              Smoothing = double(l),
                               as.integer(l),
                               PACKAGE="GLAD")
 
@@ -247,9 +216,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                               as.integer(l),
                               PACKAGE="GLAD")
 
-            profileCGH$profileValues$NormalRange <- NormalRange$NormalRange
-            
-            
+            profileCGH$profileValues$NormalRange <- NormalRange$NormalRange                        
             
             
             ## le clustering est fait sur les niveaux NormalRange
@@ -258,35 +225,6 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                       lambda=profileCGH$lambdaclusterGen,
                                       nmin=profileCGH$NbClusterOpt, nmax=profileCGH$NbClusterOpt)
 
-            ## le cluster correspondant au normal est celui qui comprend
-            ## le NormalRange 0
-            ##             indexNormalRange <- which(profileCGH$profileValues$NormalRange==0)
-            ##             NormalCluster <- unique(profileCGH$profileValues$ZoneGen[indexNormalRange])
-            ##             MedianCluster <- aggregate(profileCGH$profileValues$LogRatio, list(ZoneGen=profileCGH$profileValues$ZoneGen),median,na.rm=TRUE)
-            ##             MedianCluster$ZoneGen <- as.numeric(as.character(MedianCluster$ZoneGen))
-            ##             names(MedianCluster) <- c("ZoneGen","Median")
-            ##             RefNorm <- MedianCluster$Median[which(MedianCluster$ZoneGen==NormalCluster)]
-            ##             MedianCluster$ZoneGNL <- 0
-            ##             indexClusterGain <- which(MedianCluster$Median>RefNorm)
-            ##             MedianCluster$ZoneGNL[indexClusterGain] <- 1
-            ##             indexClusterLost <- which(MedianCluster$Median<RefNorm)
-            ##             MedianCluster$ZoneGNL[indexClusterLost] <- -1
-
-            ##             lengthSrc <- length(MedianCluster$ZoneGen)
-            ##             myZoneGNL <- .C("my_merge_int_forceGL",
-            ##                             as.integer(profileCGH$profileValues$ZoneGen),
-            ##                             ZoneGNL=integer(lengthDest),
-            ##                             as.integer(MedianCluster$ZoneGen),
-            ##                             as.integer(MedianCluster$ZoneGNL),
-            ##                             as.integer(lengthDest),
-            ##                             as.integer(lengthSrc),
-            ##                             as.double(profileCGH$profileValues$Smoothing),
-            ##                             as.double(profileCGH$forceGL[1]),
-            ##                             as.double(profileCGH$forceGL[2]),
-            ##                             as.double(profileCGH$NormalRef),
-            ##                             as.double(profileCGH$amplicon),
-            ##                             as.double(profileCGH$deletion),                                                                                    
-            ##                             PACKAGE="GLAD")
 
             lengthDest <- length(profileCGH$profileValues$ZoneGen)
             myZoneGNL <- .C("compute_cluster_LossNormalGain",
