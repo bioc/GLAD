@@ -14,9 +14,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
                                    type = "tricubic", param = c(d = 6), verbose = FALSE, ...)
   {
 
-    print("param")
-    print(param)
-    
     doinR <- 0
     
     if (verbose) print("findCluster: starting function")
