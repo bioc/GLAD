@@ -694,6 +694,140 @@ extern "C"
   }
 
 
+  void MoveBkp_StepAll(const int *subBkpInfo_MoveBkp,
+		       const int *subBkpInfo_PosOrder,
+		       const double *LogRatio,
+		       double *NextLogRatio,
+		       const int *Chromosome,
+		       const int *PosOrder,
+		       int *Breakpoints,
+		       int *OutliersTot,
+		       int *OutliersAws,
+		       int *OutliersMad,
+		       int *Level,
+		       int *Region,
+		       double *Smoothing,
+		       int *ZoneGNL,
+		       int *NormalRange,
+		       // seuils
+		       const double *NormalRef,
+		       const double *deltaN,
+		       const double *forceGL1Value,
+		       const double *forceGL2Value,
+		       const double *ampliconValue,
+		       const double *deletionValue,
+		       // paramètres pour findCluster
+		       int *method,
+		       const double *Sigma,
+		       const double *d,
+		       const double *lambda,
+		       const int *min,
+		       const int *max,
+		       int *nbclasses,
+		       const int *lensubBkp,
+		       const int *l)
+  {
+
+    int *zone;
+
+    zone = (int *)malloc(*l * sizeof(int));
+
+    MoveBkp_Step1(subBkpInfo_MoveBkp,
+		  subBkpInfo_PosOrder,
+		  LogRatio,
+		  NextLogRatio,
+		  Chromosome,
+		  PosOrder,
+		  Breakpoints,
+		  OutliersTot,
+		  OutliersAws,
+		  OutliersMad,
+		  Level,
+		  Region,
+		  Smoothing,
+		  ZoneGNL,
+		  NormalRange,
+		  NormalRef,
+		  deltaN,
+		  lensubBkp,
+		  l);
+
+
+    // on fait le clustering sur NormalRange
+    findCluster(LogRatio,
+		NormalRange,              
+		OutliersTot,
+		zone,
+		method,
+		// paramètres pour clusterglad
+		Sigma,
+		d,
+		lambda,
+		min,
+		max,
+		nbclasses,
+		l);
+// il faudra récupérer nbclasses dans R (i.e. NbClusterOpt)
+
+
+  MoveBkp_Step2(OutliersAws,
+		     OutliersTot,
+		     Level,
+		     Region,
+		     Breakpoints,
+		     // variables pour faire la jointure
+		     ZoneGNL,
+		     zone,
+		     l,
+		     Smoothing,
+		     forceGL1Value,
+		     forceGL2Value,
+		     NormalRef,
+		     ampliconValue,
+		     deletionValue,
+		     deltaN,
+		     //variables pour calcul la médiane par cluster
+		     LogRatio,
+		     NormalRange);
+
+
+    // on fait le clustering sur NormalRange
+    findCluster(LogRatio,
+		NormalRange,              
+		OutliersTot,
+		zone,
+		method,
+		// paramètres pour clusterglad
+		Sigma,
+		d,
+		lambda,
+		min,
+		max,
+		nbclasses,
+		l);
+// il faudra récupérer nbclasses dans R (i.e. NbClusterOpt)
+
+
+    compute_cluster_LossNormalGain(// variables pour la jointure
+				   zone,
+				   ZoneGNL,
+				   l,
+				   Smoothing,
+				   forceGL1Value,
+				   forceGL2Value,
+				   NormalRef,
+				   ampliconValue,
+				   deletionValue,  
+				   // variables pour le calcul de la médiane par cluster
+				   LogRatio,
+				   NormalRange);
+
+
+
+    free(zone);
+
+  }
+
   void MoveBkp_Step1(const int *subBkpInfo_MoveBkp,
 		     const int *subBkpInfo_PosOrder,
 		     const double *LogRatio,

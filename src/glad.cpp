@@ -1054,7 +1054,6 @@ extern "C"
 		   const int *nmin,
 		   const int *nmax,
 		   int *nbclasses,
-		   int *nbregion,
 		   const int *l)
   {
 
@@ -1062,8 +1061,8 @@ extern "C"
     int nc = 1;
     int diag = 0;
     int dist_method = 1;
-    int NBR = *nbregion;
-    int taille = NBR * (NBR - 1) / 2;
+    int NBR;
+    int taille;
     int res = 0;
     int *ia, *ib, *order, *treemerge, *classe, *clusterRegion_Region;
     const int nb = *l;
@@ -1077,7 +1076,7 @@ extern "C"
     map<int, struct agg> map_clusterRegion;
 
     // récupération des logratios par région
-    for(i = 0; i < nb; i++)
+    for(i; i < nb; i++)
       {
 	if(OutliersTot[i] == 0)
 	  {
@@ -1085,150 +1084,123 @@ extern "C"
 	  }
       }
 
-    // calcul des informations par région
-    x_Mean = (double *)malloc(*nbregion * sizeof(double));
-    members = (double *)malloc(*nbregion * sizeof(double));
-    clusterRegion_Region = (int *)malloc(NBR * sizeof(int));
-    it_map_Region_LogRatio = map_Region_LogRatio.begin();
 
-    for (i = 0; i < (int)map_Region_LogRatio.size(); i++)
+    NBR = (int)map_Region_LogRatio.size();
+    if(NBR == 1)
       {
-	// on pourrait avoir une fonction qui renvoie Mean et Var pour éviter de calculer 2 fois Mean
-	map_clusterRegion[it_map_Region_LogRatio->first].Mean =  mean_vector_double(it_map_Region_LogRatio->second);
-	x_Mean[i] = map_clusterRegion[it_map_Region_LogRatio->first].Mean;
-	map_clusterRegion[it_map_Region_LogRatio->first].Var = var_vector_double(it_map_Region_LogRatio->second, 1);
-	map_clusterRegion[it_map_Region_LogRatio->first].Card = (int)(it_map_Region_LogRatio->second.size());
-	members[i] = (double)map_clusterRegion[it_map_Region_LogRatio->first].Card;
-	map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion = it_map_Region_LogRatio->first;
-	clusterRegion_Region[i] = it_map_Region_LogRatio->first;
-
-	// cas des régions avec un seul élément
-	if(it_map_Region_LogRatio->second.size() == 1)
+	*nbclasses = 1;
+	for (i = 0; i < nb; i++)
 	  {
-	    map_clusterRegion[it_map_Region_LogRatio->first].Var = 0;
-	    map_clusterRegion[it_map_Region_LogRatio->first].VarLike = 1;
+	    zone[i] = 1;
 	  }
-	else
-	  {
-	    map_clusterRegion[it_map_Region_LogRatio->first].VarLike = map_clusterRegion[it_map_Region_LogRatio->first].Var;
-	  }
-
-// 	printf("Mean: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].Mean);
-// 	printf("Var: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].Var);
-// 	printf("VarLike: %f\t", map_clusterRegion[it_map_Region_LogRatio->first].VarLike);
-// 	printf("Card: %i\t", map_clusterRegion[it_map_Region_LogRatio->first].Card);
-// 	printf("LabelRegion: %i\t", map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion);
-// 	printf("\n");
-
-	it_map_Region_LogRatio++;
       }
+    else
+      {
+	taille = NBR * (NBR - 1) / 2;
 
-    // calcul de la matrice de distance
-    dist = (double *)calloc(*nbregion * (*nbregion - 1) / 2, sizeof(double));
+	// calcul des informations par région
+	x_Mean = (double *)malloc(NBR * sizeof(double));
+	members = (double *)malloc(NBR * sizeof(double));
+	clusterRegion_Region = (int *)malloc(NBR * sizeof(int));
+	it_map_Region_LogRatio = map_Region_LogRatio.begin();
 
-    R_distance(x_Mean,
-	       &NBR,
-	       &nc, 
-	       dist, 
-	       &diag , 
-	       &dist_method);
+	for (i = 0; i < (int)map_Region_LogRatio.size(); i++)
+	  {
+	    // on pourrait avoir une fonction qui renvoie Mean et Var pour éviter de calculer 2 fois Mean
+	    map_clusterRegion[it_map_Region_LogRatio->first].Mean =  mean_vector_double(it_map_Region_LogRatio->second);
+	    x_Mean[i] = map_clusterRegion[it_map_Region_LogRatio->first].Mean;
+	    map_clusterRegion[it_map_Region_LogRatio->first].Var = var_vector_double(it_map_Region_LogRatio->second, 1);
+	    map_clusterRegion[it_map_Region_LogRatio->first].Card = (int)(it_map_Region_LogRatio->second.size());
+	    members[i] = (double)map_clusterRegion[it_map_Region_LogRatio->first].Card;
+	    map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion = it_map_Region_LogRatio->first;
+	    clusterRegion_Region[i] = it_map_Region_LogRatio->first;
 
-//     for (i = 0; i < *nbregion * (*nbregion - 1) / 2; i++)
-//       {
-// 	printf("d = %f\n", dist[i]);
-//       }
+	    // cas des régions avec un seul élément
+	    if(it_map_Region_LogRatio->second.size() == 1)
+	      {
+		map_clusterRegion[it_map_Region_LogRatio->first].Var = 0;
+		map_clusterRegion[it_map_Region_LogRatio->first].VarLike = 1;
+	      }
+	    else
+	      {
+		map_clusterRegion[it_map_Region_LogRatio->first].VarLike = map_clusterRegion[it_map_Region_LogRatio->first].Var;
+	      }
 
-    free(x_Mean);
+	    it_map_Region_LogRatio++;
+	  }
 
-    // clustering hiérarchique
-    ia = (int *)calloc(*nbregion, sizeof(int));
-    ib = (int *)calloc(*nbregion, sizeof(int));
-    order = (int *)calloc(*nbregion, sizeof(int));
-    crit = (double *)calloc(*nbregion, sizeof(double));
+	// calcul de la matrice de distance
+	dist = (double *)calloc(taille, sizeof(double));
+
+	R_distance(x_Mean,
+		   &NBR,
+		   &nc, 
+		   dist, 
+		   &diag , 
+		   &dist_method);
+
+	free(x_Mean);
+
+	// clustering hiérarchique
+	ia = (int *)calloc(NBR, sizeof(int));
+	ib = (int *)calloc(NBR, sizeof(int));
+	order = (int *)calloc(NBR, sizeof(int));
+	crit = (double *)calloc(NBR, sizeof(double));
 
 
-    hclust(nbregion,
-           &taille, 
-           method,
-	   ia,
-	   ib,
-	   order,
-	   crit,
-	   members,
-	   dist,
-	   &res);
+	hclust(&NBR,
+	       &taille, 
+	       method,
+	       ia,
+	       ib,
+	       order,
+	       crit,
+	       members,
+	       dist,
+	       &res);
 
 
-//     for (i = 0; i < NBR; i++)
-//       {
-// 	printf("ia: %i - ib: %i - crit: %f\n", ia[i], ib[i], crit[i]);
-//       }
-
-    free(dist);
-    free(members);
-    free(order);
-    free(crit);
+	free(dist);
+	free(members);
+	free(order);
+	free(crit);
  
-    treemerge = (int *)malloc((2 * NBR - 2) * sizeof(int));
-    memcpy(&treemerge[0], &ia[0], (NBR - 1) * sizeof(int));
-    memcpy(&treemerge[NBR - 1], &ib[0], (NBR - 1) * sizeof(int));
+	treemerge = (int *)malloc((2 * NBR - 2) * sizeof(int));
+	memcpy(&treemerge[0], &ia[0], (NBR - 1) * sizeof(int));
+	memcpy(&treemerge[NBR - 1], &ib[0], (NBR - 1) * sizeof(int));
 
-    free(ia);
-    free(ib);
-
-//     printf("NBR: %i\n", NBR);
-//     for (i = 0; i < (2 * NBR - 2); i++)
-//       {
-// 	printf("tree: %i \n", treemerge[i]);
-//       }
+	free(ia);
+	free(ib);
 
 
-// calcul du nombre de classes
-    *nbclasses = clusterglad(map_clusterRegion,
-			     treemerge,
-			     *nmin,
-			     *nmax,
-			     *sigma,
-			     *d,
-			     *lambda);
+	// calcul du nombre de classes
+	*nbclasses = clusterglad(map_clusterRegion,
+				 treemerge,
+				 *nmin,
+				 *nmax,
+				 *sigma,
+				 *d,
+				 *lambda);
 
-    classe = (int *)malloc(NBR * sizeof(int));
+	classe = (int *)malloc(NBR * sizeof(int));
 
-    R_cutree(treemerge,
-	     nbclasses,
-	     classe,
-	     &NBR);
-
-    free(treemerge);
-
-
-    my_merge_int(Region,
-		 zone,
-                 clusterRegion_Region,
-                 classe,
-                 l,
+	R_cutree(treemerge,
+		 nbclasses,
+		 classe,
 		 &NBR);
 
-//         profileChr$NbClusterOpt <- nbclasses
-//         clusterRegion <- data.frame(clusterRegion, zone = classes)
+	free(treemerge);
 
+	my_merge_int(Region,
+		     zone,
+		     clusterRegion_Region,
+		     classe,
+		     l,
+		     &NBR);
 
-//         lengthDest <- length(profileChr$profileValues[,region])
-//         lengthSrc <- length(clusterRegion$Region)
-//         myzone <- .C("my_merge_int",
-//                      as.integer(profileChr$profileValues[,region]),
-//                      zone = integer(lengthDest),
-//                      as.integer(clusterRegion$Region),
-//                      as.integer(clusterRegion$zone),
-//                      as.integer(lengthDest),
-//                      as.integer(lengthSrc),
-//                      PACKAGE="GLAD")
-
-
-    free(classe);
-    free(clusterRegion_Region);
-
-
+	free(classe);
+	free(clusterRegion_Region);
+      }
   }
 
 

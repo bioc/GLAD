@@ -215,9 +215,9 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
             ## le clustering est fait sur les niveaux NormalRange
             class(profileCGH) <- "profileChr"
-            profileCGH <- findCluster(profileCGH, region="NormalRange", method=profileCGH$method, genome=TRUE,
-                                      lambda=profileCGH$lambdaclusterGen,
-                                      nmin=profileCGH$NbClusterOpt, nmax=profileCGH$NbClusterOpt)
+            profileCGH <- findCluster(profileCGH, region = "NormalRange", method = profileCGH$method, genome = TRUE,
+                                      lambda = profileCGH$lambdaclusterGen,
+                                      nmin = profileCGH$NbClusterOpt, nmax = profileCGH$NbClusterOpt, param = profileCGH$param)
             class(profileCGH) <- "profileCGH"
 
 

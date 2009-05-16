@@ -9,9 +9,14 @@ findCluster <- function(...)
   }
 
 
-findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lambda=10, nmin=1, nmax=10, type="tricubic", param=c(d=6), verbose=FALSE, ...)
+findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
+                                   lambda = 10, nmin = 1, nmax = 10,
+                                   type = "tricubic", param = c(d = 6), verbose = FALSE, ...)
   {
 
+    print("param")
+    print(param)
+    
     doinR <- 0
     
     if (verbose) print("findCluster: starting function")
@@ -21,39 +26,39 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
                  "median", "centroid")
     method <- pmatch(profileChr$method, METHODS)
 
-                                        #    print(profileChr$method)
+
     if (is.na(method)) 
       stop("invalid clustering method")
     if (method == -1) 
       stop("ambiguous clustering method")
     
-
-
-    nbregion <- length(unique(profileChr$profileValues[,region]))
     
 
-    if (nbregion == 1) 	
-      {	
-        profileChr$NbClusterOpt <- 1
+    if(doinR)
+      {
 
-        if (genome == FALSE)
-          {
-            profileChr$profileValues$ZoneChr <- 1
+        nbregion <- length(unique(profileChr$profileValues[,region]))
+        
+        if (nbregion == 1) 	
+          {	
+            profileChr$NbClusterOpt <- 1
+
+            if (genome == FALSE)
+              {
+                profileChr$profileValues$ZoneChr <- 1
+              }
+            else
+              {
+                profileChr$profileValues$ZoneGen <- 1
+              }
           }
         else
           {
-            profileChr$profileValues$ZoneGen <- 1
-          }
-      }	
-    
-    else	
-      {
-        if(doinR)
-          {
+            
 
             subsetdata <- profileChr$profileValues[which(profileChr$profileValues$OutliersTot == 0),c(region, "LogRatio")]
             
-### vérifier le comportement pour les clusters de cardinalité 1
+            ## vérifier le comportement pour les clusters de cardinalité 1
 
             sagg <- split(subsetdata$LogRatio,subsetdata[,region])
             Mean <- sapply(sagg,mean)
@@ -94,45 +99,42 @@ findCluster.profileChr <- function(profileChr, region="Region", genome=TRUE, lam
                          as.integer(lengthSrc),
                          PACKAGE="GLAD")
           }
-        else
-          {
+      }
+    else
+      {
 
-            ## implémentation en C
-            l <- length(profileChr$profileValues$LogRatio)
-            myzone <- .C("findCluster",
-                         as.double(profileChr$profileValues$LogRatio),
-                         as.integer(profileChr$profileValues[,region]),              
-                         as.integer(profileChr$profileValues$OutliersTot),
-                         zone = integer(l),
-                         as.integer(method),
-                         ## paramètres pour clusterglad
-                         as.double(profileChr$findClusterSigma),
-                         as.double(param["d"]),
-                         as.double(lambda),
-                         as.integer(nmin),
-                         as.integer(nmax),
-                         nbclasses = integer(1),
-                         as.integer(nbregion),
-                         as.integer(l),
-                         PACKAGE = "GLAD")
-            ## fin de l'implémentation en C
+        l <- length(profileChr$profileValues$LogRatio)
+        myzone <- .C("findCluster",
+                     as.double(profileChr$profileValues$LogRatio),
+                     as.integer(profileChr$profileValues[,region]),              
+                     as.integer(profileChr$profileValues$OutliersTot),
+                     zone = integer(l),
+                     as.integer(method),
+                     ## paramètres pour clusterglad
+                     as.double(profileChr$findClusterSigma),
+                     as.double(param["d"]),
+                     as.double(lambda),
+                     as.integer(nmin),
+                     as.integer(nmax),
+                     nbclasses = integer(1),
+                     as.integer(l),
+                     PACKAGE = "GLAD")
 
 
-            profileChr$NbClusterOpt <- myzone$nbclasses
+        profileChr$NbClusterOpt <- myzone$nbclasses
 
-          }
-        
-        if (genome == FALSE)
-          {
-            profileChr$profileValues[,"ZoneChr"] <- myzone$zone
-          }
-        else
-          {
-            profileChr$profileValues[,"ZoneGen"] <- myzone$zone
-          }
+      }
+    
+    if (genome == FALSE)
+      {
+        profileChr$profileValues[,"ZoneChr"] <- myzone$zone
+      }
+    else
+      {
+        profileChr$profileValues[,"ZoneGen"] <- myzone$zone
+      }
 
 
-      }	
 
     
     if (verbose) print("findCluster: ending function")

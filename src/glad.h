@@ -110,5 +110,20 @@ extern "C"
 		 const int *classe,
 		 const int which_classe);
 
+  void findCluster(const double *LogRatio,
+		   const int *Region,
+		   const int *OutliersTot,
+		   int *zone,
+		   int *method,
+		   // paramètres pour clusterglad
+		   const double *sigma,
+		   const double *d,
+		   const double *lambda,
+		   const int *nmin,
+		   const int *nmax,
+		   int *nbclasses,
+		   const int *l);
+
+
 
 }

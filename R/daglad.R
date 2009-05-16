@@ -12,15 +12,15 @@ daglad <- function(...)
 
 
 
-daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
-                              smoothfunc="lawsglad", lkern="Exponential", model="Gaussian",
-                              qlambda=0.999,  bandwidth=10, sigma=NULL, base=FALSE, round=2,
-                              lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
-                              method="centroid", nmin=1, nmax=8,
-                              amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
-                              MinBkpWeight=0.35, CheckBkpPos=TRUE, assignGNLOut=TRUE,
+daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter = FALSE, genomestep = FALSE,
+                              smoothfunc = "lawsglad", lkern = "Exponential", model = "Gaussian",
+                              qlambda = 0.999,  bandwidth = 10, sigma = NULL, base = FALSE, round = 2,
+                              lambdabreak = 8, lambdaclusterGen = 40, param = c(d = 6), alpha = 0.001, msize = 5,
+                              method = "centroid", nmin = 1, nmax = 8,
+                              amplicon = 1, deletion = -5, deltaN = 0.10,  forceGL = c(-0.15,0.15), nbsigma = 3,
+                              MinBkpWeight = 0.35, CheckBkpPos = TRUE, assignGNLOut = TRUE,
                               breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5,
-                              verbose=FALSE, ...)
+                              verbose = FALSE, ...)
   {
 
 
@@ -39,6 +39,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     profileCGH$forceGL <- forceGL
     profileCGH$nbsigma <- nbsigma    
     profileCGH$smoothfunc <- smoothfunc
+    profileCGH$lambdabreak <- lambdabreak
+    profileCGH$param <- param
 
     profilage <- FALSE
 ## ############################################################################
@@ -216,8 +218,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         ## le clustering est fait sur les niveaux LevelG
         print("Find cluster over the Genome")
         profileCGH$findClusterSigma <- profileCGH$SigmaG$Value[1]
-        profileCGH <- findCluster(profileCGH, region="LevelG", method=method, genome=TRUE,
-                                  lambda=lambdaclusterGen, nmin=nmin, nmax=nmax)
+        profileCGH <- findCluster(profileCGH, region = "LevelG", method = method, genome = TRUE,
+                                  lambda = lambdaclusterGen, nmin = nmin, nmax = nmax, param = profileCGH$param)
         class(profileCGH) <- "profileCGH"
 
 
@@ -348,8 +350,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
     print("DNA copy number calling")
 
     class(profileCGH) <- "profileChr"
-    profileCGH <- findCluster(profileCGH, region="NormalRange", method=method, genome=TRUE,
-                              lambda=lambdaclusterGen, nmin=nmin, nmax=nmax, verbose=verbose)
+    profileCGH <- findCluster(profileCGH, region = "NormalRange", method = method, genome = TRUE,
+                              lambda = lambdaclusterGen, nmin = nmin, nmax = nmax, param = profileCGH$param, verbose = verbose)
     class(profileCGH) <- "profileCGH"
 
 
@@ -652,7 +654,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter=FALSE, normalrefcenter=FA
         profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("SmoothingNext","NextLogRatio","MaxPosOrder","MinPosOrder","ZoneGNLnext","PosOrder"))]
 
         namesprofile <- names(profileCGH$BkpInfo)
-        namesprofile[which(namesprofile=="NewPosOrder")] <- "PosOrder"
+        namesprofile[which(namesprofile == "NewPosOrder")] <- "PosOrder"
         names(profileCGH$BkpInfo) <- namesprofile
 
       }

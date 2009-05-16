@@ -115,4 +115,45 @@ extern "C"
 
 
 
+  void MoveBkp_Step1(const int *subBkpInfo_MoveBkp,
+		     const int *subBkpInfo_PosOrder,
+		     const double *LogRatio,
+		     double *NextLogRatio,
+		     const int *Chromosome,
+		     const int *PosOrder,
+		     int *Breakpoints,
+		     int *OutliersTot,
+		     int *OutliersAws,
+		     int *OutliersMad,
+		     int *Level,
+		     int *Region,
+		     double *Smoothing,
+		     int *GNL,
+		     int *NormalRange,
+		     const double *NormalRef,
+		     const double *deltaN,
+		     const int *lensubBkp,
+		     const int *l);
+
+  void MoveBkp_Step2(int *OutliersAws,
+		     int *OutliersTot,
+		     int *Level,
+		     int *Region,
+		     int *Breakpoints,
+		     // variables pour faire la jointure
+		     int *ZoneGNL,
+		     int *value_dest,
+		     const int *length_dest,
+		     double *Smoothing,
+		     const double *forceGL1Value,
+		     const double *forceGL2Value,
+		     const double *NormalRefValue,
+		     const double *ampliconValue,
+		     const double *deletionValue,
+		     const double *deltaN,
+		     //variables pour calcul la médiane par cluster
+		     const double *LogRatio,
+		     int *NormalRange);
+
+
 }

@@ -11,11 +11,23 @@ MoveBkp <- function(profileCGH, ...)
 
 MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...)
   {
-    
+
 
     if (is.data.frame(profileCGH$BkpInfo))
       {
 
+        
+        ## choix de la méthode de clustering
+        METHODS <- c("ward", "single", "complete", "average", "mcquitty", 
+                     "median", "centroid")
+        method <- pmatch(profileCGH$method, METHODS)
+
+
+        if (is.na(method)) 
+          stop("invalid clustering method")
+        if (method == -1) 
+          stop("ambiguous clustering method")
+        
 ##        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
         RecomputeBkpInfo <- FALSE
 
@@ -23,20 +35,18 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 
         l <- length(profileCGH$profileValues[,1])
         updateGNL <- .C("MoveBkp_updateGNL",
-                        ZoneGNL=as.integer(profileCGH$profileValues$ZoneGNL),
+                        ZoneGNL = as.integer(profileCGH$profileValues$ZoneGNL),
                         as.double(profileCGH$profileValues$Smoothing),
                         as.integer(profileCGH$profileValues$OutliersTot),
                         as.integer(l),
-                        PACKAGE="GLAD")
+                        PACKAGE = "GLAD")
         
 
         profileCGH$profileValues$ZoneGNL <- updateGNL$ZoneGNL
 
 
         ## ######################################
-        ##
         ## Déplacement des Bkp avec MoveBkp != 0
-        ##
         ## ######################################
 
         indexMoveBkp <- which(profileCGH$BkpInfo$MoveBkp != 0)
@@ -117,10 +127,9 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 
 ##             profileCGH$profileValues$NormalRange <- NormalRange$NormalRange
 
-
             #####################################
-            ## assemblage des différentes étapes
-            res <- .C("MoveBkp_Step1",
+            ## assemblage des différentes étapes TOUT EN C
+            res <- .C("MoveBkp_StepAll",
                       as.integer(subBkpInfo$MoveBkp),
                       as.integer(subBkpInfo$PosOrder),
                       as.double(profileCGH$profileValues$LogRatio),
@@ -139,12 +148,23 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                       ## seuils
                       as.double(profileCGH$NormalRef),
                       as.double(profileCGH$deltaN),
+                      as.double(profileCGH$forceGL[1]),
+                      as.double(profileCGH$forceGL[2]),
+                      as.double(profileCGH$amplicon),
+                      as.double(profileCGH$deletion),            
+                      ## paramètres pour findCluster
+                      as.integer(method),
+                      as.double(profileCGH$findClusterSigma),
+                      as.double(profileCGH$param["d"]),
+                      as.double(profileCGH$lambdaclusterGen),
+                      as.integer(profileCGH$NbClusterOpt),
+                      as.integer(profileCGH$NbClusterOpt),
+                      nbclasses = integer(1), ## valeur à récupérer
                       as.integer(lensubBkp),
                       as.integer(l),
                       PACKAGE="GLAD")
             ## fin de l'assemblage
             ######################################
-
 
             ## #########################################            
             ## Récuparation des données après assemblage
@@ -156,8 +176,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                         "Region",
                                         "Smoothing",
                                         "ZoneGNL",
-                                        "NextLogRatio",
-                                        "NormalRange")] <- res[c("Breakpoints",
+                                        "NextLogRatio")] <- res[c("Breakpoints",
                                                                  "OutliersTot",
                                                                  "OutliersAws",
                                                                  "OutliersMad",
@@ -165,52 +184,108 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                                                  "Region",
                                                                  "Smoothing",
                                                                  "ZoneGNL",
-                                                                 "NextLogRatio",
-                                                                 "NormalRange")]
-            
-            ## fin de la récupération des données
+                                                                 "NextLogRatio")]
+
+            profileCGH$NbClusterOpt <-  res$nbclasses
+
+            ## fin de la récupération
             ## #########################################                        
 
             
-            ## le clustering est fait sur les niveaux NormalRange
-            class(profileCGH) <- "profileChr"
-            profileCGH <- findCluster(profileCGH, region = "NormalRange", method = profileCGH$method, genome = TRUE,
-                                      lambda = profileCGH$lambdaclusterGen,
-                                      nmin = profileCGH$NbClusterOpt, nmax = profileCGH$NbClusterOpt)
+
+##             #####################################
+##             ## assemblage des différentes étapes
+##             res <- .C("MoveBkp_Step1",
+##                       as.integer(subBkpInfo$MoveBkp),
+##                       as.integer(subBkpInfo$PosOrder),
+##                       as.double(profileCGH$profileValues$LogRatio),
+##                       NextLogRatio = double(l),
+##                       as.integer(profileCGH$profileValues$Chromosome),                      
+##                       as.integer(profileCGH$profileValues$PosOrder),
+##                       Breakpoints = as.integer(profileCGH$profileValues$Breakpoints),
+##                       OutliersTot = as.integer(profileCGH$profileValues$OutliersTot),
+##                       OutliersAws = as.integer(profileCGH$profileValues$OutliersAws),
+##                       OutliersMad = as.integer(profileCGH$profileValues$OutliersMad),
+##                       Level = as.integer(profileCGH$profileValues[,region]),
+##                       Region = as.integer(profileCGH$profileValues$Region),
+##                       Smoothing = as.double(profileCGH$profileValues$Smoothing),
+##                       ZoneGNL = as.integer(profileCGH$profileValues$ZoneGNL),
+##                       NormalRange = integer(l),
+##                       ## seuils
+##                       as.double(profileCGH$NormalRef),
+##                       as.double(profileCGH$deltaN),
+##                       as.integer(lensubBkp),
+##                       as.integer(l),
+##                       PACKAGE="GLAD")
+##             ## fin de l'assemblage
+##             ######################################
 
 
-            ## ###################################
-            ## assemblage des différentes étapes
+##             ## #########################################            
+##             ## Récuparation des données après assemblage
+##             profileCGH$profileValues[,c("Breakpoints",
+##                                         "OutliersTot",
+##                                         "OutliersAws",
+##                                         "OutliersMad",
+##                                         region,
+##                                         "Region",
+##                                         "Smoothing",
+##                                         "ZoneGNL",
+##                                         "NextLogRatio",
+##                                         "NormalRange")] <- res[c("Breakpoints",
+##                                                                  "OutliersTot",
+##                                                                  "OutliersAws",
+##                                                                  "OutliersMad",
+##                                                                  "Level",
+##                                                                  "Region",
+##                                                                  "Smoothing",
+##                                                                  "ZoneGNL",
+##                                                                  "NextLogRatio",
+##                                                                  "NormalRange")]
+            
+##             ## fin de la récupération des données
+##             ## #########################################                        
 
-            res <- .C("MoveBkp_Step2",
-                      OutliersAws = as.integer(profileCGH$profileValues$OutliersAws),
-                      OutliersTot = as.integer(profileCGH$profileValues$OutliersTot),
-                      Level = as.integer(profileCGH$profileValues[,region]),
-                      Region = as.integer(profileCGH$profileValues$Region),
-                      Breakpoints = as.integer(profileCGH$profileValues$Breakpoints),                      
-                      ## variables pour la jointure
-                      as.integer(profileCGH$profileValues$ZoneGen),
-                      ZoneGNL = integer(lengthDest),
-                      as.integer(lengthDest),
-                      Smoothing = as.double(profileCGH$profileValues$Smoothing),
-                      as.double(profileCGH$forceGL[1]),
-                      as.double(profileCGH$forceGL[2]),
-                      as.double(profileCGH$NormalRef),
-                      as.double(profileCGH$amplicon),
-                      as.double(profileCGH$deletion),
-                      as.double(profileCGH$deltaN),
-                      ## variables pour le calcul de la médiane par cluster
-                      as.double(profileCGH$profileValues$LogRatio),
-                      NormalRange = as.integer(profileCGH$profileValues$NormalRange),
-                      PACKAGE="GLAD")
+            
+##             ## le clustering est fait sur les niveaux NormalRange
+##             class(profileCGH) <- "profileChr"
+##             profileCGH <- findCluster(profileCGH, region = "NormalRange", method = profileCGH$method, genome = TRUE,
+##                                       lambda = profileCGH$lambdaclusterGen,
+##                                       nmin = profileCGH$NbClusterOpt, nmax = profileCGH$NbClusterOpt, param = profileCGH$param)
 
-            ## fin de l'assemblage
-            ## ###################################
+
+##             ## ###################################
+##             ## assemblage des différentes étapes
+
+##             res <- .C("MoveBkp_Step2",
+##                       OutliersAws = as.integer(profileCGH$profileValues$OutliersAws),
+##                       OutliersTot = as.integer(profileCGH$profileValues$OutliersTot),
+##                       Level = as.integer(profileCGH$profileValues[,region]),
+##                       Region = as.integer(profileCGH$profileValues$Region),
+##                       Breakpoints = as.integer(profileCGH$profileValues$Breakpoints),                      
+##                       ## variables pour la jointure
+##                       as.integer(profileCGH$profileValues$ZoneGen),
+##                       ZoneGNL = integer(lengthDest),
+##                       as.integer(lengthDest),
+##                       Smoothing = as.double(profileCGH$profileValues$Smoothing),
+##                       as.double(profileCGH$forceGL[1]),
+##                       as.double(profileCGH$forceGL[2]),
+##                       as.double(profileCGH$NormalRef),
+##                       as.double(profileCGH$amplicon),
+##                       as.double(profileCGH$deletion),
+##                       as.double(profileCGH$deltaN),
+##                       ## variables pour le calcul de la médiane par cluster
+##                       as.double(profileCGH$profileValues$LogRatio),
+##                       NormalRange = as.integer(profileCGH$profileValues$NormalRange),
+##                       PACKAGE="GLAD")
+
+##             ## fin de l'assemblage
+##             ## ###################################
 
 
             ## ##################################
             ## récupération des données
-            profileCGH$profileValues[,c(region,"Region","Breakpoints","OutliersAws","OutliersTot", "Smoothing", "ZoneGNL", "NormalRange")] <-  res[c("Level","Region","Breakpoints","OutliersAws","OutliersTot", "Smoothing", "ZoneGNL", "NormalRange")]
+##             profileCGH$profileValues[,c(region,"Region","Breakpoints","OutliersAws","OutliersTot", "Smoothing", "ZoneGNL", "NormalRange")] <-  res[c("Level","Region","Breakpoints","OutliersAws","OutliersTot", "Smoothing", "ZoneGNL", "NormalRange")]
 
 ## ##            lengthDest <- length(profileCGH$profileValues$ZoneGen)
 ##             myZoneGNL <- .C("compute_cluster_LossNormalGain",
@@ -280,55 +355,59 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 ##             profileCGH$profileValues$NormalRange <- NormalRange$NormalRange                        
             
             
-            ## le clustering est fait sur les niveaux NormalRange
-            class(profileCGH) <- "profileChr"
-            profileCGH <- findCluster(profileCGH, region="NormalRange", method=profileCGH$method, genome=TRUE,
-                                      lambda=profileCGH$lambdaclusterGen,
-                                      nmin=profileCGH$NbClusterOpt, nmax=profileCGH$NbClusterOpt)
+##             ## le clustering est fait sur les niveaux NormalRange
+##             class(profileCGH) <- "profileChr"
+##             profileCGH <- findCluster(profileCGH, region = "NormalRange", method = profileCGH$method, genome = TRUE,
+##                                       lambda = profileCGH$lambdaclusterGen,
+##                                       nmin = profileCGH$NbClusterOpt, nmax = profileCGH$NbClusterOpt, param = profileCGH$param)
 
 
-##            lengthDest <- length(profileCGH$profileValues$ZoneGen)
-            myZoneGNL <- .C("compute_cluster_LossNormalGain",
-                            ## variables pour la jointure
-                            as.integer(profileCGH$profileValues$ZoneGen),
-                            ZoneGNL = integer(lengthDest),
-                            as.integer(lengthDest),
-                            as.double(profileCGH$profileValues$Smoothing),
-                            as.double(profileCGH$forceGL[1]),
-                            as.double(profileCGH$forceGL[2]),
-                            as.double(profileCGH$NormalRef),
-                            as.double(profileCGH$amplicon),
-                            as.double(profileCGH$deletion),  
-                            ## variables pour le calcul de la médiane par cluster
-                            as.double(profileCGH$profileValues$LogRatio),
-                            as.integer(profileCGH$profileValues$NormalRange),
-                            PACKAGE="GLAD")
+## ##            lengthDest <- length(profileCGH$profileValues$ZoneGen)
+##             myZoneGNL <- .C("compute_cluster_LossNormalGain",
+##                             ## variables pour la jointure
+##                             as.integer(profileCGH$profileValues$ZoneGen),
+##                             ZoneGNL = integer(lengthDest),
+##                             as.integer(lengthDest),
+##                             as.double(profileCGH$profileValues$Smoothing),
+##                             as.double(profileCGH$forceGL[1]),
+##                             as.double(profileCGH$forceGL[2]),
+##                             as.double(profileCGH$NormalRef),
+##                             as.double(profileCGH$amplicon),
+##                             as.double(profileCGH$deletion),  
+##                             ## variables pour le calcul de la médiane par cluster
+##                             as.double(profileCGH$profileValues$LogRatio),
+##                             as.integer(profileCGH$profileValues$NormalRange),
+##                             PACKAGE="GLAD")
             
-            profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
-            
+##             profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
+
+
+            ## Mise à jour du BkpInfo
             class(profileCGH) <- "profileCGH"
             profileCGH$BkpInfo <- BkpInfo(profileCGH, order=FALSE)
 
             
             class(profileCGH) <- "profileChr"
-            profileCGH <- detectOutliers(profileCGH, region=region, alpha=profileCGH$alpha, msize=profileCGH$msize)
+            profileCGH <- detectOutliers(profileCGH, region = region, alpha = profileCGH$alpha, msize = profileCGH$msize)
 
             ## Mise à jour du GNL des Outliers
             class(profileCGH) <- "profileCGH"
             if(assignGNLOut)
               {
-                profileCGH <- OutliersGNL(profileCGH, alpha=profileCGH$alpha, sigma=profileCGH$SigmaG$Value, NormalRef=profileCGH$NormalRef, amplicon=profileCGH$amplicon, deletion=profileCGH$deletion)
-
+                profileCGH <- OutliersGNL(profileCGH, alpha = profileCGH$alpha, sigma = profileCGH$SigmaG$Value,
+                                          NormalRef = profileCGH$NormalRef, amplicon = profileCGH$amplicon,
+                                          deletion = profileCGH$deletion)
               }
 
-            profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGen","NormalRange"))]            
+            ## si on fait tout directement en C cette étape n'est plus nécessaire car
+            ## il suffit de na pas récupéper les champs ZoneGen et NormalRange
+##            profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGen","NormalRange"))]            
           }
 
         else
           {
             profileCGH$profileValues$ZoneGNL <- ZoneGNLAux
-          }
-        
+          }        
 
       }
 
