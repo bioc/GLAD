@@ -35,6 +35,7 @@
 #define MAXDOUBLE DBL_MAX
 #endif
 
+#include "glad-struct.h"
 #include "glad.h"
 #include "glad-function.h"
 #include "mva.h"

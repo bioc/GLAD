@@ -14,6 +14,7 @@
 
 #include <map>
 
+#include "glad-struct.h"
 #include "glad-function.h"
 #include "glad.h"
 #include "HaarSeg.h"

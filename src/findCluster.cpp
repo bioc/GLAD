@@ -14,9 +14,10 @@
 #include <functional>
 #include <algorithm>
 
-
+#include "glad-struct.h"
 #include "findCluster.h"
 #include "glad-function.h"
+#include "glad.h"
 #include "mva.h"
 #include "cutree.h"
 

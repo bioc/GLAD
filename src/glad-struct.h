@@ -1,3 +1,6 @@
+#include <vector>
+
+using namespace std;
 
 struct paire_double
 {
