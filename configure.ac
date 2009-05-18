@@ -56,6 +56,23 @@ case $OS in
 		fi
 	fi
 	;;
+       *)
+	"echo operating system: $OS"
+	## BLAS.
+	AC_ARG_WITH([blas],
+	[AC_HELP_STRING([--with-blas],
+	                [use system gsl BLAS library (if available)])],
+			[BLAS_LIBS=$with_blas],
+			[BLAS_LIBS="-lgslcblas"])
+
+	PKG_CHECK_MODULES(GSL, [gsl >= 1.6], [HAVEGSL="yes"], [HAVEGSL="no"])
+	if test "$HAVEGSL" = "yes"; then
+		LIBS=$GSL_LIBS
+	else 
+		AM_PATH_GSL(1.6,[LIBS="${LIBS} -lgsl ${BLAS_LIBS} -lm"],[AC_MSG_ERROR([Cannot find Gnu Scientific Library >=1.6])])
+	fi
+
+	;;
 esac
 
 
