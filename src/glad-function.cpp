@@ -111,28 +111,28 @@ extern "C"
 		    const int *maxLevel,
 		    const int *l)
   {
-    const int nb=*l;
+    const int nb = *l;
     int pos_moins_un;
     int pos;
-    int idLevel=*maxLevel;
+    int idLevel = *maxLevel;
  
-    for (pos=1;pos<nb;pos++)
+    for (pos = 1; pos < nb; pos++)
       {
-	pos_moins_un=pos-1;
-	if (Chromosome[pos]==Chromosome[pos_moins_un])
+	pos_moins_un = pos - 1;
+	if (Chromosome[pos] == Chromosome[pos_moins_un])
 	  {
-	    if (Breakpoints[pos_moins_un]!=1)
+	    if (Breakpoints[pos_moins_un] != 1)
 	      {
-		Level[pos]=Level[pos_moins_un];
+		Level[pos] = Level[pos_moins_un];
 		//		Region[pos]=Region[pos_moins_un];
 	      }
-	    if (Breakpoints[pos_moins_un]==1)
+	    if (Breakpoints[pos_moins_un] == 1)
 	      {
-		NextLogRatio[pos_moins_un]=LogRatio[pos];
-		if (Level[pos_moins_un]==Level[pos])
+		NextLogRatio[pos_moins_un] = LogRatio[pos];
+		if (Level[pos_moins_un] == Level[pos])
 		  {
 		    idLevel++;
-		    Level[pos]=idLevel;
+		    Level[pos] = idLevel;
 		  }
 	      }
 	  }
@@ -145,25 +145,24 @@ extern "C"
 		       int *Breakpoints,
 		       double *Smoothing,
 		       const int *l)
-  {
-  
+  { 
     int pos;
     int pos_moins_un;
-    const int nb=*l-1;
+    const int nb = *l - 1;
 
-    for (pos=1;pos<nb;pos++)
+    for (pos = 1; pos < nb; pos++)
       {
-	pos_moins_un=pos-1;
-	if (Level[pos_moins_un]==Level[pos+1] && Level[pos_moins_un]!=Level[pos])
+	pos_moins_un = pos - 1;
+	if (Level[pos_moins_un] == Level[pos + 1] && 
+	    Level[pos_moins_un] != Level[pos])
 	  {
-	    Level[pos]=Level[pos_moins_un];
-	    Breakpoints[pos_moins_un]=0;
-	    Breakpoints[pos]=0;
-	    OutliersAws[pos]=1;
-	    Smoothing[pos]=Smoothing[pos_moins_un];
+	    Level[pos] = Level[pos_moins_un];
+	    Breakpoints[pos_moins_un] = 0;
+	    Breakpoints[pos] = 0;
+	    OutliersAws[pos] = 1;
+	    Smoothing[pos] = Smoothing[pos_moins_un];
 	  }
       }
-
   }
 
 

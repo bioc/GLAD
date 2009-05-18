@@ -30,7 +30,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
       stop("ambiguous clustering method")
     
     
-
     if(doinR)
       {
 
@@ -50,9 +49,7 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
               }
           }
         else
-          {
-            
-
+          {            
             subsetdata <- profileChr$profileValues[which(profileChr$profileValues$OutliersTot == 0),c(region, "LogRatio")]
             
             ## vérifier le comportement pour les clusters de cardinalité 1
@@ -75,7 +72,9 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
             cluster.res <- hclustglad(dist, members = clusterRegion$Card, ...)
 
 
-            nbclasses <- clusterglad(Cluster = cluster.res, clusterRegion = clusterRegion, lambda = lambda, nmin = nmin, nmax = nmax, sigma = sigma, type = type, param = param)
+            nbclasses <- clusterglad(Cluster = cluster.res, clusterRegion = clusterRegion,
+                                     lambda = lambda, nmin = nmin, nmax = nmax,
+                                     sigma = sigma, type = type, param = param)
 
             
             classes <- cutree(cluster.res, k=nbclasses)
@@ -130,8 +129,6 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
       {
         profileChr$profileValues[,"ZoneGen"] <- myzone$zone
       }
-
-
 
     
     if (verbose) print("findCluster: ending function")
