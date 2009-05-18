@@ -402,6 +402,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
         ## récupération des informations
         ## ##############################        
 
+        
         ## Range de position pour chaque chromosome
         MinPosOrder <- res[["startChr"]] + 1
         MaxPosOrder <- res[["sizeChr"]] + MinPosOrder - 1
@@ -418,8 +419,14 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                                              BkpDetected = res[["BkpDetected"]])
 
         ## valeurs de segmentation
-        profileCGH$profileValues[,c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- res[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
+        
+
+
+
+        profileCGH$profileValues[,c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- res[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]   
         profileCGH$profileValues <- data.frame(profileCGH$profileValues, MinPosOrder = 0, MaxPosOrder = 0)
+
+        
 
       }
 
