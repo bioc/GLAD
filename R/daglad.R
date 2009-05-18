@@ -26,7 +26,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     IQRdiff <- function(y) IQR(diff(y))/1.908
     
-## Récupération des paramètres de la fonction    
+    ## Récupération des paramètres de la fonction    
     profileCGH$alpha <- alpha
     profileCGH$msize <- msize
     profileCGH$amplicon <- amplicon
@@ -41,21 +41,18 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$smoothfunc <- smoothfunc
     profileCGH$lambdabreak <- lambdabreak
     profileCGH$param <- param
+    profileCGH$NbProbes <- length(profileCGH$profileValues[,1])
 
-    profilage <- FALSE
-## ############################################################################
-##
-## Préparation des données
-##
-## ############################################################################
+    ## ############################################################################
+    ## Préparation des données
+    ## ############################################################################
 
-    if(profilage) Rprof("/tmp/Step00DataPreparation.dat")
-## vérification de l'object donné en entrée
+    ## vérification de l'object donné en entrée
 
     if (verbose) print("daglad - step CheckData")
     CheckData(profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc)
 
-    if(base==TRUE)
+    if(base == TRUE)
       {
         if(!require(aws))
           {
@@ -64,14 +61,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
       }
 
     
-    if(smoothfunc=="lawsglad" & model!="Gaussian")
+    if(smoothfunc == "lawsglad" & model != "Gaussian")
       stop("Error in daglad: for lawsglad, only Gaussian model is available")
 
-    if(smoothfunc=="lawsglad" & base==TRUE)
+    if(smoothfunc == "lawsglad" & base == TRUE)
       stop("Error in daglad: for lawsglad it is not possible to use the option base=TRUE. Choose laws smoothfunc instead.")
 
     
-    if (smoothfunc!="lawsglad" && smoothfunc!="haarseg")      
+    if (smoothfunc != "lawsglad" && smoothfunc != "haarseg")      
       {
         print(paste("You have chosen smoothfunc=", smoothfunc))
         print(paste("Choose smoothfunc=lawsglad or smoothfunc=haarseg if you want the process runs faster"))
@@ -85,33 +82,31 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     inputfields <- setdiff(inputfields,fieldstodel)
     profileCGH$profileValues <- profileCGH$profileValues[,inputfields]
 
-### Il faut des PosOrder uniques
+    ## Il faut des PosOrder uniques
     profileCGH$profileValues$NewPosOrder <- profileCGH$profileValues$PosOrder
     profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$Chromosome,profileCGH$profileValues$PosOrder),]
-    profileCGH$profileValues$PosOrder <- 1:length(profileCGH$profileValues[,1])
-    rownames(profileCGH$profileValues) <- 1:length(profileCGH$profileValues$LogRatio)
+    profileCGH$profileValues$PosOrder <- 1:profileCGH$NbProbes
+    rownames(profileCGH$profileValues) <- 1:profileCGH$NbProbes
     
-## LogRatio are median-centered
+    ## LogRatio are median-centered
     if (mediancenter)
       {
         med <- median(profileCGH$profileValues$LogRatio)
         profileCGH$profileValues$LogRatio <- profileCGH$profileValues$LogRatio - med
       }
 
-    if(profilage)Rprof(NULL)
 
-## ############################################################################
-##
-## Début de l'analyse daglad
-##
-## ############################################################################
+    ## ############################################################################
+    ##
+    ## Début de l'analyse daglad
+    ##
+    ## ############################################################################
 
-## #####################################################
-## AWS smoothing chromosome par chromosome
-## #####################################################    
+    ## #####################################################
+    ## AWS smoothing chromosome par chromosome
+    ## #####################################################    
 
     print("Smoothing for each Chromosome")
-    if(profilage) Rprof("/tmp/Step01DataSegmentation.dat")    
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma,
                                  bandwidth=bandwidth, lkern=lkern, model=model, qlambda=qlambda,
                                  round=round, verbose=verbose,
@@ -122,12 +117,9 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$Sigma <- NULL
     
     
-    if(profilage)Rprof(NULL)
-    
-
-## #####################################################
-##  AWS smoothing sur l'ensemble du génome
-## #####################################################   
+    ## #####################################################
+    ##  AWS smoothing sur l'ensemble du génome
+    ## #####################################################   
 
 
     if (genomestep)
@@ -243,7 +235,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         fields.kept <- setdiff(names(profileCGH$profileValues),c("LevelG", "OutliersAws", "OutliersMad", "OutliersTot", "ZoneGNL"))
         profileCGH$profileValues <- profileCGH$profileValues[,fields.kept]
 
-## on récupère les champs calculés chromosome par chromosome
+        ## on récupère les champs calculés chromosome par chromosome
         namesprofile <- names(profileCGH$profileValues)
         namesprofile[which(namesprofile == "SmoothingC")] <- "Smoothing"    
         namesprofile[which(namesprofile == "LevelC")] <- "Level"
@@ -252,15 +244,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         namesprofile[which(namesprofile == "OutliersAwsC")] <- "OutliersAws"
         names(profileCGH$profileValues) <- namesprofile
 
-        profileCGH$profileValues <- data.frame(profileCGH$profileValues, OutliersMad=0, OutliersTot=0)
+        profileCGH$profileValues <- data.frame(profileCGH$profileValues, OutliersMad = 0, OutliersTot = 0)
 
         
       } ## fin (if) de l'étape sur le génome
     else
       {
 
-
-        profileCGH$profileValues <- data.frame(profileCGH$profileValues, OutliersMad=0, OutliersTot=0)
+        profileCGH$profileValues <- data.frame(profileCGH$profileValues, OutliersMad = 0,  OutliersTot = 0)
         profileCGH$NormalRef <- 0
 
 
@@ -280,38 +271,32 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
 
-## ################################################
-## fin de l'étape sur le génome
-## ############################################
+    ## ################################################
+    ## fin de l'étape sur le génome
+    ## ############################################
 
 
-    if(profilage) Rprof("/tmp/Step04DataPreparation.dat")    
     ## On va appliquer la fonction removeLevel
     ## l'objet doit donc être de type profileChr
-    class(profileCGH) <- "profileChr"
 
 
-    indice <- 1:length(profileCGH$profileValues[,1])
-    ChrIndice <- split(indice,profileCGH$profileValues$Chromosome)
-    NbChr <- length(names(ChrIndice))
+##     indice <- 1:length(profileCGH$profileValues[,1])
+##     ChrIndice <- split(indice,profileCGH$profileValues$Chromosome)
+##     NbChr <- length(names(ChrIndice))
 
-    Init <- 0       
-    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio=Init)
+##    Init <- 0       
+    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio = 0)
     FieldOrder <- names(profileCGH$profileValues)
 
-    if(profilage) Rprof(NULL)
     print("Optimization of the Breakpoints")
-
     
-    if(profilage) Rprof("/tmp/Step05BkpOptimization.dat")
-
     
     startChr <- profileCGH$PosOrderRange$MinPosOrder - 1 ### car on commence à compter à 0
     sizeChr <- profileCGH$PosOrderRange$MaxPosOrder - profileCGH$PosOrderRange$MinPosOrder + 1
 
 
-    
-    l <- length(profileCGH$profileValues$Level)
+    NbChr <- length(startChr)
+    l <- profileCGH$NbProbes
     resLoopChr <- .C("OptmisationBreakpointsStep",
                      Smoothing = double(l), ## valeur de sortie
                      NormalRange = integer(l),
@@ -340,10 +325,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     fields.replaced <- c("Smoothing", "NextLogRatio","Level", "OutliersAws", "OutliersMad", "OutliersTot", "Breakpoints", "NormalRange")
     profileCGH$profileValues[,fields.replaced] <- resLoopChr[fields.replaced]
-    
-
-    
-    if(profilage)Rprof(NULL)
+        
 
     
     ## le clustering est fait sur les niveaux NormalRange
@@ -356,11 +338,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
 
-
-    if(profilage) Rprof("/tmp/Step08DataPreparation.dat")                
-
-
-    lengthDest <- length(profileCGH$profileValues$ZoneGen)
+    lengthDest <- profileCGH$NbProbes
     myZoneGNL <- .C("compute_cluster_LossNormalGain",
                     ## variables pour la jointure
                     as.integer(profileCGH$profileValues$ZoneGen),
@@ -380,12 +358,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
 
     profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
-
-
     
-    
-    if(profilage)Rprof(NULL)
-
 
     ## Calcul d'un poids pour les Breakpoints
     ## Attention: comme on calcul une variable GNLchange
@@ -398,219 +371,45 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
     
-### 01052009 Suppression de cette étape
-### Les Breakpoints consécutifs ont été supprimés
-### dans les fonctions précédentes
-
-#####################        
-### DEBUT SUPPRESSION
-#####################            
-    
-##     RecomputeGNL <- FALSE
-##     ## Epuration des Breakpoints consécutifs
-##     if (is.data.frame(profileCGH$BkpInfo))
-##       {
-##         profileCGH$BkpInfo <- profileCGH$BkpInfo[order(profileCGH$BkpInfo$PosOrder),]
-##         profileCGH$BkpInfo$BkpToDel <- rep(0, length(profileCGH$BkpInfo[,1]))
-##         profileCGH$BkpInfo$Side <- profileCGH$BkpInfo$BkpToDel
-##         profileCGH$BkpInfo$NextPosOrder <- profileCGH$BkpInfo$PosOrder + 1
-
-##         ## on regarde que si il y a au moins 2 Bkp
-##         if (length(profileCGH$BkpInfo[,1])>1)
-##           {
-
-##             deleteContiguousBkp <- .C("delete_contiguous_bkp",
-##                                       BkpToDel=as.integer(profileCGH$BkpInfo$BkpToDel),
-##                                       Gap=as.double(profileCGH$BkpInfo$Gap),
-##                                       LogRatio=as.double(profileCGH$BkpInfo$LogRatio),
-##                                       NextPosOrder=as.integer(profileCGH$BkpInfo$NextPosOrder),
-##                                       PosOrder=as.integer(profileCGH$BkpInfo$PosOrder),
-##                                       Side=as.integer(profileCGH$BkpInfo$Side),
-##                                       Sigma=as.double(profileCGH$BkpInfo$Sigma),
-##                                       Smoothing=as.double(profileCGH$BkpInfo$Smoothing),
-##                                       SmoothingNext=as.double(profileCGH$BkpInfo$SmoothingNext),
-##                                       Weight=as.double(profileCGH$BkpInfo$Weight),
-##                                       as.integer(length(profileCGH$BkpInfo[,1])),
-##                                       RecomputeGNL=as.integer(0),
-##                                       as.integer(nbsigma),                                      
-##                                       PACKAGE="GLAD")
-
-
-##             profileCGH$BkpInfo[,c("BkpToDel",
-##                                   "Gap",
-##                                   "LogRatio",
-##                                   "NextPosOrder",
-##                                   "PosOrder",
-##                                   "Side",
-##                                   "Sigma",
-##                                   "Smoothing",
-##                                   "SmoothingNext",
-##                                   "Weight")] <- deleteContiguousBkp[c("BkpToDel",
-##                                                                       "Gap",
-##                                                                       "LogRatio",
-##                                                                       "NextPosOrder",
-##                                                                       "PosOrder",
-##                                                                       "Side",
-##                                                                       "Sigma",
-##                                                                       "Smoothing",
-##                                                                       "SmoothingNext",
-##                                                                       "Weight")]
-            
-##             RecomputeGNL <- deleteContiguousBkp$RecomputeGNL
-
-##           }
-
-
-##         ## ICI on peut encore optimiser en supprimant la boucle for
-##         indexBPtoDel <- which(profileCGH$BkpInfo$BkpToDel==1)
-##         if (length(indexBPtoDel)>0)
-##           {
-
-##             if(profilage) Rprof("/tmp/Step11BkpInfo.dat")                                                                   
-##             profile <- profileCGH$profileValues
-##             profile <- profile[order(profile$PosOrder),]
-
-##             for (ind in indexBPtoDel)
-##               {
-                
-##                 profile <- profile[order(profile$PosOrder),]
-##                 indextochange <- profileCGH$BkpInfo$PosOrder[ind]
-##                 profile$Breakpoints[indextochange] <- 0
-                
-##                 if (profileCGH$BkpInfo$Side[ind]==0)
-##                   {
-##                     profile$Level[indextochange+1] <- profile$Level[indextochange]
-##                     profile$Smoothing[indextochange+1] <- profile$Smoothing[indextochange]
-##                   }
-##                 else
-##                   {
-##                     profile$Level[indextochange] <- profile$Level[indextochange+1]
-##                     profile$Smoothing[indextochange] <- profile$Smoothing[indextochange+1] 
-##                   }
-                
-##               }
-
-
-##             profileCGH$profileValues <- profile
-
-##             profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexBPtoDel,]
-
-##             if(profilage)Rprof(NULL)            
-##           }
-
-
-##         profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("Side","BkpToDel","NextPosOrder"))]
-
-##       }
-
-
-##     if (verbose) print("daglad - step recomputeGNL")
-##     if (RecomputeGNL)
-##       {
-##         if(profilage) Rprof("/tmp/Step12RecomputeGNL.dat")                                                                           
-
-
-##         profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGNL","ZoneGen"))]
-        
-##         ## on prend comme référence ceux qui sont compris entre certaines valeurs
-##         l <- length(profileCGH$profileValues$NormalRef)
-##         NormalRange <- .C("compute_NormalRange",
-##                           as.double(profileCGH$profileValues$Smoothing),
-##                           as.double(profileCGH$profileValues$NormalRef),
-##                           as.integer(profileCGH$profileValues$Level),
-##                           NormalRange=integer(l),
-##                           as.double(deltaN),
-##                           as.integer(l),
-##                           PACKAGE="GLAD")
-
-        
-##         ## le clustering est fait sur les niveaux NormalRange
-##         class(profileCGH) <- "profileChr"
-##         profileCGH <- findCluster(profileCGH, region="NormalRange", method=method, genome=TRUE,
-##                                   lambda=lambdaclusterGen, nmin=profileCGH$NbClusterOpt, nmax=profileCGH$NbClusterOpt)
-##         class(profileCGH) <- "profileCGH"
-
-##         ## le cluster correspondant au normal est celui qui comprend
-##         ## le NormalRange 0
-##         lengthDest <- length(profileCGH$profileValues$ZoneGen)
-##         myZoneGNL <- .C("compute_cluster_LossNormalGain",
-##                         ## variables pour la jointure
-##                         as.integer(profileCGH$profileValues$ZoneGen),
-##                         ZoneGNL=integer(lengthDest),
-##                         as.integer(lengthDest),
-##                         as.double(profileCGH$profileValues$Smoothing),
-##                         as.double(profileCGH$forceGL[1]),
-##                         as.double(profileCGH$forceGL[2]),
-##                         as.double(profileCGH$NormalRef),
-##                         as.double(profileCGH$amplicon),
-##                         as.double(profileCGH$deletion),                                                                                    
-##                         ## variables pour le calcul de la médiane par cluster
-##                         as.double(profileCGH$profileValues$LogRatio),
-##                         as.integer(profileCGH$profileValues$NormalRange),
-##                         PACKAGE="GLAD")
-
-        
-##         profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL       
-
-##       }
-
-###################    
-### FIN SUPPRESSION    
-###################    
-
 
 ### Statut des Outliers
 
     if (verbose) print("daglad - step OutliersGNL")
 
-    if(profilage) Rprof("/tmp/Step13OutliersGNL.dat")                                                                               
+    ## ###############################################################################
+    ##  GNL des OUtliers
+    ## ###############################################################################        
 
     ## on peut récupérer directement les paramètre passés à OutliersGNL depuis l'objet profileCGH
-    profileCGH <- OutliersGNL(profileCGH, alpha=alpha, sigma=profileCGH$SigmaG$Value[1], NormalRef=profileCGH$NormalRef, amplicon=amplicon, deletion=deletion, assignGNLOut=assignGNLOut)
+    profileCGH <- OutliersGNL(profileCGH, alpha = alpha, sigma = profileCGH$SigmaG$Value[1], NormalRef = profileCGH$NormalRef,
+                              amplicon = amplicon, deletion = deletion, assignGNLOut = assignGNLOut)
 
 
     profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("NormalRange","ZoneGen"))]
 
 
-### Récupération des informations sur l'analyse
-###    profileCGH <- profileCGH[-which(names(profileCGH)=="Sigma")]
-### Les données sont centrées sur NormalRef
-
-    ## Pourquoi ne pas supprimé cette étape de tri
-    ## normalement l'ordre n'a pas changé
-###    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
-###    rownames(profileCGH$profileValues) <- 1:length(profileCGH$profileValues$LogRatio)
-
     class(profileCGH) <- "profileCGH"
 
 
-    if(profilage)Rprof(NULL)                    
 
     
-#################################################################################
-###
-###  Bkp filter
-###
-#################################################################################        
+    ## ###############################################################################
+    ##  Bkp filter
+    ## ###############################################################################        
 
     
     if (verbose) print("daglad - step filterBkpStep")
-    if(profilage) Rprof("/tmp/Step14FilterBkp.dat")                                                                                   
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, assignGNLOut=assignGNLOut, verbose=verbose)
-    if(profilage)Rprof(NULL)                        
 
-#################################################################################
-###
-###  Déplacement des Bkp
-###
-#################################################################################    
+
+    ## ###############################################################################
+    ##  Déplacement des Bkp
+    ## ###############################################################################    
 
     if (CheckBkpPos)
       {
         if (verbose) print("daglad - step MoveBkpStep")
-        if(profilage) Rprof("/tmp/Step15MoveBkp.dat")                                                                                           
         profileCGH <- MoveBkpStep(profileCGH, assignGNLOut=assignGNLOut)
-        if(profilage)Rprof(NULL)                        
       }
 
 
@@ -620,7 +419,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 ### suppression des champs inutiles
 
 
-    if(profilage) Rprof("/tmp/Step15Results.dat")                                                                                               
     if (genomestep)
       {
         profileCGH$profileValues$NormalRef <- profileCGH$profileValues$ZoneGNLGen
@@ -675,11 +473,168 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     class(profileCGH) <- "profileCGH"
     
 
-    if(profilage)Rprof(NULL)
     
     return (profileCGH)
     
     
   }
 
+
+
+### 01052009 Suppression de cette étape
+### Les Breakpoints consécutifs ont été supprimés
+### dans les fonctions précédentes
+
+#####################        
+### DEBUT SUPPRESSION
+#####################            
+    
+    ##     RecomputeGNL <- FALSE
+    ##     ## Epuration des Breakpoints consécutifs
+    ##     if (is.data.frame(profileCGH$BkpInfo))
+    ##       {
+    ##         profileCGH$BkpInfo <- profileCGH$BkpInfo[order(profileCGH$BkpInfo$PosOrder),]
+    ##         profileCGH$BkpInfo$BkpToDel <- rep(0, length(profileCGH$BkpInfo[,1]))
+    ##         profileCGH$BkpInfo$Side <- profileCGH$BkpInfo$BkpToDel
+    ##         profileCGH$BkpInfo$NextPosOrder <- profileCGH$BkpInfo$PosOrder + 1
+
+    ##         ## on regarde que si il y a au moins 2 Bkp
+    ##         if (length(profileCGH$BkpInfo[,1])>1)
+    ##           {
+
+    ##             deleteContiguousBkp <- .C("delete_contiguous_bkp",
+    ##                                       BkpToDel=as.integer(profileCGH$BkpInfo$BkpToDel),
+    ##                                       Gap=as.double(profileCGH$BkpInfo$Gap),
+    ##                                       LogRatio=as.double(profileCGH$BkpInfo$LogRatio),
+    ##                                       NextPosOrder=as.integer(profileCGH$BkpInfo$NextPosOrder),
+    ##                                       PosOrder=as.integer(profileCGH$BkpInfo$PosOrder),
+    ##                                       Side=as.integer(profileCGH$BkpInfo$Side),
+    ##                                       Sigma=as.double(profileCGH$BkpInfo$Sigma),
+    ##                                       Smoothing=as.double(profileCGH$BkpInfo$Smoothing),
+    ##                                       SmoothingNext=as.double(profileCGH$BkpInfo$SmoothingNext),
+    ##                                       Weight=as.double(profileCGH$BkpInfo$Weight),
+    ##                                       as.integer(length(profileCGH$BkpInfo[,1])),
+    ##                                       RecomputeGNL=as.integer(0),
+    ##                                       as.integer(nbsigma),                                      
+    ##                                       PACKAGE="GLAD")
+
+
+    ##             profileCGH$BkpInfo[,c("BkpToDel",
+    ##                                   "Gap",
+    ##                                   "LogRatio",
+    ##                                   "NextPosOrder",
+    ##                                   "PosOrder",
+    ##                                   "Side",
+    ##                                   "Sigma",
+    ##                                   "Smoothing",
+    ##                                   "SmoothingNext",
+    ##                                   "Weight")] <- deleteContiguousBkp[c("BkpToDel",
+    ##                                                                       "Gap",
+    ##                                                                       "LogRatio",
+    ##                                                                       "NextPosOrder",
+    ##                                                                       "PosOrder",
+    ##                                                                       "Side",
+    ##                                                                       "Sigma",
+    ##                                                                       "Smoothing",
+    ##                                                                       "SmoothingNext",
+    ##                                                                       "Weight")]
+    
+    ##             RecomputeGNL <- deleteContiguousBkp$RecomputeGNL
+
+    ##           }
+
+
+    ##         ## ICI on peut encore optimiser en supprimant la boucle for
+    ##         indexBPtoDel <- which(profileCGH$BkpInfo$BkpToDel==1)
+    ##         if (length(indexBPtoDel)>0)
+    ##           {
+
+    ##             profile <- profileCGH$profileValues
+    ##             profile <- profile[order(profile$PosOrder),]
+
+    ##             for (ind in indexBPtoDel)
+    ##               {
+    
+    ##                 profile <- profile[order(profile$PosOrder),]
+    ##                 indextochange <- profileCGH$BkpInfo$PosOrder[ind]
+    ##                 profile$Breakpoints[indextochange] <- 0
+    
+    ##                 if (profileCGH$BkpInfo$Side[ind]==0)
+    ##                   {
+    ##                     profile$Level[indextochange+1] <- profile$Level[indextochange]
+    ##                     profile$Smoothing[indextochange+1] <- profile$Smoothing[indextochange]
+    ##                   }
+    ##                 else
+    ##                   {
+    ##                     profile$Level[indextochange] <- profile$Level[indextochange+1]
+    ##                     profile$Smoothing[indextochange] <- profile$Smoothing[indextochange+1] 
+    ##                   }
+    
+    ##               }
+
+
+    ##             profileCGH$profileValues <- profile
+
+    ##             profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexBPtoDel,]
+
+    ##           }
+
+
+    ##         profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("Side","BkpToDel","NextPosOrder"))]
+
+    ##       }
+
+
+    ##     if (verbose) print("daglad - step recomputeGNL")
+    ##     if (RecomputeGNL)
+    ##       {
+
+
+    ##         profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGNL","ZoneGen"))]
+    
+    ##         ## on prend comme référence ceux qui sont compris entre certaines valeurs
+    ##         l <- length(profileCGH$profileValues$NormalRef)
+    ##         NormalRange <- .C("compute_NormalRange",
+    ##                           as.double(profileCGH$profileValues$Smoothing),
+    ##                           as.double(profileCGH$profileValues$NormalRef),
+    ##                           as.integer(profileCGH$profileValues$Level),
+    ##                           NormalRange=integer(l),
+    ##                           as.double(deltaN),
+    ##                           as.integer(l),
+    ##                           PACKAGE="GLAD")
+
+    
+    ##         ## le clustering est fait sur les niveaux NormalRange
+    ##         class(profileCGH) <- "profileChr"
+    ##         profileCGH <- findCluster(profileCGH, region="NormalRange", method=method, genome=TRUE,
+    ##                                   lambda=lambdaclusterGen, nmin=profileCGH$NbClusterOpt, nmax=profileCGH$NbClusterOpt)
+    ##         class(profileCGH) <- "profileCGH"
+
+    ##         ## le cluster correspondant au normal est celui qui comprend
+    ##         ## le NormalRange 0
+    ##         lengthDest <- length(profileCGH$profileValues$ZoneGen)
+    ##         myZoneGNL <- .C("compute_cluster_LossNormalGain",
+    ##                         ## variables pour la jointure
+    ##                         as.integer(profileCGH$profileValues$ZoneGen),
+    ##                         ZoneGNL=integer(lengthDest),
+    ##                         as.integer(lengthDest),
+    ##                         as.double(profileCGH$profileValues$Smoothing),
+    ##                         as.double(profileCGH$forceGL[1]),
+    ##                         as.double(profileCGH$forceGL[2]),
+    ##                         as.double(profileCGH$NormalRef),
+    ##                         as.double(profileCGH$amplicon),
+    ##                         as.double(profileCGH$deletion),                                                                                    
+    ##                         ## variables pour le calcul de la médiane par cluster
+    ##                         as.double(profileCGH$profileValues$LogRatio),
+    ##                         as.integer(profileCGH$profileValues$NormalRange),
+    ##                         PACKAGE="GLAD")
+
+    
+    ##         profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL       
+
+    ##       }
+
+###################    
+### FIN SUPPRESSION    
+###################    
 
