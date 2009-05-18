@@ -1076,7 +1076,7 @@ extern "C"
     map<int, struct agg> map_clusterRegion;
 
     // récupération des logratios par région
-    for(i; i < nb; i++)
+    for(i = 0; i < nb; i++)
       {
 	if(OutliersTot[i] == 0)
 	  {
