@@ -92,11 +92,6 @@ extern "C"
 				   const int *startChr, // position pour le début des valeurs de chaque chromosome
 				   const int *BkpDetected);
 
-  void putLevel(double *Smoothing,
-		const double *LogRatio,
-		int *Level,
-		int *nblevel,
-		const int *l);
 
 
   void my_merge_int(const int *index_dest,

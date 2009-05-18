@@ -307,60 +307,6 @@ extern "C"
 
 
 
-  void putLevel(double *Smoothing,
-		const double *LogRatio,
-		int *Level,
-		int *nblevel,
-		const int *l)
-  {
-    int i, j;
-    const int nb = *l;
-    double MedianValue;
-    double SmoothingValue;
-
-    map<double, vector<double> > LogRatioLevel;
-    map<double, vector<double> >::iterator it_LogRatioLevel;
-    map<double, double> MedianLevel;
-    map<double, double>::iterator it_MedianLevel;
-    map<double, vector<int> > indexLevel;
-    vector<int>::iterator it_vec;
-
-    for (i = 0; i < nb; i++)
-      {
-	indexLevel[Smoothing[i]].push_back(i);
-	LogRatioLevel[Smoothing[i]].push_back(LogRatio[i]);
-      }
-
-
-    // avec la map, les levels seront ordonnés par ordre croissant de médiane
-    it_LogRatioLevel = LogRatioLevel.begin();
-    for (i = 0; i < (int)LogRatioLevel.size(); i++)
-      {
-	MedianLevel[it_LogRatioLevel->first] = quantile_vector_double(it_LogRatioLevel->second, 0.5);
-	it_LogRatioLevel++;
-      }
-
-
-    it_MedianLevel = MedianLevel.begin();
-    for(i = 0; i < (int)MedianLevel.size(); i++)
-      {
-	*nblevel += 1;
-
-	SmoothingValue = it_MedianLevel->first;
-	MedianValue = it_MedianLevel->second;
-
-	it_vec = indexLevel[SmoothingValue].begin();
-	for(j = 0; j < (int)(indexLevel[SmoothingValue].size()); j++)
-	  {
-	    Level[*it_vec] = *nblevel;
-	    Smoothing[*it_vec] = MedianValue;
-	    it_vec++;
-	  }
-
-	it_MedianLevel++;
-      }
-
-  }
 
   void my_merge(const int *index_dest,
 		double *value_dest,

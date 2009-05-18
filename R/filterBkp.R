@@ -55,7 +55,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
         if (verbose) print("filterBkp: move breakpoints which are outliers")        
 
         nb <- length(profileCGH$profileValues[,1]) - 1        
-        moveBkp <- .C("moveBkp",
+        moveBkp <- .C("filterBkp_moveBkp_Outliers",
                       as.integer(profileCGH$profileValues$ZoneGNL),
                       Level=as.integer(profileCGH$profileValues$Level),
                       Breakpoints=as.integer(profileCGH$profileValues$Breakpoints),
