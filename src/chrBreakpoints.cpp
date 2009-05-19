@@ -17,7 +17,7 @@ using namespace std;
 
 #include "glad-struct.h"
 #include "chrBreakpoints.h"
-#include "glad.h"
+#include "glad-utils.h"
 #include "HaarSeg.h"
 
 #ifdef IS_MAC_OS

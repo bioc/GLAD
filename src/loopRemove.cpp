@@ -4,12 +4,27 @@
 /* Contact: glad@curie.fr                                                    */
 /*****************************************************************************/
 
+#include <math.h>
+
 #include <map>
 #include <vector>
+#include <algorithm>
 
 #include "glad-struct.h"
 #include "glad-utils.h"
 #include "loopRemove.h"
+
+#ifdef IS_MAC_OS
+#include <limits.h>
+#else
+#include <values.h>
+#endif
+
+#ifndef MAXDOUBLE
+#include <float.h>
+#define MAXDOUBLE DBL_MAX
+#endif
+
 
 extern "C"
 {
@@ -370,6 +385,96 @@ extern "C"
 
     return sum;
   
+  }
+
+  void updateBkpRL (int *Region,
+		    int *OutliersAws,
+		    int *Breakpoints,
+		    const int *PosOrder,
+		    double *NextLogRatio,
+		    const double *LogRatio,
+		    const int *l)
+  {
+ 
+    // le 03 01 09
+    // la variables Chromosome a été supprimée
+    // car la fonction est utilisée chromosome par chromosome
+    int i;
+    int i_moins_un;
+    int i_plus_un;
+    //    int i_moins_deux;
+    const int nb=*l;
+    const int nb_moins_un=*l-1;
+    const int nb_moins_deux=*l-2;
+
+    OutliersAws[0] = 0;
+    Breakpoints[0] = 0;
+    NextLogRatio[0] = 0;
+
+    for (i=1;i<nb;i++)
+      {
+
+	OutliersAws[i] = 0;
+	Breakpoints[i] = 0;
+	NextLogRatio[i] = 0;
+
+	i_moins_un=i-1;
+	if (i==1 || i==nb_moins_un)
+	  {
+	    if (Region[i]!=Region[i_moins_un])
+	      {
+		if (i==1)
+		  {
+		    OutliersAws[0]=1;
+		    Region[0]=Region[1];
+		  }
+		else
+		  {
+		    OutliersAws[nb_moins_un]=1;
+		    Region[nb_moins_un]=Region[nb_moins_deux];
+		  }
+	      }
+	  }
+	else
+	  {
+	    i_plus_un=i+1;
+	    // 	    if (Chromosome[i]!=Chromosome[i_moins_un])
+	    // 	      {
+	    // 		printf("Chromosomes différents\n");
+	    // 		i_moins_deux=i-2;
+	    // 		if (Region[i_moins_un]!=Region[i_moins_deux])
+	    // 		  {
+	    // 		    Region[i_moins_un]=Region[i_moins_deux];
+	    // 		    OutliersAws[i_moins_un]=1;
+	    // 		  }
+
+	    // 		if (Region[i_plus_un]!=Region[i])
+	    // 		  {
+	    // 		    Region[i_plus_un]=Region[i];
+	    // 		    OutliersAws[i]=1;
+	    // 		  }                
+	    // 	      }
+	    // 	    else
+	    // 	      {
+	    if (Region[i]!=Region[i_moins_un] && Region[i_plus_un]!=Region[i] && Region[i_plus_un]==Region[i_moins_un])
+	      {
+		if (OutliersAws[i_moins_un]==0)
+		  {
+		    OutliersAws[i]=1;
+		    Region[i]=Region[i_moins_un];
+		  }
+	      }
+	    else
+	      {
+		if (Region[i]!=Region[i_moins_un] && OutliersAws[i_moins_un]==0)
+		  {
+		    Breakpoints[i_moins_un]=1;
+		    NextLogRatio[i_moins_un]=LogRatio[i];
+		  }
+	      }                                               
+	    // 	      }
+	  }
+      }
   }
 
 

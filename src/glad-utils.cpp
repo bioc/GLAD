@@ -26,13 +26,159 @@
 
 #include "glad-struct.h"
 #include "glad-utils.h"
-#include "glad-function.h"
 
 
 using namespace std;
 
 extern "C"
 {
+
+  /********************************************************************/
+  /* fonction pour faire une aggregation avec le calcul de la médian  */
+  /********************************************************************/
+
+
+  void compute_median_smoothing(const double *LogRatio,
+				const int *ByValue,
+				double *Smoothing,
+				const int *l)
+  {
+    int i,j;
+    const int nb=*l;
+    double *median_ByValue;
+    int *unique_ByValue;
+    int nb_unique_ByValue;
+
+    map<int, vector<double> > agg_LogRatio;
+    map<int, vector<double> >::iterator it_agg_LogRatio;
+
+    for(i = 0; i < nb; i++)
+      {
+	agg_LogRatio[ByValue[i]].push_back(LogRatio[i]);
+      }
+
+
+    median_ByValue = (double *)malloc(agg_LogRatio.size() * sizeof(double));
+    unique_ByValue = (int *)malloc(agg_LogRatio.size() * sizeof(int));
+    it_agg_LogRatio=agg_LogRatio.begin();
+
+    for (j = 0; j < (int)agg_LogRatio.size(); j++)
+      {
+	median_ByValue[j] = quantile_vector_double(it_agg_LogRatio->second, 0.5);
+	unique_ByValue[j] = it_agg_LogRatio->first;
+
+	it_agg_LogRatio++;
+
+      }
+
+    nb_unique_ByValue = (int)agg_LogRatio.size();
+    my_merge(ByValue,
+	     Smoothing,
+	     unique_ByValue,
+	     median_ByValue,
+	     l,
+	     &nb_unique_ByValue);
+
+
+
+
+    free(median_ByValue);
+    free(unique_ByValue);
+  }
+
+
+
+  void compute_NormalRange(const double *Smoothing,
+			   const double *NormalRef,
+			   const int *Level,
+			   int *NormalRange,
+			   const double *deltaN,
+			   const int *l)
+  {
+
+    int i;
+    const int nb = *l;
+
+    for (i = 0; i < nb; i++)
+      {
+	if(fabs(Smoothing[i] - *NormalRef) <= *deltaN)
+	  {
+	    NormalRange[i] = 0;
+	  }
+	else
+	  {
+	    NormalRange[i] = Level[i];
+	  }
+      }
+
+  }
+
+  void updateLevel (const int *Chromosome,
+		    const int *Breakpoints,
+		    int *Level,
+		    //		    int *Region,
+		    const int *PosOrder,
+		    double *NextLogRatio,
+		    const double *LogRatio,
+		    const int *maxLevel,
+		    const int *l)
+  {
+    const int nb = *l;
+    int pos_moins_un;
+    int pos;
+    int idLevel = *maxLevel;
+ 
+    for (pos = 1; pos < nb; pos++)
+      {
+	pos_moins_un = pos - 1;
+	if (Chromosome[pos] == Chromosome[pos_moins_un])
+	  {
+	    if (Breakpoints[pos_moins_un] != 1)
+	      {
+		Level[pos] = Level[pos_moins_un];
+		//		Region[pos]=Region[pos_moins_un];
+	      }
+	    if (Breakpoints[pos_moins_un] == 1)
+	      {
+		NextLogRatio[pos_moins_un] = LogRatio[pos];
+		if (Level[pos_moins_un] == Level[pos])
+		  {
+		    idLevel++;
+		    Level[pos] = idLevel;
+		  }
+	      }
+	  }
+      }
+  }
+
+
+  void updateOutliers (int *OutliersAws,
+		       int *Level,
+		       int *Breakpoints,
+		       double *Smoothing,
+		       const int *l)
+  { 
+    int pos;
+    int pos_moins_un;
+    const int nb = *l - 1;
+
+    for (pos = 1; pos < nb; pos++)
+      {
+	pos_moins_un = pos - 1;
+	if (Level[pos_moins_un] == Level[pos + 1] && 
+	    Level[pos_moins_un] != Level[pos])
+	  {
+	    Level[pos] = Level[pos_moins_un];
+	    Breakpoints[pos_moins_un] = 0;
+	    Breakpoints[pos] = 0;
+	    OutliersAws[pos] = 1;
+	    Smoothing[pos] = Smoothing[pos_moins_un];
+	  }
+      }
+  }
+
+
+
   void detectOutliers(const double *LogRatio,
 		      const int *Region,
 		      int *OutliersAws,
@@ -504,6 +650,107 @@ extern "C"
       }
 
   }
+
+  /*************************************/
+  /* fonctions utilisées dans daglad   */
+  /*************************************/
+
+  void delete_contiguous_bkp(int *BkpInfo_BkpToDel,
+			     double *BkpInfo_Gap,
+			     double *BkpInfo_LogRatio,
+			     int *BkpInfo_NextPosOrder,
+			     int *BkpInfo_PosOrder,
+			     int *BkpInfo_Side,
+			     double *BkpInfo_Sigma,
+			     double *BkpInfo_Smoothing,
+			     double *BkpInfo_SmoothingNext,
+			     double *BkpInfo_Weight,
+			     int *nb_Bkp,
+			     int *RecomputeGNL,
+			     const int *nbsigma)
+  {
+
+    // nb_Bkp=length(profileCGH$BkpInfo[,1])
+    int i;
+    int i_moins_un;
+    const int l=*nb_Bkp;
+    double UpLeft, LowLeft, UpRight, LowRight, DiffLeft, DiffRight;
+    double LRV;
+    double SigChr;
+
+
+    //  for (i in 2:length(profileCGH$BkpInfo[,1]))
+    for (i=1;i<l;i++)
+      {
+	i_moins_un=i-1;
+	if (BkpInfo_PosOrder[i]==BkpInfo_NextPosOrder[i_moins_un] && BkpInfo_BkpToDel[i_moins_un]==0)
+	  {
+	    SigChr=BkpInfo_Sigma[i];
+	    // on regarde d'abord à gauche
+	    UpLeft=BkpInfo_Smoothing[i_moins_un] + 3*SigChr;
+	    LowLeft=BkpInfo_Smoothing[i_moins_un] - 3*SigChr;
+
+	    // On regarde ce qui se passe à droite
+	    UpRight=BkpInfo_SmoothingNext[i] + 3*SigChr;
+	    LowRight=BkpInfo_SmoothingNext[i] - 3*SigChr;
+
+	    LRV=BkpInfo_LogRatio[i];
+                    
+	    if (((LRV > LowLeft) && (LRV < UpLeft)) || ((LRV > LowRight) && (LRV < UpRight)))
+	      {
+		*RecomputeGNL=1;
+		if (((LRV > LowLeft) && (LRV < UpLeft)) && ((LRV > LowRight) && (LRV < UpRight)))
+		  {
+		    // attention, lors de la suppression d'un Bkp, le gap n'est plus bon
+		    // d'où recalcul du weight
+		    // je ne vois pas où il est recalculé!!!!
+		    DiffLeft=fabs(LRV - BkpInfo_Smoothing[i_moins_un]);
+		    DiffRight=fabs(LRV - BkpInfo_SmoothingNext[i]);
+		    if (DiffRight<DiffLeft)
+		      {
+			// On fusionne le Bkp avec la région à droite
+			BkpInfo_BkpToDel[i]=1;
+			BkpInfo_Side[i]=1;
+			BkpInfo_Gap[i_moins_un]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+			BkpInfo_Weight[i_moins_un]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);
+                                
+		      }
+		    else
+		      {
+			// On fusionne le Bkp avec la région à gauche
+			BkpInfo_BkpToDel[i_moins_un]=1;
+			BkpInfo_Side[i_moins_un]=0;
+			BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+			BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);
+                                
+
+		      }
+		  }
+		else
+		  {
+		    if (((LRV > LowLeft) && (LRV < UpLeft)))
+		      {
+			// On fusionne le Bkp avec la région à gauche
+			BkpInfo_BkpToDel[i_moins_un]=1;
+			BkpInfo_Side[i_moins_un]=0;
+			BkpInfo_Gap[i]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+			BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);
+                                
+		      }
+		    else
+		      {
+			// On fusionne le Bkp avec la région à droite
+			BkpInfo_BkpToDel[i]=1;
+			BkpInfo_Side[i]=1;
+			BkpInfo_Gap[i_moins_un]=fabs(BkpInfo_Smoothing[i_moins_un]-BkpInfo_SmoothingNext[i]);
+			BkpInfo_Weight[i_moins_un]=1 - kernelpen(BkpInfo_Gap[i_moins_un], *nbsigma*BkpInfo_Sigma[i_moins_un]);                            
+		      }
+		  }                                        
+	      }
+	  }
+      }
+  }
+
 
 
 }

@@ -18,8 +18,9 @@
 #include <vector>
 #include <algorithm>
 #include <gsl/gsl_cdf.h>
+
 #include "HaarSeg.h"
-#include "glad.h"
+#include "glad-utils.h"
 
 #define OK 0
 #define ERROR_HAARSEG -1

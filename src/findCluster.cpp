@@ -17,8 +17,6 @@
 #include "glad-struct.h"
 #include "glad-utils.h"
 #include "findCluster.h"
-#include "glad-function.h"
-#include "glad.h"
 #include "mva.h"
 #include "cutree.h"
 

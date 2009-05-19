@@ -7,6 +7,33 @@ using namespace std;
 extern "C"
 {
 
+  void updateLevel (const int *Chromosome,
+		    const int *Breakpoints,
+		    int *Level,
+		    const int *PosOrder,
+		    double *NextLogRatio,
+		    const double *LogRatio,
+		    const int *maxLevel,
+		    const int *l);
+
+  void updateOutliers (int *OutliersAws,
+                       int *Level,
+                       int *Breakpoints,
+		       double *Smoothing,
+                       const int *l);
+
+  void compute_median_smoothing(const double *LogRatio,
+				const int *ByValue,
+				double *Smoothing,
+				const int *l);
+
+  void compute_NormalRange(const double *Smoothing,
+			   const double *NormalRef,
+			   const int *Level,
+			   int *NormalRange,
+			   const double *deltaN,
+			   const int *l);
+
   double IQRdiff(vector<double> vec);
 
   double IQR_vector_double(vector<double> vec);

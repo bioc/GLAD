@@ -63,4 +63,34 @@ extern "C"
 		     //variables pour calcul la médiane par cluster
 		     const double *LogRatio,
 		     int *NormalRange);
+
+  void rangeGainLoss(const double *Smoothing,
+		     const int *ZoneGNL,
+		     const int *OutliersTot,
+		     double *minG,
+		     double *maxL,
+		     double *minAmp,
+		     double *maxDel,
+		     const int *l);
+
+  int  testSingle(const double LogRatio,
+		  const double NextLogRatio,
+		  const double Smoothing,
+		  const double SmoothingNext);
+
+  void compute_cluster_LossNormalGain(// variables pour faire la jointure
+				      const int *ZoneGen,
+				      int *value_dest,
+				      const int *length_dest,
+				      const double *Smoothing,
+				      const double *forceGL1Value,
+				      const double *forceGL2Value,
+				      const double *NormalRefValue,
+				      const double *ampliconValue,
+				      const double *deletionValue,
+				      //variables pour calcul la médiane par cluster
+				      const double *LogRatio,
+				      const int *NormalRange);
+
+
 }
