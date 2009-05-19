@@ -1,9 +1,7 @@
 #include <vector>
 #include <map>
 
-
 using namespace std;
-
 
 
 extern "C"
@@ -31,15 +29,6 @@ extern "C"
   
   double kernelpen(double x, const double d);
 
-  void detectOutliers(const double *LogRatio,
-		      const int *Region,
-		      int *OutliersAws,
-		      int *OutliersMad,
-		      int *OutliersTot,
-		      const int *msize,
-		      const double *alpha,
-		      const int *l);
-
   void my_merge(const int *index_dest,
 		double *value_dest,
 		const int *index_src,
@@ -61,45 +50,22 @@ extern "C"
 			    const double *deletionValue);
 
 
-  void loopRemove(const double *LogRatio,
-		  int *Region,
-		  int *OutliersAws,
-		  int *OutliersMad,
-		  int *OutliersTot,
-		  int *Breakpoints,
-		  const int *msize,
-		  const double *alpha,
-		  const double *lambda,
-		  const double *d,
-		  const double *sigma,
-		  const int *l);
-
-  void loop_chromosome_removeLevel(const double *LogRatio,
-				   double *NextLogRatio,
-				   const int *PosOrder,
-				   int *Level,
-				   int *OutliersAws,
-				   int *OutliersMad,
-				   int *OutliersTot,
-				   int *Breakpoints,
-				   const int *msize,
-				   const double *alpha,
-				   const double *lambda,
-				   const double *d,
-				   const double *sigma,
-				   const int *NbChr,   // Nombre de chromosome à analyser
-				   const int *sizeChr, // taille de chaque chromosome
-				   const int *startChr, // position pour le début des valeurs de chaque chromosome
-				   const int *BkpDetected);
-
-
-
   void my_merge_int(const int *index_dest,
 		    int *value_dest,
 		    const int *index_src,
 		    const int *value_src,
 		    const int *length_dest,
 		    const int *length_src);
+
+  void detectOutliers(const double *LogRatio,
+		      const int *Region,
+		      int *OutliersAws,
+		      int *OutliersMad,
+		      int *OutliersTot,
+		      const int *msize,
+		      const double *alpha,
+		      const int *l);
+
 
 
 }

@@ -11,12 +11,26 @@
 
 #include <map>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
+#include "glad-struct.h"
 #include "chrBreakpoints.h"
 #include "glad.h"
 #include "HaarSeg.h"
+
+#ifdef IS_MAC_OS
+#include <limits.h>
+#else
+#include <values.h>
+#endif
+
+
+#ifndef MAXDOUBLE
+#include <float.h>
+#define MAXDOUBLE DBL_MAX
+#endif
 
 
 extern "C"
@@ -160,13 +174,13 @@ extern "C"
   }
 
   void awsBkp(const double *Smoothing,
-	       int *OutliersAws,
-	       int *Level,
-	       int *nbregion,
-	       int *regionChr,
-	       int *Breakpoints,
-	       int *bkp_detected,
-	       const int *l)
+	      int *OutliersAws,
+	      int *Level,
+	      int *nbregion,
+	      int *regionChr,
+	      int *Breakpoints,
+	      int *bkp_detected,
+	      const int *l)
   {
 
     int j;
