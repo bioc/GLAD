@@ -16,17 +16,17 @@ CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, smo
     n <- dim(profileCGH$profileValues)[1]
     nb.chr <- length(unique(profileCGH$profileValues$Chromosome))
     
-    if(n==0)
+    if(n == 0)
       {
         stop("Error: the data contains only missing values. Check that the fields LogRatio, Chromosome or PosOrder are not empty.")
       }
 
 
-    if(smoothfunc!="haarseg")
+    if(smoothfunc != "haarseg")
       {
-        if (n/nb.chr>2000) ### 2000 ~ 50K/24      
+        if ((n / nb.chr) > 2000) ### 2000 ~ 50K/24      
           {
-            if (bandwidth>1)
+            if (bandwidth > 1)
               {
                 print("You can set bandwitdth to 1 to decrease computation time")
               }
@@ -35,5 +35,6 @@ CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, smo
 
     if(!is.numeric(profileCGH$profileValues$Chromosome))
       stop("Error: profileCGH$profileValues$Chromosome must be numeric")
+
     
   }

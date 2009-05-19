@@ -6,10 +6,18 @@ as.profileCGH <- function(object, ...)
 as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value=20, ...)
   {
 
+    print("changer la description de l'objet profileCGH dans la doc")
+    
     profileCGH <- object
     infaction <- match.arg(infaction)
+
+    champ.obligatoire <- c("LogRatio","PosOrder","Chromosome")
     
-    nomchamp <- c("LogRatio","PosOrder","Chromosome")
+    nomchamp <- intersect(c(champ.obligatoire, "PosBase"), names(profileCGH))
+
+    nomchamp.supp <- setdiff(names(profileCGH), nomchamp)
+    print("Les champs en plus sont:")
+    print(nomchamp.supp)
 
     addedfields <- c("ChromosomeChar","Smoothing","Region","Level",
                      "OutliersAws","Breakpoints","OutliersMad","OutliersTot",
@@ -17,15 +25,15 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
     interadded <- intersect(addedfields,names(profileCGH))
 
 
-    if (length(interadded)!=0)
+    if (length(interadded) != 0)
       {
         print(paste("Error in as.profileCGH.data.frame: the following fields already exist:"))
         print(interadded)
         stop("Please remove those fields from your data.frame.")
       }
-    if (length(intersect(nomchamp,names(profileCGH)))!=3)
+    if (length(intersect(champ.obligatoire,names(profileCGH))) != 3)
       {
-        stop(paste("Error in as.profileCGH.data.frame: the following fields are missing:", paste(setdiff(nomchamp,names(profileCGH))), sep=", "))
+        stop(paste("Error in as.profileCGH.data.frame: the following fields are missing:", paste(setdiff(champ.obligatoire,names(profileCGH))), sep=", "))
       }
 
     if (!is.numeric(profileCGH$profileValues$Chromosome))
@@ -37,12 +45,10 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
       }
 
     
-### Suppression des valeurs manquantes et des LogRatio avec Inf    
+    ## Suppression des valeurs manquantes et des LogRatio avec Inf    
     indexInf <- which(is.infinite(profileCGH$LogRatio)==TRUE)
     if (length(indexInf)>0)
-      {
-
-          
+      {          
         print("The LogRatio with following rows index contains infinite value:")
         print(indexInf)
         
@@ -64,19 +70,35 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
 
     if (!is.null(indexNA))
       {
-        profileCGH <- list(profileValues=profileCGH[-indexNA,], profileValuesNA=profileCGH[indexNA,])
+        if (length(nomchamp.supp) > 0)
+          {
+            profileCGH <- list(profileValues = profileCGH[-indexNA, nomchamp],
+                               profileValuesSUPP = profileCGH[-indexNA, nomchamp.supp],
+                               profileValuesNA = profileCGH[indexNA,])            
+          }
+        else
+          {
+            profileCGH <- list(profileValues = profileCGH[-indexNA,],
+                               profileValuesSUPP = profileCGH[-indexNA, nomchamp.supp],
+                               profileValuesNA = profileCGH[indexNA,])
+          }
         class(profileCGH) <- "profileCGH"
 
       }
 
     else
       {
-        profileCGH <- list(profileValues=profileCGH)
+        if (length(nomchamp.supp) > 0)
+          {
+          }
+        else
+          {        
+            profileCGH <- list(profileValues = profileCGH)
+          }
+        
         class(profileCGH) <- "profileCGH"
       }
 
-
-###
 
     return(profileCGH)
     
@@ -85,6 +107,8 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
 
 as.data.frame.profileCGH <- function(x, row.names = NULL, optional = FALSE, ...)
   {
+
+    print("Il faut modifier cette fonction")
     profileCGH <- x
     if (!is.null(profileCGH$profileValuesNA))
       {
@@ -107,7 +131,7 @@ as.data.frame.profileCGH <- function(x, row.names = NULL, optional = FALSE, ...)
         rownames(values) <- 1:length(values[,1])
       }
 
-    if (length(which(names(profileCGH$profileValues)=="ChromosomeChar")))
+    if (length(which(names(profileCGH$profileValues) == "ChromosomeChar")))
       {
         values$Chromosome <- values$ChromosomeChar
         values <- subset(values, select=setdiff(names(values),"ChromosomeChar"))
