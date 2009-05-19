@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "glad-struct.h"
+#include "glad-utils.h"
 #include "loopRemove.h"
 
 extern "C"
@@ -326,6 +327,48 @@ extern "C"
 			deltaN,
 			l);
 
+  
+  }
+
+  double computeLike(vector<struct agg> agg_region, double lambda, double sumkernelpen)
+  {
+    vector<struct agg>::iterator it_agg = agg_region.begin();
+    vector<struct agg>::iterator it_agg_end = agg_region.end();
+
+    double logsigma = 0;
+    double nbdata = 0;
+    while(it_agg != it_agg_end)
+      {
+	logsigma += log((*it_agg).VarLike) * (*it_agg).Card;
+	nbdata += (*it_agg).Card;
+	it_agg++;
+      }
+    nbdata = log(nbdata);
+    return logsigma + lambda * sumkernelpen * nbdata;
+  }
+
+
+
+  double computeSumKernelPen(vector<struct agg> agg_region, double sigma, double d)
+  {
+    vector<struct agg>::const_iterator it_agg_b = agg_region.begin();
+    vector<struct agg>::const_iterator it_agg_n = agg_region.begin();
+    vector<struct agg>::const_iterator it_agg_e = agg_region.end();
+    double diff = 0;
+    double sum = 0;
+    double const inv_sigma = 1 / sigma;
+    ++it_agg_n;
+    while(it_agg_n != it_agg_e)
+      {
+	diff = (*it_agg_n).Mean - (*it_agg_b).Mean;
+	diff *= inv_sigma;
+	diff = fabs(diff);
+	sum += kernelpen(diff,d);  
+	it_agg_b++;
+	++it_agg_n;
+      }
+
+    return sum;
   
   }
 

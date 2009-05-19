@@ -25,12 +25,14 @@
 
 
 #include "glad-struct.h"
-#include "glad.h"
+#include "glad-utils.h"
 #include "glad-function.h"
 
 
 using namespace std;
 
+extern "C"
+{
   void detectOutliers(const double *LogRatio,
 		      const int *Region,
 		      int *OutliersAws,
@@ -117,438 +119,391 @@ using namespace std;
   }
 
 
-void my_merge(const int *index_dest,
-	      double *value_dest,
-	      const int *index_src,
-	      const double *value_src,
-	      const int *length_dest,
-	      const int *length_src)
-{
-  int i;
-  map<int, double > agg_data;
-
-  // construction de la map pour les données aggrégées
-  for(i=0;i<*length_src;i++)
-    {
-      agg_data[index_src[i]]=value_src[i];
-    }
-
-  for (i=0;i<*length_dest;i++)
-    {
-      value_dest[i]=agg_data[index_dest[i]];
-    }
-
-}
-
-void my_merge_medianlevel(const int *index_dest,
-			  int *index_dest_add,
-			  double *value_dest,
-			  const int *index_src,
-			  const int *index_src_add,
-			  const double *value_src,
-			  const int *length_dest,
-			  const int *length_src)
-{
-  int i;
-  map<int, paire_double > agg_data;
-
-  // construction de la map pour les données aggrégées
-  for(i=0;i<*length_src;i++)
-    {
-      agg_data[index_src[i]].value=value_src[i];
-      agg_data[index_src[i]].index_add=index_src_add[i];
-    }
-
-  for (i=0;i<*length_dest;i++)
-    {
-      value_dest[i]=agg_data[index_dest[i]].value;
-      index_dest_add[i]=agg_data[index_dest[i]].index_add;
-    }
-
-}
-
-
-
-
-void my_merge_int(const int *index_dest,
-		  int *value_dest,
-		  const int *index_src,
-		  const int *value_src,
-		  const int *length_dest,
-		  const int *length_src)
-{
-  int i;
-  map<int, int > agg_data;
-
-  // construction de la map pour les données aggrégées
-  for(i=0;i<*length_src;i++)
-    {
-      agg_data[index_src[i]]=value_src[i];
-    }
-
-  for (i=0;i<*length_dest;i++)
-    {
-      value_dest[i]=agg_data[index_dest[i]];
-    }
-
-}
-
-void my_merge_int_forceGL(const int *index_dest,
-			  int *value_dest,
-			  const int *index_src,
-			  const int *value_src,
-			  const int *length_dest,
-			  const int *length_src,
-			  const double *Smoothing,
-			  const double *forceGL1Value,
-			  const double *forceGL2Value,
-			  const double *NormalRefValue,
-			  const double *ampliconValue,
-			  const double *deletionValue)
-{
-  int i;
-  int *ZoneGNL = value_dest;
-  const double forceGL1 = *forceGL1Value;
-  const double forceGL2 = *forceGL2Value;
-  const double NormalRef = *NormalRefValue;
-  const double amplicon = *ampliconValue;
-  const double deletion = *deletionValue;
-  double Smoothing_moins_NormalRef;
-
-  map<int, int > agg_data;
-
-  // construction de la map pour les données aggrégées
-  for(i = 0; i < *length_src; i++)
-    {
-      agg_data[index_src[i]] = value_src[i];
-    }
-
-  for (i = 0; i < *length_dest; i++)
-    {
-      value_dest[i] = agg_data[index_dest[i]];
-
-      if(NormalRef!=0)
-	{
-	  Smoothing_moins_NormalRef = Smoothing[i] - NormalRef;
-	}
-      else
-	{
-	  Smoothing_moins_NormalRef = Smoothing[i];
-	}
-
-      // Gain et Amplicon
-      if(Smoothing_moins_NormalRef >= forceGL2)
-	{
-	  if(Smoothing_moins_NormalRef >= amplicon)
-	    {
-	      ZoneGNL[i] = 2;
-	    }
-	  else
-	    {
-	      ZoneGNL[i] = 1;
-	    }
-	}
-      else
-	{
-	  if(Smoothing_moins_NormalRef <= forceGL1)
-	    {
-	      if(Smoothing_moins_NormalRef <= deletion)
-		{
-		  ZoneGNL[i] = -10;
-		}
-	      else
-		{
-		  ZoneGNL[i] = -1;
-		}
-	    }
-	}
-    }
-
-}
-
-
-
-
-/////////////////////////////////////////////////////////////
-//
-//   Fonctions statistiques
-//
-//////////////////////////////////////////////////////////////
-
-double IQRdiff(vector<double> vec)
-{
-  int i;
-  double diffvalue;
-  double IQRdiff;
-  vector<double> diffvec;
-
-  for (i = 1; i < (int)(vec.size()); i++)
-    {
-      diffvalue = vec[i] - vec[i - 1];
-      diffvec.push_back(diffvalue);
-    }
-
-  IQRdiff = IQR_vector_double(diffvec) / 1.908;
-
-  return IQRdiff;
-}
-
-double IQR_vector_double(vector<double> vec)
-{
-  double quantile25;
-  double quantile75;
-
-  quantile25 = quantile_vector_double(vec, 0.25);
-  quantile75 = quantile_vector_double(vec, 0.75);
-
-  return quantile75 - quantile25;
-
-}
-
-
-
-double quantile_vector_double(vector<double> vec, const double quantile)
-{
-  const double index = (vec.size() - 1) * quantile;
-  double h;
-  double value_left, value_right;
-  double lo, hi;
-
-  lo = floor(index);
-  hi = ceil(index);
-  h = index - (double)lo;
-
-  nth_element(vec.begin(),
-	      vec.begin() + (int)(lo), 
-	      vec.end());
-
-  value_left = vec[(int)(lo)];
-
-
-  if (h == 0)
-    {
-      return value_left;
-    }
-  else
-    {
-      nth_element(vec.begin(),
-		  vec.begin() + (int)(hi), 
-		  vec.end());
-
-      value_right = vec[(int)(hi)];
-      //	printf("right:%f\n", value_right);
-
-      return (1 - h) * value_left + h * value_right;
-    }
-
-}
-
-//   double quantile_vector_double(vector<double> vec, const double quantile)
-//   {
-
-//     // cette fonctionne n'est applicable que pour le calcul
-//     // de la médiane quantile = 0.5
-//     // pour pour quantile = 0.25 et 0.75
-//     if(vec.size() % 2)
-//       {
-// 	// on a un nombre impair d'éléments pour quantile = 0.5
-// 	size_t indice = (vec.size() - 1) * quantile;
-
-// 	nth_element(vec.begin(),
-// 		    vec.begin() + indice, 
-// 		    vec.end());
+  void my_merge(const int *index_dest,
+		double *value_dest,
+		const int *index_src,
+		const double *value_src,
+		const int *length_dest,
+		const int *length_src)
+  {
+    int i;
+    map<int, double > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i=0;i<*length_src;i++)
+      {
+	agg_data[index_src[i]]=value_src[i];
+      }
+
+    for (i=0;i<*length_dest;i++)
+      {
+	value_dest[i]=agg_data[index_dest[i]];
+      }
+
+  }
+
+  void my_merge_medianlevel(const int *index_dest,
+			    int *index_dest_add,
+			    double *value_dest,
+			    const int *index_src,
+			    const int *index_src_add,
+			    const double *value_src,
+			    const int *length_dest,
+			    const int *length_src)
+  {
+    int i;
+    map<int, paire_double > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i=0;i<*length_src;i++)
+      {
+	agg_data[index_src[i]].value=value_src[i];
+	agg_data[index_src[i]].index_add=index_src_add[i];
+      }
+
+    for (i=0;i<*length_dest;i++)
+      {
+	value_dest[i]=agg_data[index_dest[i]].value;
+	index_dest_add[i]=agg_data[index_dest[i]].index_add;
+      }
+
+  }
+
+
+
+
+  void my_merge_int(const int *index_dest,
+		    int *value_dest,
+		    const int *index_src,
+		    const int *value_src,
+		    const int *length_dest,
+		    const int *length_src)
+  {
+    int i;
+    map<int, int > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i=0;i<*length_src;i++)
+      {
+	agg_data[index_src[i]]=value_src[i];
+      }
+
+    for (i=0;i<*length_dest;i++)
+      {
+	value_dest[i]=agg_data[index_dest[i]];
+      }
+
+  }
+
+  void my_merge_int_forceGL(const int *index_dest,
+			    int *value_dest,
+			    const int *index_src,
+			    const int *value_src,
+			    const int *length_dest,
+			    const int *length_src,
+			    const double *Smoothing,
+			    const double *forceGL1Value,
+			    const double *forceGL2Value,
+			    const double *NormalRefValue,
+			    const double *ampliconValue,
+			    const double *deletionValue)
+  {
+    int i;
+    int *ZoneGNL = value_dest;
+    const double forceGL1 = *forceGL1Value;
+    const double forceGL2 = *forceGL2Value;
+    const double NormalRef = *NormalRefValue;
+    const double amplicon = *ampliconValue;
+    const double deletion = *deletionValue;
+    double Smoothing_moins_NormalRef;
+
+    map<int, int > agg_data;
+
+    // construction de la map pour les données aggrégées
+    for(i = 0; i < *length_src; i++)
+      {
+	agg_data[index_src[i]] = value_src[i];
+      }
+
+    for (i = 0; i < *length_dest; i++)
+      {
+	value_dest[i] = agg_data[index_dest[i]];
+
+	if(NormalRef!=0)
+	  {
+	    Smoothing_moins_NormalRef = Smoothing[i] - NormalRef;
+	  }
+	else
+	  {
+	    Smoothing_moins_NormalRef = Smoothing[i];
+	  }
+
+	// Gain et Amplicon
+	if(Smoothing_moins_NormalRef >= forceGL2)
+	  {
+	    if(Smoothing_moins_NormalRef >= amplicon)
+	      {
+		ZoneGNL[i] = 2;
+	      }
+	    else
+	      {
+		ZoneGNL[i] = 1;
+	      }
+	  }
+	else
+	  {
+	    if(Smoothing_moins_NormalRef <= forceGL1)
+	      {
+		if(Smoothing_moins_NormalRef <= deletion)
+		  {
+		    ZoneGNL[i] = -10;
+		  }
+		else
+		  {
+		    ZoneGNL[i] = -1;
+		  }
+	      }
+	  }
+      }
+
+  }
+
+
+
+
+  /////////////////////////////////////////////////////////////
+  //
+  //   Fonctions statistiques
+  //
+  //////////////////////////////////////////////////////////////
+
+  double IQRdiff(vector<double> vec)
+  {
+    int i;
+    double diffvalue;
+    double IQRdiff;
+    vector<double> diffvec;
+
+    for (i = 1; i < (int)(vec.size()); i++)
+      {
+	diffvalue = vec[i] - vec[i - 1];
+	diffvec.push_back(diffvalue);
+      }
+
+    IQRdiff = IQR_vector_double(diffvec) / 1.908;
+
+    return IQRdiff;
+  }
+
+  double IQR_vector_double(vector<double> vec)
+  {
+    double quantile25;
+    double quantile75;
+
+    quantile25 = quantile_vector_double(vec, 0.25);
+    quantile75 = quantile_vector_double(vec, 0.75);
+
+    return quantile75 - quantile25;
+
+  }
+
+
+
+  double quantile_vector_double(vector<double> vec, const double quantile)
+  {
+    const double index = (vec.size() - 1) * quantile;
+    double h;
+    double value_left, value_right;
+    double lo, hi;
+
+    lo = floor(index);
+    hi = ceil(index);
+    h = index - (double)lo;
+
+    nth_element(vec.begin(),
+		vec.begin() + (int)(lo), 
+		vec.end());
+
+    value_left = vec[(int)(lo)];
+
+
+    if (h == 0)
+      {
+	return value_left;
+      }
+    else
+      {
+	nth_element(vec.begin(),
+		    vec.begin() + (int)(hi), 
+		    vec.end());
+
+	value_right = vec[(int)(hi)];
+	//	printf("right:%f\n", value_right);
+
+	return (1 - h) * value_left + h * value_right;
+      }
+
+  }
+
+  //   double quantile_vector_double(vector<double> vec, const double quantile)
+  //   {
+
+  //     // cette fonctionne n'est applicable que pour le calcul
+  //     // de la médiane quantile = 0.5
+  //     // pour pour quantile = 0.25 et 0.75
+  //     if(vec.size() % 2)
+  //       {
+  // 	// on a un nombre impair d'éléments pour quantile = 0.5
+  // 	size_t indice = (vec.size() - 1) * quantile;
+
+  // 	nth_element(vec.begin(),
+  // 		    vec.begin() + indice, 
+  // 		    vec.end());
 
-// 	return vec[indice];
-//       }
+  // 	return vec[indice];
+  //       }
 
-//     else
-//       {
-// 	// on a un nombre pair d'éléments pour quantile = 0.5
-// 	size_t indice = vec.size() * quantile;
-// 	double value_right;
-// 	double value_left;
+  //     else
+  //       {
+  // 	// on a un nombre pair d'éléments pour quantile = 0.5
+  // 	size_t indice = vec.size() * quantile;
+  // 	double value_right;
+  // 	double value_left;
 
-// 	nth_element(vec.begin(),
-// 		    vec.begin() + indice - 1, 
-// 		    vec.end());
-
-// 	value_left = vec[indice - 1];
-
-// 	nth_element(vec.begin(),
-// 		    vec.begin() + indice, 
-// 		    vec.end());
-
-// 	value_right = vec[indice];
-
-// 	return (value_left * quantile + value_right * (1 - quantile))  ;
-//       }
-
-//   }
-
-double mean_vector_double(vector<double> vec)
-{
-  return accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
-
-}
-
-double mad_vector_double(vector<double> vec)
-{
-  double median=0;
-  int i;
-  const double constant = 1.4826;
-  const int vsize=vec.size();
-  vector<double> vaux(vsize);
-  median=quantile_vector_double(vec, 0.5);
-
-
-  for (i=0;i<vsize;i++)
-    {
-      vaux[i]=fabs(vec[i]-median);
-    }
-
-  return(constant*quantile_vector_double(vaux, 0.5));
-
-
-}
-
-double var_vector_double(vector<double> vec, int unbiased)
-{
-  double var = 0;
-  double aux;
-  double mean;
-  int i;
-  const int vsize=vec.size();
-  vector<double> vaux(vsize);
-
-  mean = mean_vector_double(vec);
-
-  if (vsize == 1)
-    return 0;
-
-  for (i = 0; i < vsize; i++)
-    {
-      aux = vec[i] - mean;
-      aux *= aux;
-      var += aux;
-    }
-
-  if (unbiased == 0)
-    return var / (vsize - 1);
-  else
-    return(var/vsize);
-
-
-}
-
-
-double median_fabs_double(const double *value, const int l)
-{
-  int i;
-  vector<double> value_vector;
-
-  for (i = 0; i < l; i++)
-    {
-      value_vector.push_back(fabs(*value));
-      value++;
-    }
-
-  return quantile_vector_double(value_vector, 0.5);
-
-
-}
-
-
-
-double computeLike(vector<struct agg> agg_region, double lambda, double sumkernelpen)
-{
-  vector<struct agg>::iterator it_agg = agg_region.begin();
-  vector<struct agg>::iterator it_agg_end = agg_region.end();
-
-  double logsigma=0;
-  double nbdata=0;
-  while(it_agg != it_agg_end)
-    {
-      logsigma+=log((*it_agg).VarLike)*(*it_agg).Card;
-      nbdata+=(*it_agg).Card;
-      it_agg++;
-    }
-  nbdata=log(nbdata);
-  return(logsigma+lambda*sumkernelpen*nbdata);
-}
+  // 	nth_element(vec.begin(),
+  // 		    vec.begin() + indice - 1, 
+  // 		    vec.end());
+
+  // 	value_left = vec[indice - 1];
+
+  // 	nth_element(vec.begin(),
+  // 		    vec.begin() + indice, 
+  // 		    vec.end());
+
+  // 	value_right = vec[indice];
+
+  // 	return (value_left * quantile + value_right * (1 - quantile))  ;
+  //       }
+
+  //   }
+
+  double mean_vector_double(vector<double> vec)
+  {
+    return accumulate(vec.begin(), vec.end(), 0.0) / vec.size();
+
+  }
+
+  double mad_vector_double(vector<double> vec)
+  {
+    double median=0;
+    int i;
+    const double constant = 1.4826;
+    const int vsize=vec.size();
+    vector<double> vaux(vsize);
+    median=quantile_vector_double(vec, 0.5);
+
+
+    for (i=0;i<vsize;i++)
+      {
+	vaux[i]=fabs(vec[i]-median);
+      }
+
+    return(constant*quantile_vector_double(vaux, 0.5));
+
+
+  }
+
+  double var_vector_double(vector<double> vec, int unbiased)
+  {
+    double var = 0;
+    double aux;
+    double mean;
+    int i;
+    const int vsize=vec.size();
+    vector<double> vaux(vsize);
+
+    mean = mean_vector_double(vec);
+
+    if (vsize == 1)
+      return 0;
+
+    for (i = 0; i < vsize; i++)
+      {
+	aux = vec[i] - mean;
+	aux *= aux;
+	var += aux;
+      }
+
+    if (unbiased == 0)
+      return var / (vsize - 1);
+    else
+      return(var/vsize);
+
+
+  }
+
+
+  double median_fabs_double(const double *value, const int l)
+  {
+    int i;
+    vector<double> value_vector;
+
+    for (i = 0; i < l; i++)
+      {
+	value_vector.push_back(fabs(*value));
+	value++;
+      }
+
+    return quantile_vector_double(value_vector, 0.5);
+
+
+  }
+
 
 
         
-double kernelpen(double x, const double d)
-{
-  double k;
-  if (x >= d)
-    return 0;
-  else
-    {
-      k = x / d;
-      k = k * k * k;
-      k = 1 - k;
-      k = k * k * k;
-      return k;
-    }
-}
+  double kernelpen(double x, const double d)
+  {
+    double k;
+    if (x >= d)
+      return 0;
+    else
+      {
+	k = x / d;
+	k = k * k * k;
+	k = 1 - k;
+	k = k * k * k;
+	return k;
+      }
+  }
 
 
 
 
-double computeSumKernelPen(vector<struct agg> agg_region, double sigma, double d)
-{
-  vector<struct agg>::const_iterator it_agg_b = agg_region.begin();
-  vector<struct agg>::const_iterator it_agg_n = agg_region.begin();
-  vector<struct agg>::const_iterator it_agg_e = agg_region.end();
-  double diff = 0;
-  double sum = 0;
-  double const inv_sigma = 1 / sigma;
-  ++it_agg_n;
-  while(it_agg_n != it_agg_e)
-    {
-      diff = (*it_agg_n).Mean - (*it_agg_b).Mean;
-      diff *= inv_sigma;
-      diff = fabs(diff);
-      sum += kernelpen(diff,d);  
-      it_agg_b++;
-      ++it_agg_n;
-    }
 
-  return sum;
-  
-}
+  void printagg(vector<struct agg> agg_region)
+  {
+    vector<struct agg>::const_iterator b=agg_region.begin();
+    vector<struct agg>::const_iterator e=agg_region.end();
 
 
+    while(b !=e)
+      {
+	cout << "\tMean=";
+	cout <<(*b).Mean;
+	cout <<"\tVar=";
+	cout <<(*b).Var;
+	cout <<"\tVarLike=";
+	cout <<(*b).VarLike;
+	cout <<"\tCard=";
+	cout <<(*b).Card;
+	cout <<"\tLabelRegion=";
+	cout << (*b).LabelRegion;
+	cout << " " << endl;
+	b++;
+      }
 
-void printagg(vector<struct agg> agg_region)
-{
-  vector<struct agg>::const_iterator b=agg_region.begin();
-  vector<struct agg>::const_iterator e=agg_region.end();
+  }
 
-
-  while(b !=e)
-    {
-      cout << "\tMean=";
-      cout <<(*b).Mean;
-      cout <<"\tVar=";
-      cout <<(*b).Var;
-      cout <<"\tVarLike=";
-      cout <<(*b).VarLike;
-      cout <<"\tCard=";
-      cout <<(*b).Card;
-      cout <<"\tLabelRegion=";
-      cout << (*b).LabelRegion;
-      cout << " " << endl;
-      b++;
-    }
 
 }
-
-
-
-
-
-
-
-

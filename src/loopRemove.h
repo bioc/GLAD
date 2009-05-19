@@ -31,5 +31,9 @@ extern "C"
 				   const int *startChr, // position pour le début des valeurs de chaque chromosome
 				   const int *BkpDetected);
 
+  double computeLike(vector<struct agg> agg_region, double lambda, double sumkernelpen);
+
+  double computeSumKernelPen(vector<struct agg> agg_region, double sigma, double d);
+
 
 }
