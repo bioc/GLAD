@@ -319,10 +319,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
         NbChr <- length(unique(profileCGH$profileValues[["Chromosome"]]))
         l <- length(profileCGH$profileValues[["LogRatio"]])
-        print(NbChr)
-        print(l)
-        print(as.double(profileCGH$profileValues[["LogRatio"]]))
-        print(as.integer(profileCGH$profileValues[["Chromosome"]]))
         res <- .C("chrBreakpoints",
                   as.double(profileCGH$profileValues[["LogRatio"]]),
                   as.integer(profileCGH$profileValues[["Chromosome"]]),

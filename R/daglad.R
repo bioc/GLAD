@@ -169,8 +169,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         
         if (verbose) print("daglad - step genomestep")        
         ## pour le smoothing sur l'ensemble du génome, il ne faut qu'un seul chromosome
-        profileCGH$profileValues$ChromosomeTrue <- profileCGH$profileValues$Chromosome
-        profileCGH$profileValues$Chromosome <- 0
+        profileCGH$profileValues[["ChromosomeTrue"]] <- profileCGH$profileValues[["Chromosome"]]
+        profileCGH$profileValues[["Chromosome"]] <- integer(profileCGH$NbProbes)
 
         ## Indicateur des Bkp détéctés chromosome par chromosome
         BkpDetectedAux <- profileCGH$BkpDetected
@@ -184,14 +184,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
         ## ajout des champs nécessaires
-        profileCGH$profileValues[ new.fields] <- 0
+        profileCGH$profileValues[new.fields] <- lapply(as.list(rep(profileCGH$NbProbes, nb.new.fields)), numeric)        
+##        profileCGH$profileValues[new.fields] <- 0
         
         print("Smoothing over the genome")
         profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=FALSE, sigma=sigma,
                                      bandwidth=bandwidth, round=round, verbose=verbose,
                                      lkern=lkern, model=model, qlambda=0.9999999,
                                      breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
-        print("Fin du smoothing sur le genome")
 
         ## estimation de l'écart-type sur l'ensemble du génome    
         profileCGH$SigmaG <- profileCGH$Sigma
@@ -250,7 +250,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         ## On a besoin d'un champ OutliersAws:
         ## on ne considère comme Outliers AWS que ceux détectés        
         ## à l'étape chromosome
-        profileCGH$profileValues$OutliersAws <- profileCGH$profileValues$OutliersAwsC        
+        profileCGH$profileValues[["OutliersAws"]] <- profileCGH$profileValues[["OutliersAwsC"]]
 
         
         print("Find the Normal Baseline")
@@ -261,10 +261,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         
         ## notre niveau de référence pour le normal correspond
         ## à la médiane des log-ratios correspondant à une ZoneGNLGen de 0
-        profileCGH$NormalRef <- median(profileCGH$profileValues[which(profileCGH$profileValues$ZoneGNL == 0),"LogRatio"], na.rm=TRUE)
+        profileCGH$NormalRef <- median(profileCGH$profileValues[["LogRatio"]][which(profileCGH$profileValues[["ZoneGNL"]] == 0)], na.rm=TRUE)
 
-        ## on supprime les champs LevelG, OutliersMad, OutliersTot et ZoneGNL
-        fields.kept <- setdiff(names(profileCGH$profileValues),c("LevelG", "OutliersAws", "OutliersMad", "OutliersTot", "ZoneGNL"))
+        ## on supprime les champs LevelG et ZoneGNL
+        fields.kept <- setdiff(names(profileCGH$profileValues),c("LevelG", "OutliersAws", "ZoneGNL"))
         profileCGH$profileValues <- profileCGH$profileValues[fields.kept]
 
         ## on récupère les champs calculés chromosome par chromosome
@@ -278,7 +278,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
         ## ajout des champs nécessaires
-        profileCGH$profileValues[ setdiff(new.fields, names(profileCGH$profileValues))] <- 0
+        profileCGH$profileValues[setdiff(new.fields, names(profileCGH$profileValues))] <- 0
 
         
       } ## fin (if) de l'étape sur le génome
