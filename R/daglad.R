@@ -421,7 +421,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$profileValues[,fields.replaced] <- resLoopChr[fields.replaced]
 
 
-    profileCGH$NbClusterOpt <- resLooChr[["nbclasses"]]
+    profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
     print("profileCGH$NbClusterOpt")    
     print(profileCGH$NbClusterOpt)
         
