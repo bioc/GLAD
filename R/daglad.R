@@ -493,7 +493,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
       }
 
 
-    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(colnames(profileCGH$profileValues),c("Sigma","DiffBase","Region","NextLogRatio","MaxPosOrder","MinPosOrder","PosOrder"))]
+    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(colnames(profileCGH$profileValues),c("Sigma","DiffBase","Region","NextLogRatio","MaxPosOrder","MinPosOrder","PosOrder", "NormalRange", "ZoneGen"))]
 
     namesprofile <- colnames(profileCGH$profileValues)
     namesprofile[which(namesprofile=="NewPosOrder")] <- "PosOrder"

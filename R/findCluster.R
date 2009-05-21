@@ -123,12 +123,10 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
     
     if (genome == FALSE)
       {
-        print("ICI")
         profileChr$profileValues[,"ZoneChr"] <- myzone$zone
       }
     else
       {
-        print("LA")
         profileChr$profileValues[,"ZoneGen"] <- myzone$zone
       }
 
