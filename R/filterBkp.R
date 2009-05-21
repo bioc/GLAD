@@ -169,10 +169,11 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
             
             ## le clustering est fait sur les niveaux NormalRange
+            ## il faut prendre nmin comme le min(nmin,profileCGH$NbClusterOpt)
             class(profileCGH) <- "profileChr"
             profileCGH <- findCluster(profileCGH, region = "NormalRange", method = profileCGH$method, genome = TRUE,
                                       lambda = profileCGH$lambdaclusterGen,
-                                      nmin = profileCGH$NbClusterOpt, nmax = profileCGH$NbClusterOpt, param = profileCGH$param)
+                                      nmin = min(profileCGH$nmin, profileCGH$NbClusterOpt), nmax = profileCGH$NbClusterOpt, param = profileCGH$param)
             class(profileCGH) <- "profileCGH"
 
 

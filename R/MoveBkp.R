@@ -94,7 +94,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                       as.double(profileCGH$findClusterSigma),
                       as.double(profileCGH$param["d"]),
                       as.double(profileCGH$lambdaclusterGen),
-                      as.integer(profileCGH$NbClusterOpt),
+                      as.integer(min(profileCGH$nmin, profileCGH$NbClusterOpt)),
                       as.integer(profileCGH$NbClusterOpt),
                       nbclasses = integer(1), ## valeur à récupérer
                       as.integer(lensubBkp),
