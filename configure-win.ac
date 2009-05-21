@@ -1,0 +1,32 @@
+
+AC_INIT([GLAD])
+
+	
+## BLAS.
+	
+        AC_ARG_WITH([blas],
+	[AC_HELP_STRING([--with-blas],
+	                [use system gsl BLAS library (if available)])],
+			[BLAS_LIBS=$with_blas],
+			[BLAS_LIBS="-lgslcblas"])
+
+	PKG_CHECK_MODULES(GSL, [gsl >= 1.6], [HAVEGSL="yes"], [HAVEGSL="no"])
+	if test "$HAVEGSL" = "yes"; then
+		LIBS=$GSL_LIBS
+	else 
+		AM_PATH_GSL(1.6,[LIBS="${LIBS} -lgsl ${BLAS_LIBS} -lm"],[AC_MSG_ERROR([Cannot find Gnu Scientific Library >=1.6])])
+	fi
+
+
+
+GLAD_LIBS_OPTIONS="$CXXFLAGS $LIBS"
+echo "Compilation options: $GLAD_LIBS_OPTIONS"
+
+
+dnl Substitution
+dnl AC_SUBST(GLAD_LIBS_PATH)
+AC_SUBST(GLAD_LIBS_OPTIONS)
+dnl AC_SUBST(GLAD_INCLUDE_PATH)
+
+AC_CONFIG_FILES([src/Makevars])
+AC_OUTPUT
