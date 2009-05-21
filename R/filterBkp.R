@@ -33,7 +33,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
         if (verbose) print("filterBkp: Breakpoints in amplified regions are removed")
         
-        indexBkpToDel <- which(profileCGH$BkpInfo["GNLchange"]==0 & profileCGH$BkpInfo["ZoneGNL"]==2)
+        indexBkpToDel <- which(profileCGH$BkpInfo["GNLchange"] == 0 & profileCGH$BkpInfo["ZoneGNL"] == 2)
         if (length(indexBkpToDel)>0)
           {
             RecomputeGNL <- TRUE
@@ -56,12 +56,12 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
         nb <- length(profileCGH$profileValues[,1]) - 1        
         moveBkp <- .C("filterBkp_moveBkp_Outliers",
-                      as.integer(profileCGH$profileValues$ZoneGNL),
-                      Level=as.integer(profileCGH$profileValues$Level),
-                      Breakpoints=as.integer(profileCGH$profileValues$Breakpoints),
-                      OutliersTot=as.integer(profileCGH$profileValues$OutliersTot),
-                      OutliersAws=as.integer(profileCGH$profileValues$OutliersAws),
-                      as.integer(profileCGH$profileValues$Chromosome),
+                      as.integer(profileCGH$profileValues[,"ZoneGNL"]),
+                      Level=as.integer(profileCGH$profileValues[,"Level"]),
+                      Breakpoints=as.integer(profileCGH$profileValues[,"Breakpoints"]),
+                      OutliersTot=as.integer(profileCGH$profileValues[,"OutliersTot"]),
+                      OutliersAws=as.integer(profileCGH$profileValues[,"OutliersAws"]),
+                      as.integer(profileCGH$profileValues[,"Chromosome"]),
                       RecomputeSmt=as.integer(0),
                       as.integer(nb),
                       PACKAGE="GLAD")
@@ -71,7 +71,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             rownames(profileCGH$profileValues) <- 0:(length(profileCGH$profileValues[,1])-1)
             RecomputeGNL <- TRUE
 
-            profileCGH$profileValues[,c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")]
+            profileCGH$profileValues[,c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- unlist(moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")])
           }
         
 
@@ -91,8 +91,8 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
         if (length(indexWeightToSmall) > 0)
           {
             RecomputeGNL <- TRUE
-            indexPos <- profileCGH$BkpInfo$PosOrder[indexWeightToSmall]
-            profileCGH$profileValues$Breakpoints[indexPos] <- -1            
+            indexPos <- profileCGH$BkpInfo[,"PosOrder"][indexWeightToSmall]
+            profileCGH$profileValues[,"Breakpoints"][indexPos] <- -1            
             if (length(indexWeightToSmall) == length(profileCGH$BkpInfo[,1]))
               {
                 profileCGH$BkpInfo <- NA
@@ -123,7 +123,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
           {
             RecomputeGNL <- TRUE
             indexPos <- profileCGH$BkpInfo$PosOrder[indexWeightZero]
-            profileCGH$profileValues$Breakpoints[indexPos] <- -1            
+            profileCGH$profileValues[,"Breakpoints"][indexPos] <- -1            
             
             if (length(indexWeightZero) == length(profileCGH$BkpInfo[,1]))
               {
@@ -156,16 +156,16 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             
             l <- length(profileCGH$profileValues[,1])
             updateFilterBkp <- .C("updateFilterBkp",
-                                  as.integer(profileCGH$profileValues$Chromosome),
-                                  Breakpoints=as.integer(profileCGH$profileValues$Breakpoints),  ## valeur de sortie
-                                  Level=as.integer(profileCGH$profileValues$Level),              ## valeur de sortie
-                                  as.integer(profileCGH$profileValues$PosOrder),
-                                  NextLogRatio=as.double(profileCGH$profileValues$NextLogRatio), ## valeur de sortie
-                                  as.double(profileCGH$profileValues$LogRatio),
-                                  as.integer(max(profileCGH$profileValues$Level)),
+                                  as.integer(profileCGH$profileValues[,"Chromosome"]),
+                                  Breakpoints=as.integer(profileCGH$profileValues[,"Breakpoints"]),  ## valeur de sortie
+                                  Level=as.integer(profileCGH$profileValues[,"Level"]),              ## valeur de sortie
+                                  as.integer(profileCGH$profileValues[,"PosOrder"]),
+                                  NextLogRatio=as.double(profileCGH$profileValues[,"NextLogRatio"]), ## valeur de sortie
+                                  as.double(profileCGH$profileValues[,"LogRatio"]),
+                                  as.integer(max(profileCGH$profileValues[,"Level"])),
                                   ## ajout des variables pour updateOutliers
-                                  OutliersAws=as.integer(profileCGH$profileValues$OutliersAws),  ## valeur de sortie
-                                  Smoothing=as.double(profileCGH$profileValues$Smoothing),       ## valeur de sortie
+                                  OutliersAws=as.integer(profileCGH$profileValues[,"OutliersAws"]),  ## valeur de sortie
+                                  Smoothing=as.double(profileCGH$profileValues[,"Smoothing"]),       ## valeur de sortie
                                   ## ajout des variables pour detectOutliers
                                   OutliersMad=integer(l),                                        ## valeur de sortie
                                   OutliersTot=integer(l),                                        ## valeur de sortie
@@ -179,7 +179,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
 
             
-            profileCGH$profileValues[,c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")] <- updateFilterBkp[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")]
+            profileCGH$profileValues[,c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")] <- unlist(updateFilterBkp[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")])
 
             
             
@@ -221,26 +221,26 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             class(profileCGH) <- "profileCGH"
 
 
-            lengthDest <- length(profileCGH$profileValues$ZoneGen)
+            lengthDest <- length(profileCGH$profileValues[,"ZoneGen"])
             myZoneGNL <- .C("compute_cluster_LossNormalGain",
                             ## variables pour la jointure
-                            as.integer(profileCGH$profileValues$ZoneGen),
-                            ZoneGNL=integer(lengthDest),
+                            as.integer(profileCGH$profileValues[,"ZoneGen"]),
+                            ZoneGNL = integer(lengthDest),
                             as.integer(lengthDest),
-                            as.double(profileCGH$profileValues$Smoothing),
+                            as.double(profileCGH$profileValues[,"Smoothing"]),
                             as.double(profileCGH$forceGL[1]),
                             as.double(profileCGH$forceGL[2]),
                             as.double(profileCGH$NormalRef),
                             as.double(profileCGH$amplicon),
                             as.double(profileCGH$deletion),                                                                                    
                             ## variables pour le calcul de la médiane par cluster
-                            as.double(profileCGH$profileValues$LogRatio),
-                            as.integer(profileCGH$profileValues$NormalRange),
-                            PACKAGE="GLAD")
+                            as.double(profileCGH$profileValues[,"LogRatio"]),
+                            as.integer(profileCGH$profileValues[,"NormalRange"]),
+                            PACKAGE = "GLAD")
 
 
 
-            profileCGH$profileValues$ZoneGNL <- myZoneGNL$ZoneGNL
+            profileCGH$profileValues[,"ZoneGNL"] <- myZoneGNL$ZoneGNL
             
 
 ###            profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGen","NormalRange"))]

@@ -12,16 +12,18 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
     infaction <- match.arg(infaction)
 
     champ.obligatoire <- c("LogRatio","PosOrder","Chromosome")
+
     
     nomchamp <- intersect(c(champ.obligatoire, "PosBase"), names(profileCGH))
 
     nomchamp.supp <- setdiff(names(profileCGH), nomchamp)
-    print("Les champs en plus sont:")
-    print(nomchamp.supp)
+##     print("Les champs en plus sont:")
+##     print(nomchamp.supp)
 
     addedfields <- c("ChromosomeChar","Smoothing","Region","Level",
                      "OutliersAws","Breakpoints","OutliersMad","OutliersTot",
                      "ZoneChr","ZoneGen","ZoneGNL")
+
     interadded <- intersect(addedfields,names(profileCGH))
 
 
@@ -41,13 +43,13 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
         ChromosomeNum <- ChrNumeric(profileCGH$Chromosome)
         profileCGH$ChromosomeChar <- profileCGH$Chromosome        
         profileCGH$Chromosome <- ChromosomeNum
-
+        nomchamp.supp <- c(nomchamp.supp, "ChromosomeChar")
       }
 
     
     ## Suppression des valeurs manquantes et des LogRatio avec Inf    
-    indexInf <- which(is.infinite(profileCGH$LogRatio)==TRUE)
-    if (length(indexInf)>0)
+    indexInf <- which(is.infinite(profileCGH$LogRatio) == TRUE)
+    if (length(indexInf) > 0)
       {          
         print("The LogRatio with following rows index contains infinite value:")
         print(indexInf)
@@ -68,6 +70,7 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
 
     indexNA <- attr(na.omit(profileCGH[,nomchamp]),"na.action")
 
+
     if (!is.null(indexNA))
       {
         if (length(nomchamp.supp) > 0)
@@ -79,17 +82,18 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
         else
           {
             profileCGH <- list(profileValues = profileCGH[-indexNA,],
-                               profileValuesSUPP = profileCGH[-indexNA, nomchamp.supp],
                                profileValuesNA = profileCGH[indexNA,])
           }
         class(profileCGH) <- "profileCGH"
-
       }
 
     else
       {
         if (length(nomchamp.supp) > 0)
           {
+            profileCGH <- list(profileValues = profileCGH[, nomchamp],
+                               profileValuesSUPP = profileCGH[, nomchamp.supp])
+            
           }
         else
           {        
@@ -100,6 +104,9 @@ as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value
       }
 
 
+    print("nom des champs apres as.profileCGH")
+    print(colnames(profileCGH$profileValues))
+    
     return(profileCGH)
     
   }

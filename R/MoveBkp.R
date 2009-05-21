@@ -31,18 +31,18 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 ##        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
         RecomputeBkpInfo <- FALSE
 
-        ZoneGNLAux <- profileCGH$profileValues$ZoneGNL
+        ZoneGNLAux <- profileCGH$profileValues[,"ZoneGNL"]
 
         l <- length(profileCGH$profileValues[,1])
         updateGNL <- .C("MoveBkp_updateGNL",
-                        ZoneGNL = as.integer(profileCGH$profileValues$ZoneGNL),
-                        as.double(profileCGH$profileValues$Smoothing),
-                        as.integer(profileCGH$profileValues$OutliersTot),
+                        ZoneGNL = as.integer(profileCGH$profileValues[,"ZoneGNL"]),
+                        as.double(profileCGH$profileValues[,"Smoothing"]),
+                        as.integer(profileCGH$profileValues[,"OutliersTot"]),
                         as.integer(l),
                         PACKAGE = "GLAD")
         
 
-        profileCGH$profileValues$ZoneGNL <- updateGNL$ZoneGNL
+        profileCGH$profileValues[,"ZoneGNL"] <- updateGNL$ZoneGNL
 
 
         ## ######################################
@@ -63,7 +63,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
               }
             
             lensubBkp <- length(subBkpInfo[,1])
-            lengthDest <- length(profileCGH$profileValues$Level)
+            lengthDest <- length(profileCGH$profileValues[,"Level"])
             l <- lengthDest             
             
                        
@@ -132,18 +132,18 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             res <- .C("MoveBkp_StepAll",
                       as.integer(subBkpInfo$MoveBkp),
                       as.integer(subBkpInfo$PosOrder),
-                      as.double(profileCGH$profileValues$LogRatio),
+                      as.double(profileCGH$profileValues[,"LogRatio"]),
                       NextLogRatio = double(l),
-                      as.integer(profileCGH$profileValues$Chromosome),                      
-                      as.integer(profileCGH$profileValues$PosOrder),
-                      Breakpoints = as.integer(profileCGH$profileValues$Breakpoints),
-                      OutliersTot = as.integer(profileCGH$profileValues$OutliersTot),
-                      OutliersAws = as.integer(profileCGH$profileValues$OutliersAws),
-                      OutliersMad = as.integer(profileCGH$profileValues$OutliersMad),
+                      as.integer(profileCGH$profileValues[,"Chromosome"]),                      
+                      as.integer(profileCGH$profileValues[,"PosOrder"]),
+                      Breakpoints = as.integer(profileCGH$profileValues[,"Breakpoints"]),
+                      OutliersTot = as.integer(profileCGH$profileValues[,"OutliersTot"]),
+                      OutliersAws = as.integer(profileCGH$profileValues[,"OutliersAws"]),
+                      OutliersMad = as.integer(profileCGH$profileValues[,"OutliersMad"]),
                       Level = as.integer(profileCGH$profileValues[,region]),
-                      Region = as.integer(profileCGH$profileValues$Region),
-                      Smoothing = as.double(profileCGH$profileValues$Smoothing),
-                      ZoneGNL = as.integer(profileCGH$profileValues$ZoneGNL),
+                      Region = as.integer(profileCGH$profileValues[,"Region"]),
+                      Smoothing = as.double(profileCGH$profileValues[,"Smoothing"]),
+                      ZoneGNL = as.integer(profileCGH$profileValues[,"ZoneGNL"]),
                       NormalRange = integer(l),
                       ## seuils
                       as.double(profileCGH$NormalRef),
@@ -176,7 +176,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                         "Region",
                                         "Smoothing",
                                         "ZoneGNL",
-                                        "NextLogRatio")] <- res[c("Breakpoints",
+                                        "NextLogRatio")] <- unlist(res[c("Breakpoints",
                                                                  "OutliersTot",
                                                                  "OutliersAws",
                                                                  "OutliersMad",
@@ -184,7 +184,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                                                  "Region",
                                                                  "Smoothing",
                                                                  "ZoneGNL",
-                                                                 "NextLogRatio")]
+                                                                 "NextLogRatio")])
 
             profileCGH$NbClusterOpt <-  res$nbclasses
 
@@ -406,7 +406,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 
         else
           {
-            profileCGH$profileValues$ZoneGNL <- ZoneGNLAux
+            profileCGH$profileValues[,"ZoneGNL"] <- ZoneGNLAux
           }        
 
       }

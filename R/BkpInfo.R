@@ -11,7 +11,7 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
 ##        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
       }
 
-    indexBP <- which(profileCGH$profileValues$Breakpoints == 1)
+    indexBP <- which(profileCGH$profileValues[,"Breakpoints"] == 1)
     if (length(indexBP)>0)
       {
         
@@ -21,14 +21,16 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
                       "Smoothing","Chromosome","ZoneGNL", "LogRatio",
                       "NextLogRatio", "MinPosOrder", "MaxPosOrder", "Clone")
 
-        nomchamptot <- names(profileCGH$profileValues)
+        nomchamptot <- colnames(profileCGH$profileValues)
 
         champinter <- intersect(nomchamp,nomchamptot)
         
         BP <- profileCGH$profileValues[indexBP,champinter]
+
         
         BPlag <- profileCGH$profileValues[indexBPplusun,c("Smoothing","ZoneGNL")]
-        names(BPlag) <- c("Next","ZoneGNLnext")
+        
+        colnames(BPlag) <- c("Next","ZoneGNLnext")
         BP <- data.frame(BP,BPlag)
 ### cette jointure ne prend pas trop de temps (0.02s)
         t1 <- system.time(BP <- merge(BP, profileCGH$SigmaC))
@@ -38,16 +40,17 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
         BP$Weight <- BP$Gap
         BP$GNLchange <- 0
 
+
         makeBkpInfo <- .C("make_BkpInfo",
                           as.double(BP$Gap),
-                          GNLchange=as.integer(BP$GNLchange),
+                          GNLchange = as.integer(BP$GNLchange),
                           as.double(BP$Value),
-                          Weight=as.double (BP$Weight),
+                          Weight = as.double (BP$Weight),
                           as.integer(BP$ZoneGNL),
                           as.integer(BP$ZoneGNLnext),
                           as.integer(length(BP[,1])),
                           as.double(profileCGH$nbsigma),
-                          PACKAGE="GLAD")
+                          PACKAGE = "GLAD")
 
 
         

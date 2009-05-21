@@ -20,19 +20,19 @@ extern "C"
 		    const double *nbsigma)
   {
 
-    const int l=*nb_Bkp;
+    const int l = *nb_Bkp;
     int i;
 
-    for (i=0;i<l;i++)
+    for (i = 0; i < l; i++)
       {
-	BkpInfo_Weight[i]=1 - kernelpen(BkpInfo_Gap[i], *nbsigma*BkpInfo_Value[i]);
-	if (BkpInfo_ZoneGNL[i]==BkpInfo_ZoneGNLnext[i])
+	BkpInfo_Weight[i] = 1 - kernelpen(BkpInfo_Gap[i], *nbsigma * BkpInfo_Value[i]);
+	if (BkpInfo_ZoneGNL[i] == BkpInfo_ZoneGNLnext[i])
 	  {
-	    BkpInfo_GNLchange[i]=0;
+	    BkpInfo_GNLchange[i] = 0;
 	  }
 	else
 	  {
-	    BkpInfo_GNLchange[i]=1;
+	    BkpInfo_GNLchange[i] = 1;
 	  }
       }
   }

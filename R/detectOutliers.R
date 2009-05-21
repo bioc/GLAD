@@ -22,11 +22,11 @@ detectOutliers.profileChr <- function(profileChr, region="Region", msize=5, alph
 
     alpha <- qnorm(1-alpha/2)
     
-    l <- length(profileChr$profileValues$LogRatio)    
+    l <- length(profileChr$profileValues[,"LogRatio"])    
     res <- .C("detectOutliers",
-              as.double(profileChr$profileValues$LogRatio),
+              as.double(profileChr$profileValues[,"LogRatio"]),
               as.integer(profileChr$profileValues[,region]),
-              OutliersAws=as.integer(profileChr$profileValues$OutliersAws),
+              OutliersAws=as.integer(profileChr$profileValues[,"OutliersAws"]),
               OutliersMad=integer(l),
               OutliersTot=integer(l),
               as.integer(msize),
@@ -35,7 +35,7 @@ detectOutliers.profileChr <- function(profileChr, region="Region", msize=5, alph
               PACKAGE="GLAD")
 
 
-    profileChr$profileValues[,c("OutliersMad","OutliersAws","OutliersTot")] <- res[c("OutliersMad","OutliersAws","OutliersTot")]
+    profileChr$profileValues[,c("OutliersMad","OutliersAws","OutliersTot")] <- unlist(res[c("OutliersMad","OutliersAws","OutliersTot")])
 
     if(verbose) print("detectOutliers: ending function")
 
