@@ -33,7 +33,7 @@ extern "C"
 						 const int *startChr, // position pour le début des valeurs de chaque chromosome
 						 const int *BkpDetected,
 						 // paramètres pour findCluster
-						 const int *method, // méthode de clustering
+						 int *method, // méthode de clustering
 						 const double *findClusterSigma,
 						 const double *lambdaclusterGen,
 						 const int *nmin,
@@ -90,19 +90,19 @@ extern "C"
 		l);
 
 
-  void compute_cluster_LossNormalGain(// variables pour faire la jointure
-				      ZoneGen,
-				      ZoneGNL,
-				      l,
-				      Smoothing,
-				      const double *forceGL1Value,
-				      const double *forceGL2Value,
-				      const double *NormalRefValue,
-				      const double *ampliconValue,
-				      const double *deletionValue,
-				      //variables pour calcul la médiane par cluster
-				      LogRatio,
-				      NormalRange);
+    compute_cluster_LossNormalGain(// variables pour faire la jointure
+				   ZoneGen,
+				   ZoneGNL,
+				   l,
+				   Smoothing,
+				   forceGL1Value,
+				   forceGL2Value,
+				   NormalRefValue,
+				   ampliconValue,
+				   deletionValue,
+				   //variables pour calcul la médiane par cluster
+				   LogRatio,
+				   NormalRange);
 
 
   }

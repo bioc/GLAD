@@ -331,7 +331,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ## choix de la méthode de clustering
     METHODS <- c("ward", "single", "complete", "average", "mcquitty", 
                  "median", "centroid")
-    method <- pmatch(profileChr$method, METHODS)
+    method <- pmatch(profileCGH$method, METHODS)
 
 
     if (is.na(method)) 
