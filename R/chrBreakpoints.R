@@ -16,7 +16,8 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                                       model="Gaussian", bandwidth=10, round=1.5, verbose=FALSE,
                                       breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, ...)
   {
-    
+
+
     if (verbose)
       {
         print("chrBreakpoints: starting function")
@@ -264,7 +265,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
                 nbregion <- nbregion + 1
 
-                
                 l <- length(subsetdata[,"Smoothing"])            
                 putLevel <- .C("putLevel_awsBkp",
                                ## variables pour putLevel
@@ -274,7 +274,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                                nblevel = as.integer(nblevel),                    ## valeur de sortie
                                as.integer(l),
                                ## variables pour awsBkp
-                               OutliersAws = as.integer(subsetdata[,"OutliersAws"]), ## valeur de sortie
+                               OutliersAws = integer(l), ## valeur de sortie
                                nbregion = as.integer(nbregion),                  ## valeur de sortie
                                regionChr = integer(l),                           ## valeur de sortie
                                Breakpoints = integer(l),                         ## valeur de sortie
@@ -299,6 +299,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
               }
 
 
+            
             profileCGH$profileValues[indexChr,] <- subsetdata
 
             

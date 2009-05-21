@@ -24,10 +24,12 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
   {
 
     if (verbose) print("daglad - step CheckData")    
-### vérification de l'object donné en entrée
+
+    ## vérification de l'object donné en entrée
     CheckData(profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc)
     
-### champs tels qu'ils sont en entrée
+
+    ## champs tels qu'ils sont en entrée
     fieldinput <- names(profileCGH$profileValues)
     excdudefields <- c("Smoothing", "Region", "Level", "OutliersAws",
       "Breakpoints", "OutliersMad", "OutliersTot",
@@ -67,11 +69,29 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         print(paste("Choose smoothfunc=lawsglad or smoothfunc=haarseg if you want the process runs faster"))
       }
 
-    ### Méthode d'estimation du sigma
+    ## ajout des champs nécessaires à la procédure
+    ## ajout des champs nécessaires à la procédure
+##     new.fields <- c("NewPosOrder", "Smoothing",
+##                     "OutliersAws", "Region",
+##                     "Level", "Breakpoints",
+##                     "MinPosOrder", "MaxPosOrder",
+##                     "OutliersMad",  "OutliersTot",
+##                     "NextLogRatio", "NormalRange",
+##                     "ZoneGen", "ZoneGNL")
 
+     new.fields <- c("OutliersAws", "OutliersMad", "OutliersTot",
+                     "Smoothing", "Level", "Region", "Breakpoints",
+                     "ZoneChr", "NextLogRatio", "MinPosOrder", "MaxPosOrder")
+    
+
+    profileCGH$profileValues[, new.fields] <- 0
+    
+    ## Méthode d'estimation du sigma
     print("Smoothing for each Chromosome")    
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, verbose=verbose, model=model, lkern=lkern, qlambda=qlambda, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
-### LogRatio are median-centered
+
+
+    ## LogRatio are median-centered
     if (mediancenter)
       {
         med <- median(profileCGH$profileValues$LogRatio) 
@@ -81,7 +101,8 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
     
     
     
-### profile by chromosome	
+
+    ## profile by chromosome	
     nbzonetot <- 0 #total number of zones that have been previously identify	
 
 
@@ -93,7 +114,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
     Init <- indice
     Init <- 0
 
-    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio=Init, OutliersMad=Init, OutliersTot=Init, ZoneChr=Init)
+##    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio=Init)
     FieldOrder <- names(profileCGH$profileValues)
 
     print("Optimization of the Breakpoints")    
@@ -130,10 +151,10 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         profileChr$profileValues$ZoneChr <- profileChr$profileValues$ZoneChr + nbzonetot	
         nbzonetot <- nbzonetot + nbzone
 
+              
         profileCGH$profileValues[indexChr,] <- profileChr$profileValues[,FieldOrder]
 
       }
-    
 
     
     class(profileCGH) <- "profileChr"

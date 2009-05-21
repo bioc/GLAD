@@ -20,16 +20,16 @@ loopRemove.profileChr <- function(profileChr, sigma, lambda=10, type="tricubic",
     
 
     alpha <- qnorm(1-alpha/2)
-    
+
     
     l <- length(profileChr$profileValues[,1])
     res <- .C("loopRemove",
               as.double(profileChr$profileValues$LogRatio),
-              Region=as.integer(profileChr$profileValues$Region),
-              OutliersAws=as.integer(profileChr$profileValues$OutliersAws),
-              OutliersMad=integer(l),
-              OutliersTot=integer(l),
-              Breakpoints=as.integer(profileChr$profileValues$Breakpoints),
+              Region = as.integer(profileChr$profileValues$Region),
+              OutliersAws = as.integer(profileChr$profileValues$OutliersAws),
+              OutliersMad = integer(l),
+              OutliersTot = integer(l),
+              Breakpoints = as.integer(profileChr$profileValues$Breakpoints),
               as.integer(msize),
               as.double(alpha),
               as.double(lambda),
@@ -157,7 +157,6 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
     if (verbose) print("removeLevel: ending function")
 
     return(profileChr)
-
 
   }
 
