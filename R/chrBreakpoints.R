@@ -419,7 +419,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
         
 
 
-        profileCGH$profileValues[,c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- unlist(res[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")])
+        profileCGH$profileValues[,c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- res[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
 
 #        print(profileCGH$profileValues)
 

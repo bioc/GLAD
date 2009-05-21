@@ -71,7 +71,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             rownames(profileCGH$profileValues) <- 0:(length(profileCGH$profileValues[,1])-1)
             RecomputeGNL <- TRUE
 
-            profileCGH$profileValues[,c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- unlist(moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")])
+            profileCGH$profileValues[,c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")]
           }
         
 
@@ -179,7 +179,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
 
             
-            profileCGH$profileValues[,c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")] <- unlist(updateFilterBkp[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")])
+            profileCGH$profileValues[,c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")] <- updateFilterBkp[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange")]
 
             
             

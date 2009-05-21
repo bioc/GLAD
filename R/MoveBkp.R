@@ -176,7 +176,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                         "Region",
                                         "Smoothing",
                                         "ZoneGNL",
-                                        "NextLogRatio")] <- unlist(res[c("Breakpoints",
+                                        "NextLogRatio")] <- res[c("Breakpoints",
                                                                  "OutliersTot",
                                                                  "OutliersAws",
                                                                  "OutliersMad",
@@ -184,7 +184,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                                                                  "Region",
                                                                  "Smoothing",
                                                                  "ZoneGNL",
-                                                                 "NextLogRatio")])
+                                                                 "NextLogRatio")]
 
             profileCGH$NbClusterOpt <-  res$nbclasses
 

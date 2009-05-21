@@ -35,7 +35,7 @@ detectOutliers.profileChr <- function(profileChr, region="Region", msize=5, alph
               PACKAGE="GLAD")
 
 
-    profileChr$profileValues[,c("OutliersMad","OutliersAws","OutliersTot")] <- unlist(res[c("OutliersMad","OutliersAws","OutliersTot")])
+    profileChr$profileValues[,c("OutliersMad","OutliersAws","OutliersTot")] <- res[c("OutliersMad","OutliersAws","OutliersTot")]
 
     if(verbose) print("detectOutliers: ending function")
 

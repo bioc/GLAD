@@ -101,18 +101,20 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                     "NextLogRatio", "NormalRange",
                     "ZoneGen", "ZoneGNL")
 
+    profileCGH$profileValues[, new.fields] <- 0
+
     
-    nb.new.fields <- length(new.fields)
-    names.fields <- c(colnames(profileCGH$profileValues), new.fields)
-    print(colnames(profileCGH$profileValues))
-    print(names.fields)
-    print(profileCGH$NbProbes)
-    profileCGH$profileValues <- matrix(c(profileCGH$profileValues, rep(0, profileCGH$NbProbes * nb.new.fields)),
-                                       profileCGH$NbProbes,
-                                       dim(profileCGH$profileValues)[2] + nb.new.fields)
-    print(dim(profileCGH$profileValues)[2] + nb.new.fields)
-    print(dim(profileCGH$profileValues))
-    colnames(profileCGH$profileValues) <- names.fields
+##     nb.new.fields <- length(new.fields)
+##     names.fields <- c(colnames(profileCGH$profileValues), new.fields)
+##     print(colnames(profileCGH$profileValues))
+##     print(names.fields)
+##     print(profileCGH$NbProbes)
+##     profileCGH$profileValues <- matrix(c(profileCGH$profileValues, rep(0, profileCGH$NbProbes * nb.new.fields)),
+##                                        profileCGH$NbProbes,
+##                                        dim(profileCGH$profileValues)[2] + nb.new.fields)
+##     print(dim(profileCGH$profileValues)[2] + nb.new.fields)
+##     print(dim(profileCGH$profileValues))
+##     colnames(profileCGH$profileValues) <- names.fields
 
     ## on trie les données par chromosome et position
     profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues[,"Chromosome"], profileCGH$profileValues[,"PosOrder"]),]
@@ -362,7 +364,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
 
     fields.replaced <- c("Smoothing", "NextLogRatio","Level", "OutliersAws", "OutliersMad", "OutliersTot", "Breakpoints", "NormalRange")
-    profileCGH$profileValues[,fields.replaced] <- unlist(resLoopChr[fields.replaced])
+    profileCGH$profileValues[,fields.replaced] <- resLoopChr[fields.replaced]
         
 
     print("resloopChr")

@@ -156,7 +156,7 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
                       as.integer(length(profileCGH$profileValues[,"Smoothing"])),
                       PACKAGE = "GLAD")
 
-  profileCGH$profileValues[,c("OutliersTot", "ZoneGNL")] <- unlist(myOutliersGNL[c("OutliersTot", "ZoneGNL")])
+  profileCGH$profileValues[,c("OutliersTot", "ZoneGNL")] <- myOutliersGNL[c("OutliersTot", "ZoneGNL")]
   
   
   if (verbose) print("OutliersGNL: ending function")
