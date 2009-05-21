@@ -64,6 +64,12 @@ extern "C"
     map<int, vector<double> >::iterator it_map_Region_LogRatio;
     map<int, struct agg> map_clusterRegion;
 
+    printf("sigma: %f\n", sigma);
+    printf("d: %f\n", d);
+    printf("lambda: %f\n", lambda);
+    printf("nmin: %i\n", nmin);
+    printf("nmax: %i\n", nmax);
+
     // récupération des logratios par région
     for(i = 0; i < nb; i++)
       {
