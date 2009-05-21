@@ -99,11 +99,11 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
 ##     else
 ##       {
 
-        l <- length(profileChr$profileValues[,"LogRatio"])
+        l <- length(profileChr$profileValues[["LogRatio"]])
         myzone <- .C("findCluster",
-                     as.double(profileChr$profileValues[,"LogRatio"]),
-                     as.integer(profileChr$profileValues[,region]),              
-                     as.integer(profileChr$profileValues[,"OutliersTot"]),
+                     as.double(profileChr$profileValues[["LogRatio"]]),
+                     as.integer(profileChr$profileValues[[region]]),              
+                     as.integer(profileChr$profileValues[["OutliersTot"]]),
                      zone = integer(l),
                      as.integer(method),
                      ## paramètres pour clusterglad
@@ -123,11 +123,11 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
     
     if (genome == FALSE)
       {
-        profileChr$profileValues[,"ZoneChr"] <- myzone$zone
+        profileChr$profileValues[["ZoneChr"]] <- myzone$zone
       }
     else
       {
-        profileChr$profileValues[,"ZoneGen"] <- myzone$zone
+        profileChr$profileValues[["ZoneGen"]] <- myzone$zone
       }
 
     

@@ -11,7 +11,7 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
 ##        profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
       }
 
-    indexBP <- which(profileCGH$profileValues[,"Breakpoints"] == 1)
+    indexBP <- which(profileCGH$profileValues[["Breakpoints"]] == 1)
     if (length(indexBP)>0)
       {
         
@@ -21,16 +21,18 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
                       "Smoothing","Chromosome","ZoneGNL", "LogRatio",
                       "NextLogRatio", "MinPosOrder", "MaxPosOrder", "Clone")
 
-        nomchamptot <- colnames(profileCGH$profileValues)
+        nomchamptot <- names(profileCGH$profileValues)
 
         champinter <- intersect(nomchamp,nomchamptot)
         
-        BP <- profileCGH$profileValues[indexBP,champinter]
+        BP <- lapply(profileCGH$profileValues[champinter], selectindex, indexBP)
+        BP <- as.data.frame(BP)
 
         
-        BPlag <- profileCGH$profileValues[indexBPplusun,c("Smoothing","ZoneGNL")]
+        BPlag <- lapply(profileCGH$profileValues[c("Smoothing","ZoneGNL")],selectindex, indexBPplusun)
+        BPlag <- as.data.frame(BPlag)
         
-        colnames(BPlag) <- c("Next","ZoneGNLnext")
+        names(BPlag) <- c("Next","ZoneGNLnext")
         BP <- data.frame(BP,BPlag)
 ### cette jointure ne prend pas trop de temps (0.02s)
         t1 <- system.time(BP <- merge(BP, profileCGH$SigmaC))
@@ -83,4 +85,10 @@ BkpInfo.profileCGH <- function(profileCGH, order=TRUE, ...)
 
     return(profileCGH$BkpInfo)
 
+  }
+
+
+selectindex <- function(x, ind)
+  {
+    return(x[ind])
   }

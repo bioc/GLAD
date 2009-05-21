@@ -144,19 +144,19 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
   seuilinf <- NormalRef - sigma*qnorm(1-alpha/2)
 
   myOutliersGNL <- .C("OutliersGNL",
-                      OutliersTot = as.integer(profileCGH$profileValues[,"OutliersTot"]),
-                      ZoneGNL = as.integer(profileCGH$profileValues[,"ZoneGNL"]),
-                      as.double(profileCGH$profileValues[,"LogRatio"]),
-                      as.double(profileCGH$profileValues[,"Smoothing"]),
+                      OutliersTot = as.integer(profileCGH$profileValues[["OutliersTot"]]),
+                      ZoneGNL = as.integer(profileCGH$profileValues[["ZoneGNL"]]),
+                      as.double(profileCGH$profileValues[["LogRatio"]]),
+                      as.double(profileCGH$profileValues[["Smoothing"]]),
                       as.double(seuilsup),
                       as.double(seuilinf),
                       as.double(amplicon),
                       as.double(deletion),
                       as.double(NormalRef),
-                      as.integer(length(profileCGH$profileValues[,"Smoothing"])),
+                      as.integer(length(profileCGH$profileValues[["Smoothing"]])),
                       PACKAGE = "GLAD")
 
-  profileCGH$profileValues[,c("OutliersTot", "ZoneGNL")] <- myOutliersGNL[c("OutliersTot", "ZoneGNL")]
+  profileCGH$profileValues[c("OutliersTot", "ZoneGNL")] <- myOutliersGNL[c("OutliersTot", "ZoneGNL")]
   
   
   if (verbose) print("OutliersGNL: ending function")

@@ -81,12 +81,12 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
     if(smoothfunc != "haarseg")
       {
-        indice <- 1:length(profileCGH$profileValues[,1])
+        indice <- 1:length(profileCGH$profileValues[[1]])
 
-        ChrIndice <- split(indice,profileCGH$profileValues[,"Chromosome"])
+        ChrIndice <- split(indice,profileCGH$profileValues[["Chromosome"]])
         ChrName <- names(ChrIndice)
 
-        if (is.numeric(profileCGH$profileValues[,"Chromosome"][1]))
+        if (is.numeric(profileCGH$profileValues[["Chromosome"]][1]))
           {
             labelChr <- as.numeric(ChrName)
           }
@@ -123,16 +123,16 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
             ## information sur les bornes d'un chromosome
             PosOrderRange$Chromosome[i] <- labelChr[i]
-            rangePos <- range(subsetdata[,"PosOrder"])
-            subsetdata[,"MinPosOrder"] <- PosOrderRange$MinPosOrder[i] <- rangePos[1]
-            subsetdata[,"MaxPosOrder"] <- PosOrderRange$MaxPosOrder[i] <- rangePos[2]
+            rangePos <- range(subsetdata[["PosOrder"]])
+            subsetdata[["MinPosOrder"]] <- PosOrderRange$MinPosOrder[i] <- rangePos[1]
+            subsetdata[["MaxPosOrder"]] <- PosOrderRange$MaxPosOrder[i] <- rangePos[2]
 
 
             if (length(indexChr)>1)
               {
                 if (resetsigma)
                   {
-                    sigma <- IQRdiff(subsetdata[,"LogRatio"])^2
+                    sigma <- IQRdiff(subsetdata[["LogRatio"]])^2
                     IQRvalue[i] <- sigma^(0.5)
                     IQRChr[i] <- labelChr[i]                
                   }
@@ -145,7 +145,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
                 if (base == TRUE)
                   {
-                    x <- subsetdata[,"PosBase"]
+                    x <- subsetdata[["PosBase"]]
                     datarange <- range(x)
                     hmax <- diff(datarange)*bandwidth
                     hinit <- median(diff(x))
@@ -155,33 +155,33 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                     if (smoothfunc == "laws")
                       {
                         dim(x) <- c(1,length(x)) #à supprimer dans la nouvelle version du package AWS
-                        awsres <- laws(y=subsetdata[,"LogRatio"], x=x,
+                        awsres <- laws(y=subsetdata[["LogRatio"]], x=x,
                                        hinit=hinit, hmax=hmax, shape=sigma, NN=FALSE,
                                        symmetric=TRUE, model=model, ...)$theta
 
                         if (is.null(awsres) == FALSE)
                           {
-                            subsetdata[,"Smoothing"] <- roundglad(awsres, round)
+                            subsetdata[["Smoothing"]] <- roundglad(awsres, round)
                           }
 
                         else
                           {
-                            subsetdata[,"Smoothing"] <- 99999
+                            subsetdata[["Smoothing"]] <- 99999
                           }		
                       }
 
                     if (smoothfunc == "aws")
                       {
-                        awsres <- aws(y=subsetdata[,"LogRatio"], x=x, hinit=hinit, hmax=hmax, sigma2=sigma, NN=FALSE, symmetric=TRUE, ...)$theta
+                        awsres <- aws(y=subsetdata[["LogRatio"]], x=x, hinit=hinit, hmax=hmax, sigma2=sigma, NN=FALSE, symmetric=TRUE, ...)$theta
 
                         if (is.null(awsres) == FALSE)
                           {
-                            subsetdata[,"Smoothing"] <- roundglad(awsres, round)
+                            subsetdata[["Smoothing"]] <- roundglad(awsres, round)
                           }
 
                         else
                           {
-                            subsetdata[,"Smoothing"] <- 99999
+                            subsetdata[["Smoothing"]] <- 99999
                           }
                       }
                     
@@ -190,54 +190,54 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                 else          
                   {
                     hinit <- 1
-                    hmax <- length(subsetdata[,"PosOrder"])*bandwidth #si on laisse hmax à la valeur de length(data$PosOrder[indexChr]) ce n'est pas assez et les créneaux ne sont pas bien fittés
+                    hmax <- length(subsetdata[["PosOrder"]])*bandwidth #si on laisse hmax à la valeur de length(data$PosOrder[indexChr]) ce n'est pas assez et les créneaux ne sont pas bien fittés
 
                     
                     if (smoothfunc == "lawsglad")
                       {
-                        awsres <- lawsglad(y=subsetdata[,"LogRatio"],
+                        awsres <- lawsglad(y=subsetdata[["LogRatio"]],
                                            hinit=hinit, hmax=hmax, shape=sigma, model=model, ...)
 
                         if(is.null(awsres) == FALSE)
                           {
-                            subsetdata[,"Smoothing"] <- roundglad(awsres, round)
+                            subsetdata[["Smoothing"]] <- roundglad(awsres, round)
                           }
 
                         else
                           {
-                            subsetdata[,"Smoothing"] <- 99999
+                            subsetdata[["Smoothing"]] <- 99999
                           }                        
                       }                
                     
                     if (smoothfunc == "laws")
                       {
-                        awsres <- laws(y=subsetdata[,"LogRatio"], hinit=hinit,
+                        awsres <- laws(y=subsetdata[["LogRatio"]], hinit=hinit,
                                        hmax=hmax, shape=sigma, symmetric=TRUE, model=model,
                                        ...)$theta
 
                         if(is.null(awsres) == FALSE)
                           {
-                            subsetdata[,"Smoothing"] <- roundglad(awsres, round)
+                            subsetdata[["Smoothing"]] <- roundglad(awsres, round)
                           }
 
                         else
                           {
-                            subsetdata[,"Smoothing"] <- 99999
+                            subsetdata[["Smoothing"]] <- 99999
                           }                        
                       }
 
                     if (smoothfunc == "aws")
                       {
-                        awsres <- aws(y=subsetdata[,"LogRatio"], hinit=hinit, hmax=hmax, sigma2=sigma, symmetric=TRUE, ...)$theta
+                        awsres <- aws(y=subsetdata[["LogRatio"]], hinit=hinit, hmax=hmax, sigma2=sigma, symmetric=TRUE, ...)$theta
                         
                         if(is.null(awsres)==FALSE)
                           {
-                            subsetdata[,"Smoothing"] <- roundglad(awsres, round)
+                            subsetdata[["Smoothing"]] <- roundglad(awsres, round)
                           }
 
                         else
                           {
-                            subsetdata[,"Smoothing"] <- 99999
+                            subsetdata[["Smoothing"]] <- 99999
                           }                    
                         
                       }
@@ -245,18 +245,18 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                     if (smoothfunc == "haarsegbychr")
                       {
 
-                        awsres <- HaarSegGLADCPP(subsetdata[,"LogRatio"], breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)                    
+                        awsres <- HaarSegGLADCPP(subsetdata[["LogRatio"]], breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)                    
 
                         if (is.null(awsres) == FALSE)
                           {
 
-                            subsetdata[,"Smoothing"] <- awsres
+                            subsetdata[["Smoothing"]] <- awsres
 ##                            subsetdata$Smoothing <- roundglad(awsres, round)
                           }
 
                         else
                           {
-                            subsetdata[,"Smoothing"] <- 99999
+                            subsetdata[["Smoothing"]] <- 99999
                           }
                       }
                     
@@ -265,11 +265,11 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
                 nbregion <- nbregion + 1
 
-                l <- length(subsetdata[,"Smoothing"])            
+                l <- length(subsetdata[["Smoothing"]])            
                 putLevel <- .C("putLevel_awsBkp",
                                ## variables pour putLevel
-                               Smoothing = as.double(subsetdata[,"Smoothing"]),      ## valeur de sortie
-                               as.double(subsetdata[,"LogRatio"]),                              
+                               Smoothing = as.double(subsetdata[["Smoothing"]]),      ## valeur de sortie
+                               as.double(subsetdata[["LogRatio"]]),                              
                                Level = integer(l),                               ## valeur de sortie
                                nblevel = as.integer(nblevel),                    ## valeur de sortie
                                as.integer(l),
@@ -281,7 +281,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                                BkpDetected = integer(1),                         ## valeur de sortie                           
                                PACKAGE="GLAD")
 
-                subsetdata[,c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- putLevel[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
+                subsetdata[c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- putLevel[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
 
                 nblevel <- putLevel$nblevel
                 profileCGH$BkpDetected$BkpDetected[i] <- putLevel$BkpDetected
@@ -291,9 +291,9 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
             else
               {
-                subsetdata[,"Region"] <- -1
-                subsetdata[,"Level"] <- -1
-                subsetdata[,"Breakpoints"] <- 0
+                subsetdata[["Region"]] <- -1
+                subsetdata[["Level"]] <- -1
+                subsetdata[["Breakpoints"]] <- 0
                 IQRvalue[i] <- 0
                 IQRChr[i] <- labelChr[i]    
               }
@@ -317,11 +317,15 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
     else
       {
 
-        NbChr <- length(unique(profileCGH$profileValues[,"Chromosome"]))
-        l <- length(profileCGH$profileValues[,"LogRatio"])        
+        NbChr <- length(unique(profileCGH$profileValues[["Chromosome"]]))
+        l <- length(profileCGH$profileValues[["LogRatio"]])
+        print(NbChr)
+        print(l)
+        print(profileCGH$profileValues[["LogRatio"]])
+        print(profileCGH$profileValues[["Chromosome"]])
         res <- .C("chrBreakpoints",
-                  as.double(profileCGH$profileValues[,"LogRatio"]),
-                  as.integer(profileCGH$profileValues[,"Chromosome"]),
+                  as.double(profileCGH$profileValues[["LogRatio"]]),
+                  as.integer(profileCGH$profileValues[["Chromosome"]]),
                   Smoothing = double(l),                                             ## valeur de sortie
                   Level = integer(l),                                                ## valeur de sortie
                   OutliersAws = integer(l),                                          ## valeur de sortie
@@ -360,7 +364,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                                              BkpDetected = res[["BkpDetected"]])
 
         ## valeurs de segmentation        
-        profileCGH$profileValues[,c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- res[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
+        profileCGH$profileValues[c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- res[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
 
       }
 

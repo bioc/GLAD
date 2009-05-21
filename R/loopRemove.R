@@ -24,22 +24,22 @@ loopRemove.profileChr <- function(profileChr, sigma, lambda=10, type="tricubic",
     
     l <- length(profileChr$profileValues[,1])
     res <- .C("loopRemove",
-              as.double(profileChr$profileValues$LogRatio),
-              Region = as.integer(profileChr$profileValues$Region),
-              OutliersAws = as.integer(profileChr$profileValues$OutliersAws),
+              as.double(profileChr$profileValues[["LogRatio"]]),
+              Region = as.integer(profileChr$profileValues[["Region"]]),
+              OutliersAws = as.integer(profileChr$profileValues[["OutliersAws"]]),
               OutliersMad = integer(l),
               OutliersTot = integer(l),
-              Breakpoints = as.integer(profileChr$profileValues$Breakpoints),
+              Breakpoints = as.integer(profileChr$profileValues[["Breakpoints"]]),
               as.integer(msize),
               as.double(alpha),
               as.double(lambda),
               as.double(param["d"]),
               as.double(sigma),
               as.integer(l),
-              PACKAGE="GLAD")
+              PACKAGE = "GLAD")
 
 
-    profileChr$profileValues[,c("Region","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")] <- res[c("Region","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")]
+    profileChr$profileValues[c("Region","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")] <- res[c("Region","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")]
 
     return(profileChr)
     
@@ -117,12 +117,12 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
     ## qui fait aussi appel à loopRemove mais pas à updateBkpRL
     l <- length(profileChr$profileValues[,1])
     res <- .C("loopRemove",
-              as.double(profileChr$profileValues$LogRatio),
-              Level=as.integer(profileChr$profileValues$Level),
-              OutliersAws=as.integer(profileChr$profileValues$OutliersAws),
+              as.double(profileChr$profileValues[["LogRatio"]]),
+              Level=as.integer(profileChr$profileValues[["Level"]]),
+              OutliersAws=as.integer(profileChr$profileValues[["OutliersAws"]]),
               OutliersMad=integer(l),
               OutliersTot=integer(l),
-              Breakpoints=as.integer(profileChr$profileValues$Breakpoints),
+              Breakpoints=as.integer(profileChr$profileValues[["Breakpoints"]]),
               as.integer(msize),
               as.double(qnorm(1-alpha/2)),
               as.double(lambda),
@@ -132,23 +132,23 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
               PACKAGE="GLAD")
 
 
-    profileChr$profileValues[,c("Level","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")] <- res[c("Level","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")]
+    profileChr$profileValues[c("Level","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")] <- res[c("Level","OutliersAws","OutliersMad", "OutliersTot", "Breakpoints")]
     
 
     updateBkpRL <- .C("updateBkpRL",
-                      Level=as.integer(profileChr$profileValues$Level),
-                      OutliersAws=as.integer(profileChr$profileValues$OutliersAws),
-                      Breakpoints=as.integer(profileChr$profileValues$Breakpoints),
+                      Level=as.integer(profileChr$profileValues[["Level"]]),
+                      OutliersAws=as.integer(profileChr$profileValues[["OutliersAws"]]),
+                      Breakpoints=as.integer(profileChr$profileValues[["Breakpoints"]]),
                       ## as.integer(profileChr$profileValues$Chromosome), on est forcément sur le même chromosome
-                      as.integer(profileChr$profileValues$PosOrder),
-                      NextLogRatio=as.double(profileChr$profileValues$NextLogRatio),
-                      as.double(profileChr$profileValues$LogRatio),
+                      as.integer(profileChr$profileValues[["PosOrder"]]),
+                      NextLogRatio=as.double(profileChr$profileValues[["NextLogRatio"]]),
+                      as.double(profileChr$profileValues[["LogRatio"]]),
                       as.integer(l),
                       PACKAGE="GLAD")
 
 
 
-    profileChr$profileValues[,c("Level","Breakpoints","NextLogRatio","OutliersAws")] <- updateBkpRL[c("Level","Breakpoints","NextLogRatio","OutliersAws")]
+    profileChr$profileValues[c("Level","Breakpoints","NextLogRatio","OutliersAws")] <- updateBkpRL[c("Level","Breakpoints","NextLogRatio","OutliersAws")]
 
             
     profileChr <- detectOutliers(profileChr, region="Level", verbose=verbose, msize=msize, alpha=alpha)

@@ -7,16 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef IS_MAC_OS
-#include <limits.h>
-#else
-#include <values.h>
-#endif
 
-#ifndef MAXINT
-#define MAXINT INT_MAX
-#endif
-
+#include "glad-limits.h"
 #include "MoveBkp.h"
 #include "findCluster.h"
 #include "glad-utils.h"

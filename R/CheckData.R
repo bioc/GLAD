@@ -13,7 +13,6 @@ CheckData <- function(...)
 CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc, ...)
   {
 
-    print("suis dans checkdata")
     n <- dim(profileCGH$profileValues)[1]
     nb.chr <- length(unique(profileCGH$profileValues[,"Chromosome"]))
     

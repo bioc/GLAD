@@ -1,6 +1,6 @@
-# Copyright (C) 2003 Institut Curie
-# Author(s): Philippe Hupé (Institut Curie) 2003
-# Contact: glad@curie.fr
+                                        # Copyright (C) 2003 Institut Curie
+                                        # Author(s): Philippe Hupé (Institut Curie) 2003
+                                        # Contact: glad@curie.fr
 
 affectationGNL <- function(...)
 {
@@ -13,10 +13,9 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
   if (verbose) print("affectationGNL: starting function")
   CGH <- profileCGH$profileValues
 
-
-  indexout <- which(CGH$OutliersTot==0)
-  CGHaux <- CGH[indexout,]
-  aggZone <- aggregate(CGHaux$LogRatio, list(ZoneGen=CGHaux$ZoneGen), median)
+  indexout <- which(CGH[["OutliersTot"]] == 0)
+                                        #  CGHaux <- CGH[indexout,]
+  aggZone <- aggregate(CGH[["LogRatio"]][indexout], list(ZoneGen=CGH[["ZoneGen"]][indexout]), median)
   names(aggZone) <- c("ZoneGen","Median")
   aggZone$ZoneGen <- as.numeric(as.character(aggZone$ZoneGen))
 
@@ -36,7 +35,7 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
   aggZone$ZoneGNL[aggZone$Median<aggZone$MinMedian] <- -1
 
 
-  lengthDest <- length(CGH[,1])
+  lengthDest <- length(CGH[[1]])
   lengthSrc <- length(aggZone$ZoneGNL)
   myzoneGNL <- .C("my_merge_int",
                   as.integer(CGH$ZoneGen),
@@ -49,7 +48,7 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
 
   CGH$ZoneGNL <- myzoneGNL$ZoneGNL
 
-##  CGH <- merge(CGH,aggZone[,c("ZoneGen","ZoneGNL")], by="ZoneGen")
+  ##  CGH <- merge(CGH,aggZone[,c("ZoneGen","ZoneGNL")], by="ZoneGen")
 
 
 
@@ -59,21 +58,19 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
 ###
 ###################################################################
 
-  if(assignGNLOut==FALSE) print("GNL will no be assigned for outliers")
+  if(assignGNLOut == FALSE) print("GNL will no be assigned for outliers")
   if(assignGNLOut)
     {
-      indexout <- which(CGH$OutliersTot!=0)
+
+      indexout <- which(CGH[["OutliersTot"]] != 0)
 
 
-
-      if (length(indexout)>0)
+      if (length(indexout) > 0)
         {
-
-
           
-          CGHnotout <- CGH[-indexout,]
+                                        #          CGHnotout <- CGH[-indexout,]
 
-          sagg <- split(CGHnotout$LogRatio, CGHnotout$ZoneGNL)
+          sagg <- split(CGH[["LogRatio"]][-indexout], CGH[["ZoneGNL"]][-indexout])
 
           Mean <- sapply(sagg,mean)
           std <- sapply(sagg,var)
@@ -88,9 +85,9 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
           
 
           
-          CGHout <- CGH[indexout,]
-          ZoneGNLaux <- CGHout$ZoneGNL      
-          CGHout$ZoneGNL <- CGHout$OutliersTot
+                                        #          CGHout <- CGH[indexout,]
+          ZoneGNLaux <- CGH[["ZoneGNL"]][indexout]      
+          CGH[["ZoneGNL"]][indexout] <- CGH[["OutliersTot"]][indexout]
 
           
 
@@ -98,7 +95,6 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
 ### intervalle de confiance pour les régions normales
           seuilinf <- statnormal$Mean - statnormal$std*qnorm(1-alpha/2)
           seuilsup <- statnormal$Mean + statnormal$std*qnorm(1-alpha/2)
-
 
 
 ###################################################################################
@@ -110,11 +106,13 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
 
 
 ### ceux qui sont perdus
-          indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio<seuilinf)
+          indexgainmoins <-  which(ZoneGNLaux == 1 &
+                                   CGH[["OutliersTot"]][indexout] == -1 &
+                                   CGH[["LogRatio"]][indexout] < seuilinf)
 
-          if (length(indexgainmoins)>0)
+          if (length(indexgainmoins) > 0)
             {
-              CGHout[indexgainmoins,"ZoneGNL"] <- -1
+              CGH[["ZoneGNL"]][indexout][indexgainmoins] <- -1
 
             }
           
@@ -122,26 +120,33 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
           
 
 ### ceux qui sont normaux
-          indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio>=seuilinf&CGHout$LogRatio<=seuilsup)
+          indexgainmoins <-  which(ZoneGNLaux == 1 &
+                                   CGH[["OutliersTot"]][indexout] == -1 &
+                                   CGH[["LogRatio"]][indexout] >= seuilinf &
+                                   CGH[["LogRatio"]][indexout] <= seuilsup)
 
-          if (length(indexgainmoins)>0)
+          if (length(indexgainmoins) > 0)
             {
-              CGHout[indexgainmoins,"ZoneGNL"] <- 0
+              CGH[["ZoneGNL"]][indexout][indexgainmoins] <- 0
 
             }
 
 
           
 ### ceux qui sont outliers mais quand meme gagnés
-          indexgainmoins <-  which(ZoneGNLaux==1&CGHout$OutliersTot==-1&CGHout$LogRatio>seuilsup)
+          indexgainmoins <-  which(ZoneGNLaux == 1 &
+                                   CGH[["OutliersTot"]][indexout] == -1 &
+                                   CGH[["LogRatio"]][indexout] > seuilsup)
 
-          if (length(indexgainmoins)>0)
+          if (length(indexgainmoins) > 0)
             {
-              CGHout[indexgainmoins,"ZoneGNL"] <- 1
+              CGH[["ZoneGNL"]][indexout][indexgainmoins] <- 1
 
             }
-          
 
+
+
+          
 ###################################################################################
 ###
 ###     cas des outliers situés dans les régions perdues et outlier +1
@@ -149,35 +154,41 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
 ###################################################################################
 
 ### ceux qui sont gagnés
-          indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio>seuilsup)
+          indexlostplus <-  which(ZoneGNLaux == -1 &
+                                  CGH[["OutliersTot"]][indexout] == 1 &
+                                  CGH[["LogRatio"]][indexout] > seuilsup)
 
-          if (length(indexlostplus)>0)
+          if (length(indexlostplus) > 0)
             {
-              CGHout[indexlostplus,"ZoneGNL"] <- 1
+              CGH[["ZoneGNL"]][indexout][indexlostplus] <- 1
 
             }
 
+          
 ### ceux qui sont normaux
-          indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio<=seuilsup&CGHout$LogRatio>=seuilinf)
+          indexlostplus <-  which(ZoneGNLaux== -1 &
+                                  CGH[["OutliersTot"]][indexout] == 1 &
+                                  CGH[["LogRatio"]][indexout] <= seuilsup &
+                                  CGH[["LogRatio"]][indexout] >= seuilinf)
 
           if (length(indexlostplus)>0)
             {
-              CGHout[indexlostplus,"ZoneGNL"] <- 0
+              CGH[["ZoneGNL"]][indexout][indexlostplus] <- 0
 
             }
           
 
+          
 ### ceux qui sont des outliers mais perdus quand meme
-          indexlostplus <-  which(ZoneGNLaux==-1&CGHout$OutliersTot==1&CGHout$LogRatio<seuilinf)
+          indexlostplus <-  which(ZoneGNLaux == -1 &
+                                  CGH[["OutliersTot"]][indexout] == 1 &
+                                  CGH[["LogRatio"]][indexout] < seuilinf)
 
-          if (length(indexlostplus)>0)
+          if (length(indexlostplus) > 0)
             {
-              CGHout[indexlostplus,"ZoneGNL"] <- -1
+              CGH[["ZoneGNL"]][indexout][indexlostplus] <- -1
 
             }
-          
-          CGH[indexout,] <- CGHout
-          
           
         }
 

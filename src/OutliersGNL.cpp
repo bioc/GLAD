@@ -6,18 +6,7 @@
 
 #include <stdio.h>
 
-#ifdef IS_MAC_OS
-#include <limits.h>
-#else
-#include <values.h>
-#endif
-
-
-#ifndef MAXDOUBLE
-#include <float.h>
-#define MAXDOUBLE DBL_MAX
-#endif
-
+#include "glad-limits.h"
 extern "C"
 {
   void OutliersGNL(int * OutliersTot,

@@ -46,24 +46,24 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
         
         if (verbose) print("filterBkp: move breakpoints which are outliers")        
 
-        nb <- length(profileCGH$profileValues[,1]) - 1        
+        nb <- length(profileCGH$profileValues[[1]]) - 1        
         moveBkp <- .C("filterBkp_moveBkp_Outliers",
-                      as.integer(profileCGH$profileValues[,"ZoneGNL"]),
-                      Level = as.integer(profileCGH$profileValues[,"Level"]),
-                      Breakpoints = as.integer(profileCGH$profileValues[,"Breakpoints"]),
-                      OutliersTot = as.integer(profileCGH$profileValues[,"OutliersTot"]),
-                      OutliersAws = as.integer(profileCGH$profileValues[,"OutliersAws"]),
-                      as.integer(profileCGH$profileValues[,"Chromosome"]),
+                      as.integer(profileCGH$profileValues[["ZoneGNL"]]),
+                      Level = as.integer(profileCGH$profileValues[["Level"]]),
+                      Breakpoints = as.integer(profileCGH$profileValues[["Breakpoints"]]),
+                      OutliersTot = as.integer(profileCGH$profileValues[["OutliersTot"]]),
+                      OutliersAws = as.integer(profileCGH$profileValues[["OutliersAws"]]),
+                      as.integer(profileCGH$profileValues[["Chromosome"]]),
                       RecomputeSmt = as.integer(0),
                       as.integer(nb),
                       PACKAGE = "GLAD")
 
         if (moveBkp$RecomputeSmt == 1)
           {            
-            rownames(profileCGH$profileValues) <- 0:(length(profileCGH$profileValues[,1])-1)
+            rownames(profileCGH$profileValues) <- 0:(length(profileCGH$profileValues[[1]])-1)
             RecomputeGNL <- TRUE
 
-            profileCGH$profileValues[,c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")]
+            profileCGH$profileValues[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")]
           }
         
 
@@ -82,7 +82,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
           {
             RecomputeGNL <- TRUE
             indexPos <- profileCGH$BkpInfo[,"PosOrder"][indexWeightToSmall]
-            profileCGH$profileValues[,"Breakpoints"][indexPos] <- -1            
+            profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1            
             if (length(indexWeightToSmall) == length(profileCGH$BkpInfo[,1]))
               {
                 profileCGH$BkpInfo <- NA
@@ -110,7 +110,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
           {
             RecomputeGNL <- TRUE
             indexPos <- profileCGH$BkpInfo$PosOrder[indexWeightZero]
-            profileCGH$profileValues[,"Breakpoints"][indexPos] <- -1            
+            profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1            
             
             if (length(indexWeightZero) == length(profileCGH$BkpInfo[,1]))
               {
@@ -151,19 +151,19 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             if (method == -1) 
               stop("ambiguous clustering method")
             
-            l <- length(profileCGH$profileValues[,1])
+            l <- length(profileCGH$profileValues[[1]])
 
             updateFilterBkp <- .C("FilterBkpStep",
-                                  as.integer(profileCGH$profileValues[,"Chromosome"]),
-                                  Breakpoints = as.integer(profileCGH$profileValues[,"Breakpoints"]),  ## valeur de sortie
-                                  Level = as.integer(profileCGH$profileValues[,"Level"]),              ## valeur de sortie
-                                  as.integer(profileCGH$profileValues[,"PosOrder"]),
-                                  NextLogRatio  = as.double(profileCGH$profileValues[,"NextLogRatio"]), ## valeur de sortie
-                                  as.double(profileCGH$profileValues[,"LogRatio"]),
-                                  as.integer(max(profileCGH$profileValues[,"Level"])),
+                                  as.integer(profileCGH$profileValues[["Chromosome"]]),
+                                  Breakpoints = as.integer(profileCGH$profileValues[["Breakpoints"]]),  ## valeur de sortie
+                                  Level = as.integer(profileCGH$profileValues[["Level"]]),              ## valeur de sortie
+                                  as.integer(profileCGH$profileValues[["PosOrder"]]),
+                                  NextLogRatio  = as.double(profileCGH$profileValues[["NextLogRatio"]]), ## valeur de sortie
+                                  as.double(profileCGH$profileValues[["LogRatio"]]),
+                                  as.integer(max(profileCGH$profileValues[["Level"]])),
                                   ## ajout des variables pour updateOutliers
-                                  OutliersAws = as.integer(profileCGH$profileValues[,"OutliersAws"]),  ## valeur de sortie
-                                  Smoothing = as.double(profileCGH$profileValues[,"Smoothing"]),       ## valeur de sortie
+                                  OutliersAws = as.integer(profileCGH$profileValues[["OutliersAws"]]),  ## valeur de sortie
+                                  Smoothing = as.double(profileCGH$profileValues[["Smoothing"]]),       ## valeur de sortie
                                   ## ajout des variables pour detectOutliers
                                   OutliersMad = integer(l),                                        ## valeur de sortie
                                   OutliersTot = integer(l),                                        ## valeur de sortie
@@ -220,7 +220,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
             ## récupération des données
             ## ########################
             
-            profileCGH$profileValues[,c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange", "ZoneGen", "ZoneGNL")] <- updateFilterBkp[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange", "ZoneGen", "ZoneGNL")]
+            profileCGH$profileValues[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange", "ZoneGen", "ZoneGNL")] <- updateFilterBkp[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange", "ZoneGen", "ZoneGNL")]
 
 
             profileCGH$NbClusterOpt <- updateFilterBkp[["nbclasses"]]

@@ -41,7 +41,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$smoothfunc <- smoothfunc
     profileCGH$lambdabreak <- lambdabreak
     profileCGH$param <- param
-    profileCGH$NbProbes <- length(profileCGH$profileValues[,1])
+    profileCGH$NbProbes <- length(profileCGH$profileValues[["PosOrder"]])
 
     ## ############################################################################
     ## Préparation des données
@@ -74,7 +74,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         print(paste("Choose smoothfunc=lawsglad or smoothfunc=haarseg if you want the process runs faster"))
       }
 
-    inputfields <- colnames(profileCGH$profileValues)
+    inputfields <- names(profileCGH$profileValues)
     excdudefields <- c("Level", "OutliersAws", "OutliersMad",
                        "OutliersTot", "Breakpoints", "Smoothing",
                        "NormalRef", "ZoneGNL")
@@ -89,7 +89,11 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 ##     inputfields <- setdiff(inputfields,fieldstodel)
 ##     profileCGH$profileValues <- profileCGH$profileValues[,inputfields]
 
+    ## on trie les données par chromosome et position
+    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues[["Chromosome"]], profileCGH$profileValues[["PosOrder"]]),]
+    
     ## ajout des champs nécessaires à la procédure
+    ## et transformation des données en liste
     new.fields <- c("NewPosOrder", "Smoothing",
                     "OutliersAws", "Region",
                     "Level", "Breakpoints",
@@ -98,36 +102,24 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                     "NextLogRatio", "NormalRange",
                     "ZoneGen", "ZoneGNL")
 
-    profileCGH$profileValues[, new.fields] <- 0
+    nb.new.fields <- length(new.fields)
 
-    
-##     nb.new.fields <- length(new.fields)
-##     names.fields <- c(colnames(profileCGH$profileValues), new.fields)
-##     print(colnames(profileCGH$profileValues))
-##     print(names.fields)
-##     print(profileCGH$NbProbes)
-##     profileCGH$profileValues <- matrix(c(profileCGH$profileValues, rep(0, profileCGH$NbProbes * nb.new.fields)),
-##                                        profileCGH$NbProbes,
-##                                        dim(profileCGH$profileValues)[2] + nb.new.fields)
-##     print(dim(profileCGH$profileValues)[2] + nb.new.fields)
-##     print(dim(profileCGH$profileValues))
-##     colnames(profileCGH$profileValues) <- names.fields
+    profileCGH$profileValues <- as.list(profileCGH$profileValues)
+    profileCGH$profileValues[new.fields] <- lapply(as.list(rep(profileCGH$NbProbes, nb.new.fields)), numeric)
 
-    ## on trie les données par chromosome et position
-    profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues[,"Chromosome"], profileCGH$profileValues[,"PosOrder"]),]
-    
+        
     ## Il faut des PosOrder uniques
-    profileCGH$profileValues[,"NewPosOrder"] <- profileCGH$profileValues[,"PosOrder"]
-    profileCGH$profileValues[,"PosOrder"] <- 1:profileCGH$NbProbes
-    rownames(profileCGH$profileValues) <- profileCGH$profileValues[,"PosOrder"]
+    profileCGH$profileValues[["NewPosOrder"]] <- profileCGH$profileValues[["PosOrder"]]
+    profileCGH$profileValues[["PosOrder"]] <- 1:profileCGH$NbProbes
+#    rownames(profileCGH$profileValues) <- profileCGH$profileValues[["PosOrder"]]
     
 
 
     ## LogRatio are median-centered
     if (mediancenter)
       {
-        med <- median(profileCGH$profileValues[,"LogRatio"])
-        profileCGH$profileValues[,"LogRatio"] <- profileCGH$profileValues[,"LogRatio"] - med
+        med <- median(profileCGH$profileValues[["LogRatio"]])
+        profileCGH$profileValues[["LogRatio"]] <- profileCGH$profileValues[["LogRatio"]] - med
       }
 
 
@@ -192,13 +184,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
         ## ajout des champs nécessaires
-        profileCGH$profileValues[, new.fields] <- 0
+        profileCGH$profileValues[ new.fields] <- 0
         
         print("Smoothing over the genome")
         profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=FALSE, sigma=sigma,
                                      bandwidth=bandwidth, round=round, verbose=verbose,
                                      lkern=lkern, model=model, qlambda=0.9999999,
                                      breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
+        print("Fin du smoothing sur le genome")
 
         ## estimation de l'écart-type sur l'ensemble du génome    
         profileCGH$SigmaG <- profileCGH$Sigma
@@ -214,7 +207,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
         ## maintenant, le champ ChromosomeTrue ne sert plus à rien
         ## on récupère le nom des chromosomes de départ
-        profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("Chromosome"))]        
+        profileCGH$profileValues <- profileCGH$profileValues[setdiff(names(profileCGH$profileValues),c("Chromosome"))]        
         namesprofile <- names(profileCGH$profileValues)
         namesprofile[which(namesprofile == "ChromosomeTrue")] <- "Chromosome"
         names(profileCGH$profileValues) <- namesprofile        
@@ -223,7 +216,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         ## on conserve le champ Level qui est renommé en LevelG
         ## on réinitialise les Min et MaxposOrder aux valeurs chromosome par chromosome
         fields.kept <- setdiff(names(profileCGH$profileValues),c("Smoothing","Region","Breakpoints","MinPosOrder","MaxPosOrder"))
-        profileCGH$profileValues <- profileCGH$profileValues[,fields.kept]
+        profileCGH$profileValues <- profileCGH$profileValues[fields.kept]
 
         namesprofile <- names(profileCGH$profileValues)
         namesprofile[which(namesprofile == "Level")] <- "LevelG"
@@ -272,7 +265,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
         ## on supprime les champs LevelG, OutliersMad, OutliersTot et ZoneGNL
         fields.kept <- setdiff(names(profileCGH$profileValues),c("LevelG", "OutliersAws", "OutliersMad", "OutliersTot", "ZoneGNL"))
-        profileCGH$profileValues <- profileCGH$profileValues[,fields.kept]
+        profileCGH$profileValues <- profileCGH$profileValues[fields.kept]
 
         ## on récupère les champs calculés chromosome par chromosome
         namesprofile <- names(profileCGH$profileValues)
@@ -285,7 +278,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
         ## ajout des champs nécessaires
-        profileCGH$profileValues[, setdiff(new.fields, names(profileCGH$profileValues))] <- 0
+        profileCGH$profileValues[ setdiff(new.fields, names(profileCGH$profileValues))] <- 0
 
         
       } ## fin (if) de l'étape sur le génome
@@ -298,7 +291,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
         if (is.null(sigma))
           {
-            IQRinfoG <- IQRdiff(profileCGH$profileValues[,"LogRatio"])
+            IQRinfoG <- IQRdiff(profileCGH$profileValues[["LogRatio"]])
           }
         else
           {
@@ -327,7 +320,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 ##    Init <- 0       
 #    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio = 0)
-    FieldOrder <- colnames(profileCGH$profileValues)
+    FieldOrder <- names(profileCGH$profileValues)
 
     print("Optimization of the Breakpoints and DNA copy number calling")
 
@@ -355,14 +348,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                      NormalRange = integer(l),
                      as.double(profileCGH$NormalRef),
                      as.double(deltaN),
-                     as.double(profileCGH$profileValues[,"LogRatio"]),
-                     NextLogRatio = as.double(profileCGH$profileValues[,"NextLogRatio"]),   ## valeur de sortie
-                     as.integer(profileCGH$profileValues[,"PosOrder"]),
-                     Level = as.integer(profileCGH$profileValues[,"Level"]),                ## valeur de sortie
-                     OutliersAws = as.integer(profileCGH$profileValues[,"OutliersAws"]),    ## valeur de sortie
-                     OutliersMad = as.integer(profileCGH$profileValues[,"OutliersMad"]),    ## valeur de sortie
-                     OutliersTot = as.integer(profileCGH$profileValues[,"OutliersTot"]),    ## valeur de sortie
-                     Breakpoints = as.integer(profileCGH$profileValues[,"Breakpoints"]),    ## valeur de sortie
+                     as.double(profileCGH$profileValues[["LogRatio"]]),
+                     NextLogRatio = as.double(profileCGH$profileValues[["NextLogRatio"]]),   ## valeur de sortie
+                     as.integer(profileCGH$profileValues[["PosOrder"]]),
+                     Level = as.integer(profileCGH$profileValues[["Level"]]),                ## valeur de sortie
+                     OutliersAws = as.integer(profileCGH$profileValues[["OutliersAws"]]),    ## valeur de sortie
+                     OutliersMad = as.integer(profileCGH$profileValues[["OutliersMad"]]),    ## valeur de sortie
+                     OutliersTot = as.integer(profileCGH$profileValues[["OutliersTot"]]),    ## valeur de sortie
+                     Breakpoints = as.integer(profileCGH$profileValues[["Breakpoints"]]),    ## valeur de sortie
                      as.integer(msize),
                      as.double(qnorm(1-alpha/2)),
                      as.double(lambdabreak),
@@ -421,7 +414,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ## #########################################
     
     fields.replaced <- c("Smoothing", "NextLogRatio","Level", "OutliersAws", "OutliersMad", "OutliersTot", "Breakpoints", "NormalRange", "ZoneGen", "ZoneGNL")
-    profileCGH$profileValues[,fields.replaced] <- resLoopChr[fields.replaced]
+    profileCGH$profileValues[fields.replaced] <- resLoopChr[fields.replaced]
 
 
     profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
@@ -520,14 +513,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     if (genomestep)
       {
-        profileCGH$profileValues$NormalRef <- profileCGH$profileValues$ZoneGNLGen
-        profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),"ZoneGNLGen")]
+        profileCGH$profileValues[["NormalRef"]] <- profileCGH$profileValues[["ZoneGNLGen"]]
+        profileCGH$profileValues <- profileCGH$profileValues[setdiff(names(profileCGH$profileValues),"ZoneGNLGen")]
       }
 
     if (normalrefcenter)
       {
-        profileCGH$profileValues$Smoothing <- profileCGH$profileValues$Smoothing - profileCGH$NormalRef
-        profileCGH$profileValues$LogRatio <- profileCGH$profileValues$LogRatio - profileCGH$NormalRef
+        profileCGH$profileValues[["Smoothing"]] <- profileCGH$profileValues[["Smoothing"]] - profileCGH$NormalRef
+        profileCGH$profileValues[["LogRatio"]] <- profileCGH$profileValues[["LogRatio"]] - profileCGH$NormalRef
         
         
         if (is.data.frame(profileCGH$BkpInfo))
@@ -540,13 +533,16 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         profileCGH$NormalRef <- 0
       }
 
+    ## conversion en data.frame
+    profileCGH$profileValues <- as.data.frame(profileCGH$profileValues)
+    
     if (is.data.frame(profileCGH$BkpInfo))
       {
 
-        profileCGH$BkpInfo <- merge(profileCGH$BkpInfo, profileCGH$profileValues[,c("PosOrder","NewPosOrder")], by="PosOrder",all.x=TRUE)
+        profileCGH$BkpInfo <- merge(profileCGH$BkpInfo, profileCGH$profileValues[c("PosOrder","NewPosOrder")], by="PosOrder",all.x=TRUE)
 
 
-        profileCGH$BkpInfo <- profileCGH$BkpInfo[,setdiff(names(profileCGH$BkpInfo),c("SmoothingNext","NextLogRatio","MaxPosOrder","MinPosOrder","ZoneGNLnext","PosOrder"))]
+        profileCGH$BkpInfo <- profileCGH$BkpInfo[setdiff(names(profileCGH$BkpInfo),c("SmoothingNext","NextLogRatio","MaxPosOrder","MinPosOrder","ZoneGNLnext","PosOrder"))]
 
         namesprofile <- names(profileCGH$BkpInfo)
         namesprofile[which(namesprofile == "NewPosOrder")] <- "PosOrder"
@@ -555,17 +551,17 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
       }
 
 
-    profileCGH$profileValues <- profileCGH$profileValues[,setdiff(colnames(profileCGH$profileValues),c("Sigma","DiffBase","Region","NextLogRatio","MaxPosOrder","MinPosOrder","PosOrder", "NormalRange", "ZoneGen"))]
+    profileCGH$profileValues <- profileCGH$profileValues[setdiff(names(profileCGH$profileValues),c("Sigma","DiffBase","Region","NextLogRatio","MaxPosOrder","MinPosOrder","PosOrder", "NormalRange", "ZoneGen"))]
 
-    namesprofile <- colnames(profileCGH$profileValues)
+    namesprofile <- names(profileCGH$profileValues)
     namesprofile[which(namesprofile=="NewPosOrder")] <- "PosOrder"
-    colnames(profileCGH$profileValues) <- namesprofile        
+    names(profileCGH$profileValues) <- namesprofile        
     
 
     outputfields <- setdiff(names(profileCGH$profileValues),inputfields)
     at <- setdiff(attributes(profileCGH)$names,c("PosOrderRange","findClusterSigma","NbClusterOpt"))
     profileCGH <- profileCGH[at]
-    profileCGH$profileValues <- profileCGH$profileValues[,c(inputfields,outputfields)]
+    profileCGH$profileValues <- profileCGH$profileValues[c(inputfields,outputfields)]
     class(profileCGH) <- "profileCGH"
     
 

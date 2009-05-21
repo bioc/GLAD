@@ -15,22 +15,12 @@
 
 using namespace std;
 
+#include "glad-limits.h"
 #include "glad-struct.h"
 #include "chrBreakpoints.h"
 #include "glad-utils.h"
 #include "HaarSeg.h"
 
-#ifdef IS_MAC_OS
-#include <limits.h>
-#else
-#include <values.h>
-#endif
-
-
-#ifndef MAXDOUBLE
-#include <float.h>
-#define MAXDOUBLE DBL_MAX
-#endif
 
 
 extern "C"

@@ -10,20 +10,11 @@
 #include <vector>
 #include <algorithm>
 
+#include "glad-limits.h"
 #include "glad-struct.h"
 #include "glad-utils.h"
 #include "loopRemove.h"
 
-#ifdef IS_MAC_OS
-#include <limits.h>
-#else
-#include <values.h>
-#endif
-
-#ifndef MAXDOUBLE
-#include <float.h>
-#define MAXDOUBLE DBL_MAX
-#endif
 
 
 extern "C"

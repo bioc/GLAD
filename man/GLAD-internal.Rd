@@ -43,7 +43,7 @@
 \alias{HaarSegGLADCPP}
 \alias{FDRThres}
 \alias{SegmentByPeaks}
-
+\alias{selectindex}
 \usage{" "}
 
 \description{Internal functions}
