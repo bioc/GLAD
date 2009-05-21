@@ -326,7 +326,18 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 #    profileCGH$profileValues <- data.frame(profileCGH$profileValues, NextLogRatio = 0)
     FieldOrder <- colnames(profileCGH$profileValues)
 
-    print("Optimization of the Breakpoints")
+    print("Optimization of the Breakpoints and DNA copy number calling")
+
+    ## choix de la méthode de clustering
+    METHODS <- c("ward", "single", "complete", "average", "mcquitty", 
+                 "median", "centroid")
+    method <- pmatch(profileChr$method, METHODS)
+
+
+    if (is.na(method)) 
+      stop("invalid clustering method")
+    if (method == -1) 
+      stop("ambiguous clustering method")
     
     
     startChr <- profileCGH$PosOrderRange$MinPosOrder - 1 ### car on commence à compter à 0
@@ -335,7 +346,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     NbChr <- length(startChr)
     l <- profileCGH$NbProbes
-    resLoopChr <- .C("OptmisationBreakpointsStep",
+
+    resLoopChr <- .C("daglad_OptmisationBreakpoints_findCluster",
                      Smoothing = double(l), ## valeur de sortie
                      NormalRange = integer(l),
                      as.double(profileCGH$NormalRef),
@@ -357,44 +369,93 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                      as.integer(sizeChr), ## taille de chaque chromosome
                      as.integer(startChr),## position pour le debut des valeurs de chaque chromosome
                      as.integer(profileCGH$BkpDetected$BkpDetected),
+                     ## paramètres pour findCluster
+                     as.integer(method),
+                     as.double(profileCGH$findClusterSigma),
+                     as.double(lambdaclusterGen),
+                     as.integer(nmin),
+                     as.integer(nmax),
+                     ZoneGen = integer(l),  ## valeur de sortie
+                     nbclasses = integer(1),
+                     ## paramètres pour le calcul du GNL
+                     ZoneGNL = integer(l),
+                     as.double(forceGL[1]),
+                     as.double(forceGL[2]),
+                     as.double(profileCGH$NormalRef),
+                     as.double(amplicon),
+                     as.double(deletion),                                                                                                         
                      as.integer(l), ## nombre total de sondes
-                     PACKAGE="GLAD")
+                     PACKAGE = "GLAD")
+    
+##     resLoopChr <- .C("OptmisationBreakpointsStep",
+##                      Smoothing = double(l), ## valeur de sortie
+##                      NormalRange = integer(l),
+##                      as.double(profileCGH$NormalRef),
+##                      as.double(deltaN),
+##                      as.double(profileCGH$profileValues[,"LogRatio"]),
+##                      NextLogRatio = as.double(profileCGH$profileValues[,"NextLogRatio"]),   ## valeur de sortie
+##                      as.integer(profileCGH$profileValues[,"PosOrder"]),
+##                      Level = as.integer(profileCGH$profileValues[,"Level"]),                ## valeur de sortie
+##                      OutliersAws = as.integer(profileCGH$profileValues[,"OutliersAws"]),    ## valeur de sortie
+##                      OutliersMad = as.integer(profileCGH$profileValues[,"OutliersMad"]),    ## valeur de sortie
+##                      OutliersTot = as.integer(profileCGH$profileValues[,"OutliersTot"]),    ## valeur de sortie
+##                      Breakpoints = as.integer(profileCGH$profileValues[,"Breakpoints"]),    ## valeur de sortie
+##                      as.integer(msize),
+##                      as.double(qnorm(1-alpha/2)),
+##                      as.double(lambdabreak),
+##                      as.double(param["d"]),
+##                      as.double(profileCGH$SigmaC$Value),
+##                      as.integer(NbChr),   ## Nombre de chromosome a analyser
+##                      as.integer(sizeChr), ## taille de chaque chromosome
+##                      as.integer(startChr),## position pour le debut des valeurs de chaque chromosome
+##                      as.integer(profileCGH$BkpDetected$BkpDetected),
+##                      as.integer(l), ## nombre total de sondes
+##                      PACKAGE="GLAD")
     
 
-    fields.replaced <- c("Smoothing", "NextLogRatio","Level", "OutliersAws", "OutliersMad", "OutliersTot", "Breakpoints", "NormalRange")
+    ## #########################################
+    ## Récupération des résultats
+    ## #########################################
+    
+    fields.replaced <- c("Smoothing", "NextLogRatio","Level", "OutliersAws", "OutliersMad", "OutliersTot", "Breakpoints", "NormalRange", "ZoneGen", "ZoneGNL")
     profileCGH$profileValues[,fields.replaced] <- resLoopChr[fields.replaced]
+
+
+    profileCGH$NbClusterOpt <- resLooChr[["nbclasses"]]
+    print("profileCGH$NbClusterOpt")    
+    print(profileCGH$NbClusterOpt)
         
 
-    ## le clustering est fait sur les niveaux NormalRange
-    print("DNA copy number calling")
+##     ## le clustering est fait sur les niveaux NormalRange
+##     print("DNA copy number calling")
 
-    class(profileCGH) <- "profileChr"
-    profileCGH <- findCluster(profileCGH, region = "NormalRange", method = method, genome = TRUE,
-                              lambda = lambdaclusterGen, nmin = nmin, nmax = nmax, param = profileCGH$param, verbose = verbose)
-    class(profileCGH) <- "profileCGH"
+##     class(profileCGH) <- "profileChr"
+##     profileCGH <- findCluster(profileCGH, region = "NormalRange", method = method, genome = TRUE,
+##                               lambda = lambdaclusterGen, nmin = nmin, nmax = nmax, param = profileCGH$param, verbose = verbose)
+##     class(profileCGH) <- "profileCGH"
 
 
 
-    lengthDest <- profileCGH$NbProbes
-    myZoneGNL <- .C("compute_cluster_LossNormalGain",
-                    ## variables pour la jointure
-                    as.integer(profileCGH$profileValues[,"ZoneGen"]),
-                    ZoneGNL=integer(lengthDest),
-                    as.integer(lengthDest),
-                    as.double(profileCGH$profileValues[,"Smoothing"]),
-                    as.double(forceGL[1]),
-                    as.double(forceGL[2]),
-                    as.double(profileCGH$NormalRef),
-                    as.double(amplicon),
-                    as.double(deletion),                                                                                    
-                    ## variables pour le calcul de la médiane par cluster
-                    as.double(profileCGH$profileValues[,"LogRatio"]),
-                    as.integer(profileCGH$profileValues[,"NormalRange"]),
-                    PACKAGE="GLAD")
+##     lengthDest <- profileCGH$NbProbes
+##     myZoneGNL <- .C("compute_cluster_LossNormalGain",
+##                     ## variables pour la jointure
+##                     as.integer(profileCGH$profileValues[,"ZoneGen"]),
+##                     ZoneGNL=integer(lengthDest),
+##                     as.integer(lengthDest),
+##                     as.double(profileCGH$profileValues[,"Smoothing"]),
+##                     as.double(forceGL[1]),
+##                     as.double(forceGL[2]),
+##                     as.double(profileCGH$NormalRef),
+##                     as.double(amplicon),
+##                     as.double(deletion),                                                                                    
+##                     ## variables pour le calcul de la médiane par cluster
+##                     as.double(profileCGH$profileValues[,"LogRatio"]),
+##                     as.integer(profileCGH$profileValues[,"NormalRange"]),
+##                     PACKAGE="GLAD")
 
     
 
-    profileCGH$profileValues[,"ZoneGNL"] <- myZoneGNL$ZoneGNL
+##     profileCGH$profileValues[,"ZoneGNL"] <- myZoneGNL$ZoneGNL
 
 
     ## Calcul d'un poids pour les Breakpoints

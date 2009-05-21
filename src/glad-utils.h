@@ -89,6 +89,19 @@ extern "C"
 		      const double *alpha,
 		      const int *l);
 
+  void compute_cluster_LossNormalGain(// variables pour faire la jointure
+				      const int *ZoneGen,
+				      int *value_dest,
+				      const int *length_dest,
+				      const double *Smoothing,
+				      const double *forceGL1Value,
+				      const double *forceGL2Value,
+				      const double *NormalRefValue,
+				      const double *ampliconValue,
+				      const double *deletionValue,
+				      //variables pour calcul la médiane par cluster
+				      const double *LogRatio,
+				      const int *NormalRange);
 
 
 }

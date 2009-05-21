@@ -751,6 +751,114 @@ extern "C"
       }
   }
 
+  /**********************************************************/
+  /* fonction pour le calcul des clusters Loss/Normal/Gain  */
+  /**********************************************************/
+
+  void compute_cluster_LossNormalGain(// variables pour faire la jointure
+				      const int *ZoneGen,
+				      int *value_dest,
+				      const int *length_dest,
+				      const double *Smoothing,
+				      const double *forceGL1Value,
+				      const double *forceGL2Value,
+				      const double *NormalRefValue,
+				      const double *ampliconValue,
+				      const double *deletionValue,
+				      //variables pour calcul la médiane par cluster
+				      const double *LogRatio,
+				      const int *NormalRange)
+  {
+
+    int i,j;
+    int nb = *length_dest;
+    int NormalCluster = 0;
+    int NormalCluster_not_detected = 1;
+
+    int *MedianCluster_ZoneGen;
+    int *MedianCluster_ZoneGNL;
+    double *MedianCluster_Median;
+    int nb_unique_ZoneGen;
+
+    double RefNorm = 0;
+    vector<int>::iterator it_new_end_NormalCluster;
+
+
+    map<int, vector<double> > agg_LogRatio;
+    map<int, vector<double> >::iterator it_agg_LogRatio;
+
+
+    // On récupére les valeurs de LogRatio pour chaque ZoneGen
+    for (i = 0; i < nb; i++)
+      {
+	agg_LogRatio[ZoneGen[i]].push_back(LogRatio[i]);
+
+	// le cluster correspondant au normal est celui qui comprend
+	// le NormalRange 0
+	if(NormalRange[i] == 0 && NormalCluster_not_detected)
+	  {
+	    NormalCluster = ZoneGen[i];
+	    NormalCluster_not_detected = 0;
+	  }
+      }
+
+    // On calcule la médiane par ZoneGen
+    MedianCluster_Median = (double *)malloc(agg_LogRatio.size() * sizeof(double));
+    MedianCluster_ZoneGen = (int *)malloc(agg_LogRatio.size() * sizeof(int));
+    MedianCluster_ZoneGNL = (int *)malloc(agg_LogRatio.size() * sizeof(int));
+    it_agg_LogRatio=agg_LogRatio.begin();
+
+    for (j = 0; j < (int)agg_LogRatio.size(); j++)
+      {
+	MedianCluster_Median[j] = quantile_vector_double(it_agg_LogRatio->second, 0.5);
+	MedianCluster_ZoneGen[j] = it_agg_LogRatio->first;
+
+	if(NormalCluster == it_agg_LogRatio->first)
+	  {
+	    RefNorm = MedianCluster_Median[j];
+	  }
+
+	it_agg_LogRatio++;
+
+      }
+
+    for (j = 0; j < (int)agg_LogRatio.size(); j++)
+      {
+	MedianCluster_ZoneGNL[j] = 0;
+
+	if(MedianCluster_Median[j] > RefNorm)
+	  {
+	    MedianCluster_ZoneGNL[j] = 1;
+	  }
+	else
+	  {
+	    if(MedianCluster_Median[j] < RefNorm)
+	      {
+		MedianCluster_ZoneGNL[j] = -1;
+	      }
+	  }
+      }
+
+    nb_unique_ZoneGen = (int)agg_LogRatio.size();
+    my_merge_int_forceGL(ZoneGen,
+			 value_dest,
+			 MedianCluster_ZoneGen,
+			 MedianCluster_ZoneGNL,
+			 length_dest,
+			 &nb_unique_ZoneGen,
+			 Smoothing,
+			 forceGL1Value,
+			 forceGL2Value,
+			 NormalRefValue,
+			 ampliconValue,
+			 deletionValue);
+
+
+    free(MedianCluster_ZoneGen);
+    free(MedianCluster_Median);
+    free(MedianCluster_ZoneGNL);
+
+  }
 
 
 }
