@@ -97,38 +97,14 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
 
         NbChr <- length(labelChr)
         lg <- rep(0,NbChr)
-        PosOrderRange <- data.frame(Chromosome = lg, MinPosOrder = lg, MaxPosOrder = lg)
-        
-
-        
-### ajout des informations
-        ##     NbRow <- length(profileCGH$profileValues[,1])
-        ##     Smoothing <- rep(NA, NbRow)
-        ##     OutliersAws <- rep(0, NbRow)
-        ##     Region <- Level <- Breakpoints <- MinPosOrder <- MaxPosOrder <- Smoothing
-
-##         profileCGH$profileValues <- data.frame(profileCGH$profileValues, Smoothing = NA,
-##                                                OutliersAws = 0, Region = 0, Level = 0, Breakpoints = 0,
-##                                                MinPosOrder = 0, MaxPosOrder = 0)
-        
+        PosOrderRange <- data.frame(Chromosome = lg, MinPosOrder = lg, MaxPosOrder = lg)                        
 
 
-### initialization of region number to 0
+## initialization of region number to 0
         nbregion <- 0
 
-### initialization of level number to 0
+## initialization of level number to 0
         nblevel <- 0
-
-
-### Il ne faut pas les champs MedianLevel et LevelNewOrder
-### pour la jointure entre subsetdata et MedianLevel
-### par contre on en a besoin au momment du remplissage des données
-        ##    FieldInit <- names(profileCGH$profileValues)
-        ##     profileCGH$profileValues <- data.frame(profileCGH$profileValues,
-        ##                                            MedianLevel=profileCGH$profileValues$Region,
-        ##                                            LevelNewOrder=profileCGH$profileValues$Region)
-
-        ##    FieldOrder <- names(profileCGH$profileValues)
 
         
         profileCGH$BkpDetected <- data.frame(Chromosome = as.integer(labelChr), BkpDetected = 0)
@@ -311,35 +287,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                 profileCGH$BkpDetected$BkpDetected[i] <- putLevel$BkpDetected
                 nbregion <- putLevel$nbregion            
                 
-                ##             l <- length(subsetdata$Smoothing)            
-                ##             putLevel <- .C("putLevel",
-                ##                            Smoothing = as.double(subsetdata$Smoothing), ## valeur de sortie
-                ##                            as.double(subsetdata$LogRatio),                              
-                ##                            Level = integer(l),                          ## valeur de sortie
-                ##                            nblevel = as.integer(nblevel),               ## valeur de sortie
-                ##                            as.integer(l),
-                ##                            PACKAGE="GLAD")
-
-                ##             subsetdata[,c("Smoothing", "Level")] <- putLevel[c("Smoothing", "Level")]
-                ##             nblevel <- putLevel$nblevel
-
-                
-                ##             awsBkp <- .C("awsBkp",
-                ##                          as.double(subsetdata$Smoothing),
-                ##                          OutliersAws = as.integer(subsetdata$OutliersAws), ## valeur de sortie
-                ##                          Level = as.integer(subsetdata$Level),             ## valeur de sortie
-                ##                          nbregion = as.integer(nbregion),                  ## valeur de sortie
-                ##                          regionChr = integer(l),                           ## valeur de sortie
-                ##                          Breakpoints = integer(l),                         ## valeur de sortie
-                ##                          BkpDetected = integer(1),                         ## valeur de sortie
-                ##                          as.integer(l),
-                ##                          PACKAGE="GLAD")            
-                
-                ##             subsetdata[,c("Level","Region", "OutliersAws", "Breakpoints")] <- awsBkp[c("Level","regionChr", "OutliersAws", "Breakpoints")]
-
-                ##             profileCGH$BkpDetected$BkpDetected[i] <- awsBkp$BkpDetected            
-                ##             nbregion <- awsBkp$nbregion
-
               }
 
             else
@@ -347,8 +294,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                 subsetdata[,"Region"] <- -1
                 subsetdata[,"Level"] <- -1
                 subsetdata[,"Breakpoints"] <- 0
-##                 subsetdata[,"LevelNewOrder"] <- subsetdata[,"Breakpoints"]
-##                 subsetdata[,"MedianLevel"] <- subsetdata[,"Breakpoints"]
                 IQRvalue[i] <- 0
                 IQRChr[i] <- labelChr[i]    
               }
@@ -370,7 +315,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
       }
     else
       {
-#        print("On fait la boucle en C")
 
         NbChr <- length(unique(profileCGH$profileValues[,"Chromosome"]))
         l <- length(profileCGH$profileValues[,"LogRatio"])        
@@ -398,7 +342,6 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
         ## ##############################
         ## récupération des informations
         ## ##############################        
-
         
         ## Range de position pour chaque chromosome
         MinPosOrder <- res[["startChr"]] + 1
@@ -415,76 +358,10 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
         profileCGH$BkpDetected <- data.frame(Chromosome = res[["IQRChr"]],
                                              BkpDetected = res[["BkpDetected"]])
 
-        ## valeurs de segmentation
-        
-
-
+        ## valeurs de segmentation        
         profileCGH$profileValues[,c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- res[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
 
-#        print(profileCGH$profileValues)
-
-#        profileCGH$profileValues <- data.frame(profileCGH$profileValues, MinPosOrder = 0, MaxPosOrder = 0)
-
-        
-
       }
-
-
-##     ## ## TEST ####
-##     print("TEST")
-##     NbChr <- length(unique(profileCGH$profileValues$Chromosome))
-##     l <- length(profileCGH$profileValues$LogRatio)
-## t1 <- system.time(    res <- .C("chrBreakpoints",
-##               as.double(profileCGH$profileValues$LogRatio),
-##               as.integer(profileCGH$profileValues$Chromosome),
-##               Smoothing = double(l),                                             ## valeur de sortie
-##               Level = integer(l),                                                ## valeur de sortie
-##               OutliersAws = integer(l),                                          ## valeur de sortie
-##               regionChr = integer(l),                                            ## valeur de sortie
-##               Breakpoints = integer(l),                                          ## valeur de sortie
-##               sizeChr = integer(NbChr), ## taille de chaque chromosome
-##               startChr = integer(NbChr), ## position pour le début des valeurs de chaque chromosome
-##               IQRChr = integer(NbChr), ## numéro du chromosome pour le calcul de l'IQR
-##               IQRValue = double(NbChr), ## valeur de l'IQR
-##               BkpDetected = integer(NbChr), ## valeur de sortie
-##               ## paramètres pour Haarseg
-##               as.double(breaksFdrQ),
-##               as.integer(haarStartLevel),
-##               as.integer(haarEndLevel),
-##               as.integer(NbChr), ## nombre de chromosomes
-##               as.integer(l), 
-##               PACKAGE = "GLAD"))
-
-##     print(t1)
-## ###    print(res[c("sizeChr","startChr","IQRChr", "IQRValue")])
-
-##     print("VERIF")
-
-##     startChr <- profileCGH$PosOrderRange$MinPosOrder - 1 ### car on commence à compter à 0
-##     sizeChr <- profileCGH$PosOrderRange$MaxPosOrder - profileCGH$PosOrderRange$MinPosOrder + 1
-
-##     print("size verif")
-##     print(which(res[["sizeChr"]] != sizeChr))
-##     print(which(res[["startChr"]] != startChr))
-
-##     print("IQR verif")
-##     print(which(res[["IQRChr"]] != profileCGH$Sigma$Chromosome))
-##     print(which(res[["IQRValue"]] != profileCGH$Sigma$Value))
-
-##     print("BkpDetected verif")
-##     print(which(res[["BkpDetected"]] != profileCGH$BkpDetected$BkpDetected))
-
-##     print("Smoothing verif")
-##     print(which(res[["Smoothing"]] != profileCGH$profileValues$Smoothing))
-##     print(which(res[["Level"]] != profileCGH$profileValues$Level))
-##     print(which(res[["OutliersAws"]] != profileCGH$profileValues$OutliersAws))
-##     print(which(res[["regionChr"]] != profileCGH$profileValues$Region))
-##     print(which(res[["Breapoints"]] != profileCGH$profileValues$Breakpoints))     
-
-##     print("END VERIF")    
-
-##     print("FIN TEST")
-##     ## ## FIN TEST ####
 
     
     if (verbose) print("chrBreakpoints: ending function")
