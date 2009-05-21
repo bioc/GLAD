@@ -39,7 +39,7 @@ OS=$(uname -s)
 
 case $OS in
      "Darwin")
-	echo $OS
+	echo operating system: $OS
 	CXXFLAGS="-DIS_MAC_OS"
 	;;
       "Linux" | "SunOS")
@@ -77,6 +77,7 @@ esac
 
 
 GLAD_LIBS_OPTIONS="$CXXFLAGS $LIBS"
+echo "Compilation options: $GLAD_LIBS_OPTIONS"
 
 
 dnl Substitution
