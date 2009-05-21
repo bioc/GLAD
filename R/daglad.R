@@ -126,8 +126,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
 
 
-    print(profileCGH$profileValues[1:10,])
-          
     ## LogRatio are median-centered
     if (mediancenter)
       {
@@ -367,9 +365,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$profileValues[,fields.replaced] <- resLoopChr[fields.replaced]
         
 
-    print("resloopChr")
-    print(colnames(profileCGH$profileValues))
-    
     ## le clustering est fait sur les niveaux NormalRange
     print("DNA copy number calling")
 
@@ -379,8 +374,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     class(profileCGH) <- "profileCGH"
 
 
-    print("findcluster")
-    print(colnames(profileCGH$profileValues))
 
     lengthDest <- profileCGH$NbProbes
     myZoneGNL <- .C("compute_cluster_LossNormalGain",
@@ -403,9 +396,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     profileCGH$profileValues[,"ZoneGNL"] <- myZoneGNL$ZoneGNL
 
-    print("jointure")
-    print(colnames(profileCGH$profileValues))
-    
 
     ## Calcul d'un poids pour les Breakpoints
     ## Attention: comme on calcul une variable GNLchange
@@ -427,7 +417,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ##  GNL des OUtliers
     ## ###############################################################################        
 
-    print(colnames(profileCGH$profileValues))
     ## on peut récupérer directement les paramètre passés à OutliersGNL depuis l'objet profileCGH
     profileCGH <- OutliersGNL(profileCGH, alpha = alpha, sigma = profileCGH$SigmaG$Value[1], NormalRef = profileCGH$NormalRef,
                               amplicon = amplicon, deletion = deletion, assignGNLOut = assignGNLOut)
@@ -466,7 +455,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 ### fin comment
 ### suppression des champs inutiles
 
-    print("LA1")
 
     if (genomestep)
       {
@@ -474,7 +462,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),"ZoneGNLGen")]
       }
 
-    print("LA2")    
     if (normalrefcenter)
       {
         profileCGH$profileValues$Smoothing <- profileCGH$profileValues$Smoothing - profileCGH$NormalRef
@@ -491,7 +478,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         profileCGH$NormalRef <- 0
       }
 
-    print("LA3")
     if (is.data.frame(profileCGH$BkpInfo))
       {
 
@@ -506,7 +492,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
       }
 
-    print("LA4")    
 
     profileCGH$profileValues <- profileCGH$profileValues[,setdiff(colnames(profileCGH$profileValues),c("Sigma","DiffBase","Region","NextLogRatio","MaxPosOrder","MinPosOrder","PosOrder"))]
 
@@ -517,17 +502,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     outputfields <- setdiff(names(profileCGH$profileValues),inputfields)
     at <- setdiff(attributes(profileCGH)$names,c("PosOrderRange","findClusterSigma","NbClusterOpt"))
-    print("LA5")
-
-    print("a quoi sert cette etape?")
-
     profileCGH <- profileCGH[at]
-    print("LA5b")
-    print(colnames(profileCGH$profileValues))
-    print(c(inputfields,outputfields))
-    print(intersect(colnames(profileCGH$profileValues),c(inputfields,outputfields)))
     profileCGH$profileValues <- profileCGH$profileValues[,c(inputfields,outputfields)]
-    print("LA6")    
     class(profileCGH) <- "profileCGH"
     
 
