@@ -5,6 +5,8 @@
 /*****************************************************************************/
 
 #include "glad-utils.h"
+#include "findCluster.h"
+#include "filterBkp.h"
 
 extern "C"
 {
@@ -81,20 +83,19 @@ extern "C"
 		l);
 
 
-  compute_cluster_LossNormalGain(// variables pour faire la jointure
-				      ZoneGen,
-				      int *value_dest,
-				      l,
-				      Smoothing,
-				      const double *forceGL1Value,
-				      const double *forceGL2Value,
-				      const double *NormalRefValue,
-				      const double *ampliconValue,
-				      const double *deletionValue,
-				      //variables pour calcul la médiane par cluster
-				      LogRatio,
-				      NormalRange);
-
+    compute_cluster_LossNormalGain(// variables pour faire la jointure
+				   ZoneGen,
+				   ZoneGNL,
+				   l,
+				   Smoothing,
+				   forceGL1Value,
+				   forceGL2Value,
+				   NormalRefValue,
+				   ampliconValue,
+				   deletionValue,
+				   //variables pour calcul la médiane par cluster
+				   LogRatio,
+				   NormalRange);
 
 
   }

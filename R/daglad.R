@@ -23,9 +23,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                               verbose = FALSE, ...)
   {
 
-
-    print("remplacer les names par colnames")
-    print("suis dans daglad")
     
     IQRdiff <- function(y) IQR(diff(y))/1.908
     
@@ -193,6 +190,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         ## ici, on impose un qlamba élevé (l'utilisateur n'a pas le choix du paramètre)
         ## pour dégager la tendance des données
 
+
+        ## ajout des champs nécessaires
+        profileCGH$profileValues[, new.fields] <- 0
+        
         print("Smoothing over the genome")
         profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=FALSE, sigma=sigma,
                                      bandwidth=bandwidth, round=round, verbose=verbose,
@@ -282,7 +283,9 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         namesprofile[which(namesprofile == "OutliersAwsC")] <- "OutliersAws"
         names(profileCGH$profileValues) <- namesprofile
 
-#        profileCGH$profileValues <- data.frame(profileCGH$profileValues, OutliersMad = 0, OutliersTot = 0)
+
+        ## ajout des champs nécessaires
+        profileCGH$profileValues[, setdiff(new.fields, names(profileCGH$profileValues))] <- 0
 
         
       } ## fin (if) de l'étape sur le génome
@@ -422,8 +425,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
     profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
-    print("profileCGH$NbClusterOpt")    
-    print(profileCGH$NbClusterOpt)
         
 
 ##     ## le clustering est fait sur les niveaux NormalRange
