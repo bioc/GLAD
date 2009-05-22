@@ -104,8 +104,15 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     nb.new.fields <- length(new.fields)
 
-    profileCGH$profileValues <- as.list(profileCGH$profileValues)
-    profileCGH$profileValues[new.fields] <- lapply(as.list(rep(profileCGH$NbProbes, nb.new.fields)), numeric)
+    if (smoothfunc == "haarseg")
+      {
+        profileCGH$profileValues <- as.list(profileCGH$profileValues)
+        profileCGH$profileValues[new.fields] <- lapply(as.list(rep(profileCGH$NbProbes, nb.new.fields)), numeric)
+      }
+    else
+      {
+        profileCGH$profileValues[new.fields] <- 0
+      }
 
         
     ## Il faut des PosOrder uniques
@@ -184,8 +191,14 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
         ## ajout des champs nécessaires
-        profileCGH$profileValues[new.fields] <- lapply(as.list(rep(profileCGH$NbProbes, nb.new.fields)), numeric)        
-##        profileCGH$profileValues[new.fields] <- 0
+        if (smoothfunc == "haarseg")
+          {
+            profileCGH$profileValues[new.fields] <- lapply(as.list(rep(profileCGH$NbProbes, nb.new.fields)), numeric)
+          }
+        else
+          {
+            profileCGH$profileValues[new.fields] <- 0
+          }
         
         print("Smoothing over the genome")
         profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=FALSE, sigma=sigma,
