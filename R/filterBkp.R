@@ -192,29 +192,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
                                   PACKAGE = "GLAD")
 
             
-##             updateFilterBkp <- .C("updateFilterBkp",
-##                                   as.integer(profileCGH$profileValues[,"Chromosome"]),
-##                                   Breakpoints = as.integer(profileCGH$profileValues[,"Breakpoints"]),  ## valeur de sortie
-##                                   Level = as.integer(profileCGH$profileValues[,"Level"]),              ## valeur de sortie
-##                                   as.integer(profileCGH$profileValues[,"PosOrder"]),
-##                                   NextLogRatio  = as.double(profileCGH$profileValues[,"NextLogRatio"]), ## valeur de sortie
-##                                   as.double(profileCGH$profileValues[,"LogRatio"]),
-##                                   as.integer(max(profileCGH$profileValues[,"Level"])),
-##                                   ## ajout des variables pour updateOutliers
-##                                   OutliersAws = as.integer(profileCGH$profileValues[,"OutliersAws"]),  ## valeur de sortie
-##                                   Smoothing = as.double(profileCGH$profileValues[,"Smoothing"]),       ## valeur de sortie
-##                                   ## ajout des variables pour detectOutliers
-##                                   OutliersMad = integer(l),                                        ## valeur de sortie
-##                                   OutliersTot = integer(l),                                        ## valeur de sortie
-##                                   as.integer(msize),
-##                                   as.double(alpha),
-##                                   as.integer(l),
-##                                   as.double(profileCGH$NormalRef),
-##                                   as.double(profileCGH$deltaN),
-##                                   NormalRange = integer(l),
-##                                   PACKAGE = "GLAD")
-
-
 
             ## ########################
             ## récupération des données
@@ -225,35 +202,6 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
 
             profileCGH$NbClusterOpt <- updateFilterBkp[["nbclasses"]]
             
-##             ## le clustering est fait sur les niveaux NormalRange
-##             ## il faut prendre nmin comme le min(nmin,profileCGH$NbClusterOpt)
-##             class(profileCGH) <- "profileChr"
-##             profileCGH <- findCluster(profileCGH, region = "NormalRange", method = profileCGH$method, genome = TRUE,
-##                                       lambda = profileCGH$lambdaclusterGen,
-##                                       nmin = min(profileCGH$nmin, profileCGH$NbClusterOpt), nmax = profileCGH$NbClusterOpt, param = profileCGH$param)
-##             class(profileCGH) <- "profileCGH"
-
-
-##             lengthDest <- length(profileCGH$profileValues[,"ZoneGen"])
-##             myZoneGNL <- .C("compute_cluster_LossNormalGain",
-##                             ## variables pour la jointure
-##                             as.integer(profileCGH$profileValues[,"ZoneGen"]),
-##                             ZoneGNL = integer(lengthDest),
-##                             as.integer(lengthDest),
-##                             as.double(profileCGH$profileValues[,"Smoothing"]),
-##                             as.double(profileCGH$forceGL[1]),
-##                             as.double(profileCGH$forceGL[2]),
-##                             as.double(profileCGH$NormalRef),
-##                             as.double(profileCGH$amplicon),
-##                             as.double(profileCGH$deletion),                                                                                    
-##                             ## variables pour le calcul de la médiane par cluster
-##                             as.double(profileCGH$profileValues[,"LogRatio"]),
-##                             as.integer(profileCGH$profileValues[,"NormalRange"]),
-##                             PACKAGE = "GLAD")
-
-
-
-##             profileCGH$profileValues[,"ZoneGNL"] <- myZoneGNL$ZoneGNL
             
             ## ################################
             ## Mise des infos sur les Bkp

@@ -70,12 +70,11 @@ removeBreakpoints.profileChr <- function(profileChr, lambda=10, type="tricubic",
     sigma <- profileChr$findClusterSigma
 
 
-### Appel de la fonction loopRemove
-        profileChr <- loopRemove(profileChr, sigma, lambda=lambda,
-                                  type=type, param=param, verbose=verbose, msize=msize, alpha=alpha)
+    profileChr <- loopRemove(profileChr, sigma, lambda=lambda,
+                             type=type, param=param, verbose=verbose, msize=msize, alpha=alpha)
 
 
-        return(profileChr)
+    return(profileChr)
 
 
     if (verbose) print("removeBreakpoints: ending function")
@@ -150,7 +149,7 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
 
     profileChr$profileValues[c("Level","Breakpoints","NextLogRatio","OutliersAws")] <- updateBkpRL[c("Level","Breakpoints","NextLogRatio","OutliersAws")]
 
-            
+    
     profileChr <- detectOutliers(profileChr, region="Level", verbose=verbose, msize=msize, alpha=alpha)
 
 

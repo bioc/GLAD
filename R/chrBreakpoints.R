@@ -101,10 +101,10 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
         PosOrderRange <- data.frame(Chromosome = lg, MinPosOrder = lg, MaxPosOrder = lg)                        
 
 
-## initialization of region number to 0
+        ## initialization of region number to 0
         nbregion <- 0
 
-## initialization of level number to 0
+        ## initialization of level number to 0
         nblevel <- 0
 
         
@@ -251,7 +251,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                           {
 
                             subsetdata[["Smoothing"]] <- awsres
-##                            subsetdata$Smoothing <- roundglad(awsres, round)
+                            ##                            subsetdata$Smoothing <- roundglad(awsres, round)
                           }
 
                         else
