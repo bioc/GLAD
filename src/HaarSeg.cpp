@@ -88,7 +88,7 @@ extern "C"
 	highWeightSum += weight[highEnd] - weight[k-1];
 	lowSquareSum += weight[k-1]*weight[k-1] - weight[lowEnd]*weight[lowEnd];
 	highSquareSum += weight[highEnd]*weight[highEnd] - weight[k-1]*weight[k-1];
-	result[k] = (lowNonNormed / lowWeightSum + highNonNormed / highWeightSum) * sqrt(stepHalfSize/2);            
+	result[k] = (lowNonNormed / lowWeightSum + highNonNormed / highWeightSum) * sqrt((double)(stepHalfSize/2));            
 	/*            totalNorm = lowSquareSum / (lowWeightSum*lowWeightSum) + highSquareSum / (highWeightSum*highWeightSum); */
 	/*            result[k] = (lowNonNormed / lowWeightSum + highNonNormed / highWeightSum) / sqrt(totalNorm); */
       }/*if (weight != NULL) */
