@@ -601,6 +601,7 @@ PACKAGE_BUGREPORT=
 ac_unique_file="GLAD"
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
+GLAD_CPPFLAGS_OPTIONS
 GLAD_LIBS_OPTIONS
 target_alias
 host_alias
@@ -1713,7 +1714,7 @@ OS=$(uname -s)
 case $OS in
      "Darwin")
 	echo operating system: $OS
-	CXXFLAGS="-DIS_MAC_OS"
+	CPPFLAGS="-DIS_MAC_OS"
 	;;
       "Linux" | "SunOS")
 	echo operating system: $OS
@@ -1734,9 +1735,10 @@ case $OS in
 	;;
 esac
 
-
+GLAD_CPPFLAGS_OPTIONS="$CPPFLAGS"
 GLAD_LIBS_OPTIONS="$CXXFLAGS $LIBS"
 echo "Compilation options: $GLAD_LIBS_OPTIONS"
+
 
 
 
