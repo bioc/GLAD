@@ -315,7 +315,7 @@ extern "C"
 	}
 
       logLike = 0;
-      logLike += lambda * sum_kernelpen * log(NbTotObs);
+      logLike += lambda * sum_kernelpen * log((double)(NbTotObs));
       logLike += accumulate(vec_logVar.begin(), vec_logVar.end(), 0.0);
 
 
@@ -411,7 +411,7 @@ extern "C"
       }
     else
       {
-	*logVar = nbobs * (log(variance) + (1 + log(2 * pi)));
+	*logVar = nbobs * (log((double)(variance)) + (1 + log((double)(2 * pi))));
 	*Mean = barycentre;
       }
   }  
