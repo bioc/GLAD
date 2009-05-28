@@ -1961,6 +1961,7 @@ $as_echo "yes" >&6; }
 	HAVEGSL="yes"
 fi
 if test "$HAVEGSL" = "yes"; then
+  echo "GSL has been found on the operating system"
   LIBS=$GSL_LIBS
 else
   ac_ext=c
@@ -3220,6 +3221,9 @@ case $OS in
      "Darwin")
 	echo operating system: $OS
 	CPPFLAGS="-DIS_MAC_OS"
+	;;
+      *)
+	echo operating system: $OS
 	;;
 esac
 
