@@ -10,7 +10,8 @@
 
 extern "C"
 {
-  void daglad_OptmisationBreakpoints_findCluster(double *Smoothing,
+  void daglad_OptmisationBreakpoints_findCluster(const int *Chromosome,
+						 double *Smoothing,
 						 int *NormalRange,
 						 const double *NormalRef,
 						 const double *deltaN,
@@ -50,7 +51,8 @@ extern "C"
 						 const int *l) // nombre total de sondes
   {
 
-    OptmisationBreakpointsStep(Smoothing,
+    OptmisationBreakpointsStep(Chromosome,
+			       Smoothing,
 			       NormalRange,
 			       NormalRef,
 			       deltaN,

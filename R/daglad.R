@@ -336,6 +336,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     l <- profileCGH$NbProbes
 
     resLoopChr <- .C("daglad_OptmisationBreakpoints_findCluster",
+                     as.integer(profileCGH$profileValues[["Chromosome"]]),
                      Smoothing = double(l), ## valeur de sortie
                      NormalRange = integer(l),
                      as.double(profileCGH$NormalRef),

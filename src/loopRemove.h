@@ -6,7 +6,8 @@ using namespace std;
 extern "C"
 {
 
-  void OptmisationBreakpointsStep(double *Smoothing,
+  void OptmisationBreakpointsStep(const int *Chromosome,
+				  double *Smoothing,
 				  int *NormalRange,
 				  const double *NormalRef,
 				  const double *deltaN,
@@ -68,6 +69,10 @@ extern "C"
 		    double *NextLogRatio,
 		    const double *LogRatio,
 		    const int *l);
+
+  void makeRegionLevelID(const int *Chromosome,
+			 int *Level,
+			 const int n);
 
   double computeLike(vector<struct agg> agg_region, double lambda, double sumkernelpen);
 

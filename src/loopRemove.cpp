@@ -5,6 +5,7 @@
 /*****************************************************************************/
 
 #include <math.h>
+#include <string.h>
 
 #include <map>
 #include <vector>
@@ -217,7 +218,6 @@ extern "C"
     int start, size;
 
 
-
     for(i = 0; i < *NbChr; i++)
       {
 	start = startChr[i];
@@ -276,7 +276,8 @@ extern "C"
   ////////////////////////////////////////////////
 
 
-  void OptmisationBreakpointsStep(double *Smoothing,
+  void OptmisationBreakpointsStep(const int *Chromosome,
+				  double *Smoothing,
 				  int *NormalRange,
 				  const double *NormalRef,
 				  const double *deltaN,
@@ -300,6 +301,8 @@ extern "C"
 				  const int *BkpDetected,
 				  const int *l) // nombre total de sondes
   {
+    const int nb = *l;
+
     loop_chromosome_removeLevel(LogRatio,
 				NextLogRatio,
 				PosOrder,
@@ -317,6 +320,12 @@ extern "C"
 				sizeChr,
 				startChr,
 				BkpDetected);
+
+    // On oublie ici les Level, on reprend le concept de région
+    makeRegionLevelID(Chromosome,
+		      Level,
+		      nb);
+
 
     // calcul de la smoothing line
     compute_median_smoothing(LogRatio,
@@ -394,78 +403,99 @@ extern "C"
     int i_moins_un;
     int i_plus_un;
     //    int i_moins_deux;
-    const int nb=*l;
-    const int nb_moins_un=*l-1;
-    const int nb_moins_deux=*l-2;
+    const int nb = *l;
+    const int nb_moins_un = *l - 1;
+    const int nb_moins_deux= *l - 2;
 
     OutliersAws[0] = 0;
     Breakpoints[0] = 0;
     NextLogRatio[0] = 0;
 
-    for (i=1;i<nb;i++)
+    for (i = 1; i < nb; i++)
       {
 
 	OutliersAws[i] = 0;
 	Breakpoints[i] = 0;
 	NextLogRatio[i] = 0;
 
-	i_moins_un=i-1;
-	if (i==1 || i==nb_moins_un)
+	i_moins_un = i - 1;
+	if (i == 1 || i == nb_moins_un)
 	  {
-	    if (Region[i]!=Region[i_moins_un])
+	    if (Region[i] != Region[i_moins_un])
 	      {
-		if (i==1)
+		if (i == 1)
 		  {
-		    OutliersAws[0]=1;
-		    Region[0]=Region[1];
+		    OutliersAws[0] = 1;
+		    Region[0] = Region[1];
 		  }
 		else
 		  {
-		    OutliersAws[nb_moins_un]=1;
-		    Region[nb_moins_un]=Region[nb_moins_deux];
+		    OutliersAws[nb_moins_un] = 1;
+		    Region[nb_moins_un] = Region[nb_moins_deux];
 		  }
 	      }
 	  }
 	else
 	  {
-	    i_plus_un=i+1;
-	    // 	    if (Chromosome[i]!=Chromosome[i_moins_un])
-	    // 	      {
-	    // 		printf("Chromosomes différents\n");
-	    // 		i_moins_deux=i-2;
-	    // 		if (Region[i_moins_un]!=Region[i_moins_deux])
-	    // 		  {
-	    // 		    Region[i_moins_un]=Region[i_moins_deux];
-	    // 		    OutliersAws[i_moins_un]=1;
-	    // 		  }
-
-	    // 		if (Region[i_plus_un]!=Region[i])
-	    // 		  {
-	    // 		    Region[i_plus_un]=Region[i];
-	    // 		    OutliersAws[i]=1;
-	    // 		  }                
-	    // 	      }
-	    // 	    else
-	    // 	      {
-	    if (Region[i]!=Region[i_moins_un] && Region[i_plus_un]!=Region[i] && Region[i_plus_un]==Region[i_moins_un])
+	    i_plus_un = i + 1;
+ 	    if (Region[i] != Region[i_moins_un] && 
+		Region[i_plus_un] != Region[i] && 
+		Region[i_plus_un] == Region[i_moins_un])
 	      {
-		if (OutliersAws[i_moins_un]==0)
+		if (OutliersAws[i_moins_un] == 0)
 		  {
-		    OutliersAws[i]=1;
-		    Region[i]=Region[i_moins_un];
+		    OutliersAws[i] = 1;
+		    Region[i] = Region[i_moins_un];
 		  }
 	      }
 	    else
 	      {
-		if (Region[i]!=Region[i_moins_un] && OutliersAws[i_moins_un]==0)
+		if (Region[i] != Region[i_moins_un] && 
+		    OutliersAws[i_moins_un] == 0)
 		  {
-		    Breakpoints[i_moins_un]=1;
-		    NextLogRatio[i_moins_un]=LogRatio[i];
+		    Breakpoints[i_moins_un] = 1;
+		    NextLogRatio[i_moins_un] = LogRatio[i];
 		  }
 	      }                                               
-	    // 	      }
 	  }
       }
+  }
+
+
+  void makeRegionLevelID(const int *Chromosome,
+			 int *Level,
+			 const int n)
+  {
+    int i;
+    int *LevelAux;
+
+    LevelAux = (int *)malloc(n * sizeof(int));
+
+    // initialisation du numéro du Level à 1
+    LevelAux[0] = 1;
+
+    for (i == 1; i < n; i++)
+      {
+	if(Chromosome[i] != Chromosome[i - 1])
+	  {
+	    LevelAux[i] = LevelAux[i - 1] + 1;
+	  }
+	else
+	  {
+	    if(Level[i] != Level[i - 1])
+	      {
+		LevelAux[i] = LevelAux[i - 1] + 1;
+	      }
+	    else
+	      {
+		LevelAux[i] = LevelAux[i - 1] ;
+	      }
+	  }
+      }
+
+    memcpy(Level, LevelAux, n * sizeof(int));
+
+    free(LevelAux);
   }
 
 
