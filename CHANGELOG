@@ -1,4 +1,9 @@
 ###################################
+### release 2.3.2 (03-06-2009) ###
+###################################
+After the optimisation of the number of Level in daglad, the concept is used in the remaining steps of the algorithm.
+
+###################################
 ### release 2.3.0 (22-05-2009) ###
 ###################################
 some optimizations (most of the code is C)
