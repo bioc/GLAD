@@ -474,7 +474,7 @@ extern "C"
     // initialisation du numéro du Level à 1
     LevelAux[0] = 1;
 
-    for (i == 1; i < n; i++)
+    for (i = 1; i < n; i++)
       {
 	if(Chromosome[i] != Chromosome[i - 1])
 	  {
