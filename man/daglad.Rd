@@ -17,7 +17,7 @@
                   method="centroid", nmin=1, nmax=8,
                   amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
                   MinBkpWeight=0.35, CheckBkpPos=TRUE, assignGNLOut=TRUE,
-                  breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5,
+                  breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.values = NULL,
                   verbose=FALSE, ...)
 
 }
@@ -131,7 +131,9 @@
 \item{breaksFdrQ}{breaksFdrQ for HaarSeg algorithm.}
 \item{haarStartLevel}{haarStartLevel for
   HaarSeg algorithm.}
-\item{haarEndLevel}{ for HaarSeg algorithm.}
+\item{haarEndLevel}{haarEndLevel for HaarSeg algorithm.}
+
+\item{weights.values}{Weights used for the haarseg algorithm.}
 
     \item{verbose}{If \code{TRUE} some information are printed.}  
     

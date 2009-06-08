@@ -395,7 +395,8 @@ extern "C"
 		   const double *breaksFdrQ,
 		   const int *haarStartLevel,
 		   const int *haarEndLevel,
-		   double *segs)
+		   double *segs,
+		   const double *weights)
 
   {
     double *convResult_tmp1;
@@ -436,12 +437,28 @@ extern "C"
       {
 	stepHalfSize_tmp1 = (int) pow(2, (double)level);
 
+	if(weights == NULL)
+	  {
+	    printf("Il n'y a pas de poids\n");
+	    rConvAndPeak(signal,
+			 &size,
+			 &stepHalfSize_tmp1,
+			 convResult_tmp1,
+			 peakLoc_tmp1);
 
-	rConvAndPeak(signal,
-		     &size,
-		     &stepHalfSize_tmp1,
-		     convResult_tmp1,
-		     peakLoc_tmp1);
+	  }
+	else
+	  {
+	    rWConvAndPeak(signal,
+			  weights,
+			  &size,
+			  &stepHalfSize_tmp1,
+			  convResult_tmp1,
+			  peakLoc_tmp1);
+
+	    printf("WWWWWWWWWWWWWWWWW\n");
+	  }
+
 
 
 	for (i = 0; i < size; i++)
@@ -453,7 +470,6 @@ extern "C"
 	  }
 
 	indice = --i;
-
 
 	T = 0;
 	if (indice >= 0)

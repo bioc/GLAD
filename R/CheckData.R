@@ -10,7 +10,7 @@ CheckData <- function(...)
     UseMethod("CheckData")
   }
 
-CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc, ...)
+CheckData.profileCGH <- function(profileCGH = profileCGH, bandwidth = bandwidth, smoothfunc = smoothfunc, weights.values = NULL,...)
   {
 
     n <- dim(profileCGH$profileValues)[1]
@@ -33,6 +33,22 @@ CheckData.profileCGH <- function(profileCGH=profileCGH, bandwidth=bandwidth, smo
           }
       }
 
+    
+    if (!is.null(weights.values))
+      {
+        if(length(which(names(profileCGH$profileValues) == weights.values)) != 1)
+          {
+            stop(paste("Variable", weights.values, "used for weights has not been found"))
+          }
+        else
+          {
+            ind <- which(profileCGH$profileValues[[weights.values]] < 0)
+            if(length(ind) > 0)
+              {
+                stop("Weights must be positive")
+              }
+          }
+      }
 ##     if(!is.numeric(profileCGH$profileValues$Chromosome))
 ##       stop("Error: profileCGH$profileValues$Chromosome must be numeric")
 

@@ -42,6 +42,13 @@ extern "C"
 		    double * convResult,
 		    int * peakLoc);
 
+  void rWConvAndPeak(const double * signal,
+		     const double * weight,
+		     const int * signalSize,
+		     const int * stepHalfSize,
+		     double * convResult,
+		     int * peakLoc);
+
   void rThresAndUnify(const double * addon,
 		      const int * signalSize,
 		      int * addonPeaks,
@@ -67,7 +74,8 @@ extern "C"
 		   const double *breaksFdrQ,
 		   const int *haarStartLevel,
 		   const int *haarEndLevel,
-		   double *segs);
+		   double *segs,
+		   const double *weights);
  
 }
 #endif /*HAARSEG_H_*/

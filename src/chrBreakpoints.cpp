@@ -29,24 +29,25 @@ extern "C"
   /*******************************************/
   /* fonctions utilisées dans chrBreakpoints */
   /*******************************************/
-  void chrBreakpoints(const double *LogRatio,
-		      const int *Chromosome,
-		      double *Smoothing,
-		      int *Level,
-		      int *OutliersAws,
-		      int *regionChr,
-		      int *Breakpoints,
-		      int *sizeChr, // taille de chaque chromosome
-		      int *startChr, // position pour le début des valeurs de chaque chromosome
-		      int *IQRChr, // numéro du chromosome pour le calcul de l'IQR
-		      double *IQRValue, // valeur de l'IQR
-		      int *BkpDetected,
-		      // paramètres pour Haarseg
-		      const double *breaksFdrQ,
-		      const int *haarStartLevel,
-		      const int *haarEndLevel,
-		      const int *NbChr, // nombre de chromosomes
-		      const int *l) // nombre de probes
+  void chrBreakpoints_haarseg(const double *LogRatio,
+			      const int *Chromosome,
+			      double *Smoothing,
+			      int *Level,
+			      int *OutliersAws,
+			      int *regionChr,
+			      int *Breakpoints,
+			      int *sizeChr, // taille de chaque chromosome
+			      int *startChr, // position pour le début des valeurs de chaque chromosome
+			      int *IQRChr, // numéro du chromosome pour le calcul de l'IQR
+			      double *IQRValue, // valeur de l'IQR
+			      int *BkpDetected,
+			      // paramètres pour Haarseg
+			      const double *breaksFdrQ,
+			      const int *haarStartLevel,
+			      const int *haarEndLevel,
+			      const int *NbChr, // nombre de chromosomes
+			      const int *l, // nombre de probes
+			      double *weights) // poids de chacune des probes
   {
     int i;
     int start, size;
@@ -56,6 +57,7 @@ extern "C"
     int *peakLoc;
     const int nb = *l;
     double *convResult;
+    double *weights_aux = NULL;
 
     map<int, vector<double> > LogRatio_byChr;
     map<int, vector<double> >::iterator it_LogRatio_byChr;
@@ -99,6 +101,12 @@ extern "C"
 	peakLoc = (int *)calloc(size, sizeof(int));
 
 
+	printf("Chromosome %i\n", i + 1);
+	if(weights != NULL)
+	  {
+	    weights_aux = &weights[start];
+	  }
+
 	HaarSegGLAD(&LogRatio[start],
 		    &size,
 		    &stepHalfSize,
@@ -107,7 +115,8 @@ extern "C"
                     breaksFdrQ,
                     haarStartLevel,
                     haarEndLevel,
-		    &Smoothing[start]);
+		    &Smoothing[start],
+		    weights_aux);
 
 
 	free(convResult);
