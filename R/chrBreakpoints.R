@@ -14,7 +14,7 @@ chrBreakpoints <- function(...)
 
 chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FALSE, sigma=NULL,
                                       model="Gaussian", bandwidth=10, round=1.5, verbose=FALSE,
-                                      breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.values = NULL, ...)
+                                      breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL, ...)
   {
 
 
@@ -317,9 +317,9 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
     else
       {
 
-        if(!is.null(weights.values))
+        if(!is.null(weights.name))
           {
-            W <- profileCGH$profileValues[[weights.values]]
+            W <- profileCGH$profileValues[[weights.name]]
           }
         else
           {

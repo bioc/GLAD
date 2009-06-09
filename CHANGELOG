@@ -1,4 +1,10 @@
 ###################################
+### release 2.3.5 (09-06-2009) ###
+###################################
+bug corrected when a chromosome contains only one probe.
+possibility to delete or not breakpoints located in amplicon.
+
+###################################
 ### release 2.3.2 (03-06-2009) ###
 ###################################
 After the optimisation of the number of Level in daglad, the concept is used in the remaining steps of the algorithm.

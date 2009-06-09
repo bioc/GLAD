@@ -18,8 +18,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                               lambdabreak = 8, lambdaclusterGen = 40, param = c(d = 6), alpha = 0.001, msize = 5,
                               method = "centroid", nmin = 1, nmax = 8,
                               amplicon = 1, deletion = -5, deltaN = 0.10,  forceGL = c(-0.15,0.15), nbsigma = 3,
-                              MinBkpWeight = 0.35, CheckBkpPos = TRUE, assignGNLOut = TRUE,
-                              breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.values = NULL,
+                              MinBkpWeight = 0.35, DelBkpInAmp=TRUE, CheckBkpPos = TRUE, assignGNLOut = TRUE,
+                              breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL,
                               verbose = FALSE, ...)
   {
 
@@ -50,7 +50,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ## vérification de l'object donné en entrée
 
     if (verbose) print("daglad - step CheckData")
-    CheckData(profileCGH, bandwidth = bandwidth, smoothfunc = smoothfunc, weights.values = weights.values)
+    CheckData(profileCGH, bandwidth = bandwidth, smoothfunc = smoothfunc, weights.name = weights.name)
 
     if(base == TRUE)
       {
@@ -142,7 +142,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma,
                                  bandwidth=bandwidth, lkern=lkern, model=model, qlambda=qlambda,
                                  round=round, verbose=verbose,
-                                 breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel, weights.values = weights.values)
+                                 breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel, weights.name = weights.name)
 
     ## estimation de l'écart-type chromosome par chromosome
     profileCGH$SigmaC <- profileCGH$Sigma
@@ -202,7 +202,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=FALSE, sigma=sigma,
                                      bandwidth=bandwidth, round=round, verbose=verbose,
                                      lkern=lkern, model=model, qlambda=0.9999999,
-                                     breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel, weights.values = weights.values)
+                                     breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel, weights.name = weights.name)
 
         ## estimation de l'écart-type sur l'ensemble du génome    
         profileCGH$SigmaG <- profileCGH$Sigma
@@ -417,7 +417,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     
     if (verbose) print("daglad - step filterBkpStep")
-    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, assignGNLOut=assignGNLOut, verbose=verbose)
+    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)
 
 
     ## ###############################################################################

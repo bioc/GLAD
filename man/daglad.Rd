@@ -16,8 +16,8 @@
                   lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
                   method="centroid", nmin=1, nmax=8,
                   amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
-                  MinBkpWeight=0.35, CheckBkpPos=TRUE, assignGNLOut=TRUE,
-                  breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.values = NULL,
+                  MinBkpWeight=0.35, DelBkpInAmp=TRUE, CheckBkpPos=TRUE, assignGNLOut=TRUE,
+                  breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL,
                   verbose=FALSE, ...)
 
 }
@@ -121,6 +121,10 @@
     \item{MinBkpWeight}{Breakpoints which \code{GNLchange}==0 and
       \code{Weight} less than \code{MinBkpWeight} are discarded.}
 
+    \item{DelBkpInAmp}{If TRUE, the breakpoints identified inside
+    amplicon regions are deleted. For amplicon, the log-ratio values are highly
+    variable which lead to identification of false positive breakpoints.}
+
     \item{CheckBkpPos}{If \code{TRUE}, the accuracy position of each
       breakpoints is checked.}
     
@@ -133,7 +137,10 @@
   HaarSeg algorithm.}
 \item{haarEndLevel}{haarEndLevel for HaarSeg algorithm.}
 
-\item{weights.values}{Weights used for the haarseg algorithm.}
+\item{weights.name}{The name of the fields which contains the weights
+  used for the haarseg algorithm. By default, the value is set to NULL
+  meaning that all the observations have the same weights. If provided,
+  the field must contain positive values.}
 
     \item{verbose}{If \code{TRUE} some information are printed.}  
     

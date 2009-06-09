@@ -10,7 +10,7 @@ CheckData <- function(...)
     UseMethod("CheckData")
   }
 
-CheckData.profileCGH <- function(profileCGH = profileCGH, bandwidth = bandwidth, smoothfunc = smoothfunc, weights.values = NULL,...)
+CheckData.profileCGH <- function(profileCGH = profileCGH, bandwidth = bandwidth, smoothfunc = smoothfunc, weights.name = NULL,...)
   {
 
     n <- dim(profileCGH$profileValues)[1]
@@ -34,15 +34,15 @@ CheckData.profileCGH <- function(profileCGH = profileCGH, bandwidth = bandwidth,
       }
 
     
-    if (!is.null(weights.values))
+    if (!is.null(weights.name))
       {
-        if(length(which(names(profileCGH$profileValues) == weights.values)) != 1)
+        if(length(which(names(profileCGH$profileValues) == weights.name)) != 1)
           {
-            stop(paste("Variable", weights.values, "used for weights has not been found"))
+            stop(paste("Variable", weights.name, "used for weights has not been found"))
           }
         else
           {
-            ind <- which(profileCGH$profileValues[[weights.values]] < 0)
+            ind <- which(profileCGH$profileValues[[weights.name]] < 0)
             if(length(ind) > 0)
               {
                 stop("Weights must be positive")
