@@ -439,7 +439,6 @@ extern "C"
 
 	if(weights == NULL)
 	  {
-	    printf("Il n'y a pas de poids\n");
 	    rConvAndPeak(signal,
 			 &size,
 			 &stepHalfSize_tmp1,
@@ -456,7 +455,6 @@ extern "C"
 			  convResult_tmp1,
 			  peakLoc_tmp1);
 
-	    printf("WWWWWWWWWWWWWWWWW\n");
 	  }
 
 

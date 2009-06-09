@@ -427,6 +427,11 @@ extern "C"
     double IQRdiff;
     vector<double> diffvec;
 
+    if(vec.size() == 1)
+      {
+	return 0;
+      }
+
     for (i = 1; i < (int)(vec.size()); i++)
       {
 	diffvalue = vec[i] - vec[i - 1];
@@ -458,6 +463,7 @@ extern "C"
     double h;
     double value_left, value_right;
     double lo, hi;
+
 
     lo = floor(index);
     hi = ceil(index);

@@ -74,7 +74,15 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
         ## ################################################################################        
 
 
-        if (verbose) print("filterBkp: delete breakpoint with small weight")
+        if (verbose) print("filterBkp: delete breakpoints with small weight")
+
+        ## a-t-on ecore des Bkp?
+        if(dim(profileCGH$BkpInfo)[1] == 0)
+          {
+            profileCGH$BkpInfo <- NA
+            return(profileCGH)
+          }
+
         indexWeightToSmall <- which(profileCGH$BkpInfo["Weight"] < MinBkpWeight &
                                     profileCGH$BkpInfo["GNLchange"] == 0 &
                                     profileCGH$BkpInfo["ZoneGNL"] != 2)
@@ -104,6 +112,14 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, assignGNLOut=TRU
         ## ################################################################################
 
         if (verbose) print("filterBkp: delete breakpoint with null weight")
+
+        ## a-t-on ecore des Bkp?
+        if(dim(profileCGH$BkpInfo)[1] == 0)
+          {
+            profileCGH$BkpInfo <- NA
+            return(profileCGH)
+          }
+        
         indexWeightZero <- which(profileCGH$BkpInfo["Weight"] == 0 &
                                  profileCGH$BkpInfo["GNLchange"] == 1)
         if (length(indexWeightZero) > 0)

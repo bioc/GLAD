@@ -78,6 +78,7 @@ extern "C"
 	IQRChr[i] = it_LogRatio_byChr->first;
 	IQRValue[i] = IQRdiff(it_LogRatio_byChr->second);
 
+
 	if(i > 0)
 	  {
 	    startChr[i] = startChr[i - 1] + sizeChr[i - 1];
@@ -101,7 +102,6 @@ extern "C"
 	peakLoc = (int *)calloc(size, sizeof(int));
 
 
-	printf("Chromosome %i\n", i + 1);
 	if(weights != NULL)
 	  {
 	    weights_aux = &weights[start];
