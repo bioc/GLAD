@@ -3,6 +3,7 @@
 ###################################
 bug corrected when a chromosome contains only one probe.
 possibility to delete or not breakpoints located in amplicon.
+weights can be used with haarseg.
 
 ###################################
 ### release 2.3.2 (03-06-2009) ###
