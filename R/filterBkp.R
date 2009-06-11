@@ -62,9 +62,8 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
                       PACKAGE = "GLAD")
 
         if (moveBkp$RecomputeSmt == 1)
-          {            
-            rownames(profileCGH$profileValues) <- 0:(length(profileCGH$profileValues[[1]])-1)
-            RecomputeGNL <- TRUE
+          {
+             RecomputeGNL <- TRUE
 
             profileCGH$profileValues[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")]
           }
