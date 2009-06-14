@@ -47,7 +47,8 @@ extern "C"
 			      const int *haarEndLevel,
 			      const int *NbChr, // nombre de chromosomes
 			      const int *l, // nombre de probes
-			      double *weights) // poids de chacune des probes
+			      double *weights,  // poids de chacune des probes
+			      const int *OnlyOptimCall)
   {
     int i;
     int start, size;
@@ -98,29 +99,35 @@ extern "C"
 	size = sizeChr[i];
 	stepHalfSize = 1;
 
-	convResult = (double *)calloc(size, sizeof(double));
-	peakLoc = (int *)calloc(size, sizeof(int));
 
-
-	if(weights != NULL)
+	// ce test parmet d'utiliser daglad lorsque l'utilisateur fournit des données déjà segmentées
+	// ceci permet malgré tout de définir les régions et les points de cassures
+	if (!(*OnlyOptimCall))
 	  {
-	    weights_aux = &weights[start];
+	    convResult = (double *)calloc(size, sizeof(double));
+	    peakLoc = (int *)calloc(size, sizeof(int));
+
+
+	    if(weights != NULL)
+	      {
+		weights_aux = &weights[start];
+	      }
+
+	    HaarSegGLAD(&LogRatio[start],
+			&size,
+			&stepHalfSize,
+			convResult,
+			peakLoc,
+			breaksFdrQ,
+			haarStartLevel,
+			haarEndLevel,
+			&Smoothing[start],
+			weights_aux);
+
+
+	    free(convResult);
+	    free(peakLoc);
 	  }
-
-	HaarSegGLAD(&LogRatio[start],
-		    &size,
-		    &stepHalfSize,
-		    convResult,
-		    peakLoc,
-                    breaksFdrQ,
-                    haarStartLevel,
-                    haarEndLevel,
-		    &Smoothing[start],
-		    weights_aux);
-
-
-	free(convResult);
-	free(peakLoc);
 
 	nbregion += 1;
 
@@ -373,7 +380,6 @@ extern "C"
 
 	it_MedianLevel++;
       }
-
   }
 
 

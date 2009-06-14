@@ -44,6 +44,7 @@
 \alias{FDRThres}
 \alias{SegmentByPeaks}
 \alias{selectindex}
+\alias{dogenomestep}
 \usage{" "}
 
 \description{Internal functions}

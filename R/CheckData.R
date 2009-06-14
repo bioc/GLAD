@@ -10,7 +10,8 @@ CheckData <- function(...)
     UseMethod("CheckData")
   }
 
-CheckData.profileCGH <- function(profileCGH = profileCGH, bandwidth = bandwidth, smoothfunc = smoothfunc, weights.name = NULL,...)
+CheckData.profileCGH <- function(profileCGH = profileCGH, bandwidth = bandwidth,
+                                 smoothfunc = smoothfunc, weights.name = NULL, OnlyOptimCall = FALSE,...)
   {
 
     n <- dim(profileCGH$profileValues)[1]
@@ -49,8 +50,13 @@ CheckData.profileCGH <- function(profileCGH = profileCGH, bandwidth = bandwidth,
               }
           }
       }
-##     if(!is.numeric(profileCGH$profileValues$Chromosome))
-##       stop("Error: profileCGH$profileValues$Chromosome must be numeric")
 
+    if(OnlyOptimCall)
+      {
+        if(length(which(names(profileCGH$profileValues) == "Smoothing")) != 1)
+          {
+            stop("When OnlyOptimCall = TRUE, the fields Smoothing must exist in profileCGH$profileValues")
+          }        
+      }
     
   }

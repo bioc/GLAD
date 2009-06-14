@@ -11,6 +11,7 @@
 \usage{
 
 \method{daglad}{profileCGH}(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
+                  OnlySmoothing = FALSE, OnlyOptimCall = FALSE, 
                   smoothfunc="lawsglad", lkern="Exponential", model="Gaussian",
                   qlambda=0.999,  bandwidth=10, sigma=NULL, base=FALSE, round=2,
                   lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
@@ -36,6 +37,10 @@
   
   \item{normalrefcenter}{If \code{TRUE}, the LogRatio are centered
     through the median of the cluster identified during the \code{genomestep}.}
+
+  \item{OnlySmoothing}{If \code{TRUE}, only segmentation is performed without optimization of breakpoints and calling.}
+
+  \item{OnlyOptimCall}{If \code{TRUE}, the user can provide data which have been already segmented. In this case, profileCGH$profileValues must contain a field with the name "Smoothing". The daglad function skip the smoothing step but bith the optimization of breakpoints and calling are performed.}
 
   \item{smoothfunc}{Type of algorithm used to smooth \code{LogRatio} by a
     piecewise constant function. Choose either \code{lawsglad},

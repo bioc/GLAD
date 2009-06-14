@@ -12,7 +12,7 @@ chrBreakpoints <- function(...)
 
 
 
-chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FALSE, sigma=NULL,
+chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOptimCall = FALSE, base=FALSE, sigma=NULL,
                                       model="Gaussian", bandwidth=10, round=1.5, verbose=FALSE,
                                       breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL, ...)
   {
@@ -325,13 +325,13 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
           {
             W <- NULL
           }
-        
+
         NbChr <- length(unique(profileCGH$profileValues[["Chromosome"]]))
         l <- length(profileCGH$profileValues[["LogRatio"]])
         res <- .C("chrBreakpoints_haarseg",
                   as.double(profileCGH$profileValues[["LogRatio"]]),
                   as.integer(profileCGH$profileValues[["Chromosome"]]),
-                  Smoothing = double(l),                                             ## valeur de sortie
+                  Smoothing = as.double(profileCGH$profileValues[["Smoothing"]]),       ## valeur de sortie
                   Level = integer(l),                                                ## valeur de sortie
                   OutliersAws = integer(l),                                          ## valeur de sortie
                   regionChr = integer(l),                                            ## valeur de sortie
@@ -348,6 +348,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", base=FA
                   as.integer(NbChr), ## nombre de chromosomes
                   as.integer(l),
                   as.double(W),
+                  as.integer(OnlyOptimCall),
                   PACKAGE = "GLAD")
 
         ## ##############################
