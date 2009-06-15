@@ -10,16 +10,20 @@
 }
 \usage{
 
-\method{daglad}{profileCGH}(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=FALSE,
-                  OnlySmoothing = FALSE, OnlyOptimCall = FALSE, 
-                  smoothfunc="lawsglad", lkern="Exponential", model="Gaussian",
-                  qlambda=0.999,  bandwidth=10, sigma=NULL, base=FALSE, round=2,
-                  lambdabreak=8, lambdaclusterGen=40, param=c(d=6), alpha=0.001, msize=5,
-                  method="centroid", nmin=1, nmax=8,
-                  amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), nbsigma=3,
-                  MinBkpWeight=0.35, DelBkpInAmp=TRUE, CheckBkpPos=TRUE, assignGNLOut=TRUE,
-                  breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL,
-                  verbose=FALSE, ...)
+\method{daglad}{profileCGH}(profileCGH, mediancenter=FALSE,
+	normalrefcenter=FALSE, genomestep=FALSE,
+	OnlySmoothing = FALSE, OnlyOptimCall = FALSE, 
+	smoothfunc="lawsglad", lkern="Exponential",
+	model="Gaussian", qlambda=0.999, bandwidth=10, 
+	sigma=NULL, base=FALSE, round=2,
+	lambdabreak=8, lambdaclusterGen=40, param=c(d=6), 
+	alpha=0.001, msize=5, method="centroid", nmin=1, nmax=8,
+	amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), 
+	nbsigma=3, MinBkpWeight=0.35, DelBkpInAmp=TRUE,
+	CheckBkpPos=TRUE, assignGNLOut=TRUE,
+	breaksFdrQ = 0.0001, haarStartLevel = 1,
+	haarEndLevel = 5, weights.name = NULL,
+	verbose=FALSE, ...)
 
 }
 
@@ -40,7 +44,7 @@
 
   \item{OnlySmoothing}{If \code{TRUE}, only segmentation is performed without optimization of breakpoints and calling.}
 
-  \item{OnlyOptimCall}{If \code{TRUE}, the user can provide data which have been already segmented. In this case, profileCGH$profileValues must contain a field with the name "Smoothing". The daglad function skip the smoothing step but bith the optimization of breakpoints and calling are performed.}
+  \item{OnlyOptimCall}{If \code{TRUE}, the user can provide data which have been already segmented. In this case, profileCGH\$profileValues must contain a field with the name "Smoothing". The daglad function skip the smoothing step but bith the optimization of breakpoints and calling are performed.}
 
   \item{smoothfunc}{Type of algorithm used to smooth \code{LogRatio} by a
     piecewise constant function. Choose either \code{lawsglad},
@@ -170,8 +174,11 @@
 \value{
   \item{ }{An object of class "profileCGH" with the following
     attributes:}
+  
 
-  \item{\bold{profileValues}}{a data.frame with the following added information:
+
+\item{profileValues}{ is a data.frame with the following  information:
+      
 
     \itemize{
       
@@ -214,11 +221,12 @@
 	Normal by 0.}
       
     }
+    
+}
+  
 
-  }
 
-
-  \item{\bold{BkpInfo}}{a data.frame sum up the information for each
+  \item{BkpInfo}{is a data.frame sum up the information for each
     breakpoint:
 
     \itemize{
@@ -237,7 +245,7 @@
 
   }
 
-  \item{\bold{NormalRef}}{If \code{genomestep=TRUE} and
+  \item{NormalRef}{If \code{genomestep=TRUE} and
     \code{normalrefcenter=FALSE}, then NormalRef is the median of the cluster which has been used to set the normal
 	reference during the "clustering throughout the genome"
 	step. Otherwise NormalRef is 0.}
@@ -247,11 +255,12 @@
 
 
 \references{
-\itemize{
-  \item{Hupé et al. (Bioinformatics, 2004)}{ Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.}
-  \item{Polzehl and Spokoiny (WIAS-Preprint 787, 2002)}{Local likelihood modelling by adaptive weights smoothing.}
-  \item{Ben-Yaacov and Eldar (Bioinformatics, 2008)}{A fast and flexible method for the segmentation of aCGH data.}
-}
+  Hupé et al. (Bioinformatics, 2004): Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.
+
+  Polzehl and Spokoiny (WIAS-Preprint 787, 2002): Local likelihood modelling by adaptive weights smoothing.
+
+  
+  Ben-Yaacov and Eldar (Bioinformatics, 2008): A fast and flexible method for the segmentation of aCGH data.
 }
 
 \note{People interested in tools dealing with array CGH analysis can

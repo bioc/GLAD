@@ -73,7 +73,8 @@ data(arrayCGH)
 array <- list(arrayValues=array2, arrayDesign=c(4,4,21,22))
 class(array) <- "arrayCGH"
 
-arrayPersp(array,"Log2Rat", main="Perspective image of array CGH", box=FALSE, theta=110, phi=40)
+arrayPersp(array,"Log2Rat", main="Perspective image of array CGH",
+           box=FALSE, theta=110, phi=40)
 
 
 
