@@ -1,9 +1,9 @@
 Package: GLAD
-Version: 2.3.7
+Version: 2.3.8
 Date: 2009-06-14
 Title: Gain and Loss Analysis of DNA
 Depends: R (>= 2.5.0)
-SystemRequirements: gsl
+SystemRequirements: gsl. Note: users should have GSL installed. Windows users: 'consult the README file available in the inst directory of the source distribution for necessary configuration instructions'.
 Suggests: aws, tcltk
 Author: Philippe Hupe
 Maintainer: Philippe Hupe <glad@curie.fr>
