@@ -16,10 +16,15 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
                                    colDAGLAD=c("black","blue","red","green","yellow"),
                                    pchSymbol=c(20,13),
                                    colCytoBand=c("white","darkblue"),
-                                   colCentro="red", text=NULL,
+                                   colCentro="red", text=NULL, cytoband = NULL,
                                    main="", ylim=NULL, ...)
   {
 
+
+    if(is.null(cytoband))
+      {
+        stop("Error: cytoband must be provided")
+      }
     
 ### il faudrait vérifier si le champ Length existe déjà en entrée de la table, sinon
 ### pb de jointure
@@ -61,7 +66,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
       }
 
 #    cytoband <- NULL
-    data("cytoband")
+#    data("cytoband")
 
     if (!is.null(Chromosome))
       {

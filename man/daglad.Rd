@@ -295,15 +295,18 @@ res <- daglad(profileCGH, mediancenter=FALSE, normalrefcenter=FALSE, genomestep=
               MinBkpWeight=0.35, CheckBkpPos=TRUE)
 
 
+### data for cytoband
+data(cytoband)
+
 ### Genomic profile on the whole genome
 plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing",
-main="Breakpoints detection: DAGLAD analysis")
+main="Breakpoints detection: DAGLAD analysis", cytoband = cytoband)
 
 
 
 ###Genomic profile for chromosome 1
 plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1,
-Smoothing="Smoothing", main="Chromosome 1: DAGLAD analysis")
+Smoothing="Smoothing", main="Chromosome 1: DAGLAD analysis", cytoband = cytoband)
 
 
 ### The standard-deviation of LogRatio are:

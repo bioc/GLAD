@@ -79,32 +79,29 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         if (verbose) print("filterBkp: delete breakpoints with small weight")
 
         ## a-t-on ecore des Bkp?
-        if(dim(profileCGH$BkpInfo)[1] == 0)
+        if(dim(profileCGH$BkpInfo)[1] != 0)
           {
-            profileCGH$BkpInfo <- NA
-            return(profileCGH)
-          }
 
-        indexWeightToSmall <- which(profileCGH$BkpInfo["Weight"] < MinBkpWeight &
-                                    profileCGH$BkpInfo["GNLchange"] == 0 &
-                                    profileCGH$BkpInfo["ZoneGNL"] != 2)
-        if (length(indexWeightToSmall) > 0)
-          {
-            RecomputeGNL <- TRUE
-            indexPos <- profileCGH$BkpInfo[,"PosOrder"][indexWeightToSmall]
-            profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1            
-            if (length(indexWeightToSmall) == length(profileCGH$BkpInfo[,1]))
+            indexWeightToSmall <- which(profileCGH$BkpInfo["Weight"] < MinBkpWeight &
+                                        profileCGH$BkpInfo["GNLchange"] == 0 &
+                                        profileCGH$BkpInfo["ZoneGNL"] != 2)
+
+            if (length(indexWeightToSmall) > 0)
               {
-                profileCGH$BkpInfo <- NA
-              }
-            else
-              {
-                profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexWeightToSmall,]
+                RecomputeGNL <- TRUE
+                indexPos <- profileCGH$BkpInfo[,"PosOrder"][indexWeightToSmall]
+                profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1            
+                if (length(indexWeightToSmall) == length(profileCGH$BkpInfo[,1]))
+                  {
+                    profileCGH$BkpInfo <- NA
+                  }
+                else
+                  {
+                    profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexWeightToSmall,]
 
+                  }
               }
           }
-
-
 
         ## ################################################################################
         ## Suppression des Bkp dont le poids vaut 0
@@ -116,27 +113,24 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         if (verbose) print("filterBkp: delete breakpoint with null weight")
 
         ## a-t-on ecore des Bkp?
-        if(dim(profileCGH$BkpInfo)[1] == 0)
+        if(dim(profileCGH$BkpInfo)[1] != 0)
           {
-            profileCGH$BkpInfo <- NA
-            return(profileCGH)
-          }
-        
-        indexWeightZero <- which(profileCGH$BkpInfo["Weight"] == 0 &
-                                 profileCGH$BkpInfo["GNLchange"] == 1)
-        if (length(indexWeightZero) > 0)
-          {
-            RecomputeGNL <- TRUE
-            indexPos <- profileCGH$BkpInfo$PosOrder[indexWeightZero]
-            profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1            
-            
-            if (length(indexWeightZero) == length(profileCGH$BkpInfo[,1]))
+            indexWeightZero <- which(profileCGH$BkpInfo["Weight"] == 0 &
+                                     profileCGH$BkpInfo["GNLchange"] == 1)
+            if (length(indexWeightZero) > 0)
               {
-                profileCGH$BkpInfo <- NA
-              }
-            else
-              {
-                profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexWeightZero,]
+                RecomputeGNL <- TRUE
+                indexPos <- profileCGH$BkpInfo$PosOrder[indexWeightZero]
+                profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1            
+                
+                if (length(indexWeightZero) == length(profileCGH$BkpInfo[,1]))
+                  {
+                    profileCGH$BkpInfo <- NA
+                  }
+                else
+                  {
+                    profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexWeightZero,]
+                  }
               }
           }
 

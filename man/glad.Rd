@@ -264,20 +264,19 @@ res <- glad(profileCGH, mediancenter=FALSE,
                 method="centroid", nmax=8,
                 verbose=FALSE)
 
+### cytoband data to plot chromosomes
+data(cytoband)
 
 ### Genomic profile on the whole genome
 plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing",
-main="Breakpoints detection: GLAD analysis")
-
+main="Breakpoints detection: GLAD analysis", cytoband = cytoband)
 
 ###Genomic profile for chromosome 1
 plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1,
-Smoothing="Smoothing", main="Chromosome 1: GLAD analysis")
-
+Smoothing="Smoothing", main="Chromosome 1: GLAD analysis", cytoband = cytoband)
 
 ### The standard-deviation of LogRatio are:
 res$SigmaC
-
 
 ### The list of breakpoints is:
 res$BkpInfo

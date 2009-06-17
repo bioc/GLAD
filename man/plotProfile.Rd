@@ -15,7 +15,7 @@
                        colDAGLAD=c("black","blue","red","green","yellow"),
                        pchSymbol=c(20,13),
                        colCytoBand=c("white","darkblue"),
-                       colCentro="red", text=NULL, main="", ylim=NULL, ...)
+                       colCentro="red", text=NULL, cytoband = NULL, main="", ylim=NULL, ...)
 
 
 
@@ -46,10 +46,10 @@
   \item{colCentro}{Color code for centromere.}
   \item{text}{A list with the parameters to be passed to the function
     \code{\link[graphics]{text}}.}
+  \item{cytoband}{cytodand data. For human, cytoband data are avaibale using data(cytoband).}
   \item{main}{title of the plot.}
   \item{ylim}{range of the y-axis}
   \item{...}{}
-
 
 
   }
@@ -98,24 +98,28 @@ res <- glad(profileCGH, mediancenter=FALSE,
                 method="centroid", nmax=8,
                 verbose=FALSE)
 
+### cytoband data to plot chromosome
+data(cytoband)
 
 ### Genomic profile on the whole genome
-plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing", plotband=FALSE)
+plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE,
+            Smoothing="Smoothing", plotband=FALSE, cytoband = cytoband)
 
 
 ### Genomic profile on the whole genome and cytogenetic banding
-plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing")
+plotProfile(res, unit=3, Bkp=TRUE, labels=FALSE, Smoothing="Smoothing",
+            cytoband = cytoband)
 
 
 ### Genomic profile for chromosome 1
 text <- list(x=c(90000,200000),y=c(0.15,0.3),labels=c("NORMAL","GAIN"), cex=2)
 plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1,
-Smoothing="Smoothing", plotband=FALSE, text=text)
+Smoothing="Smoothing", plotband=FALSE, text=text, cytoband = cytoband)
 
 ### Genomic profile for chromosome 1 and cytogenetic banding with labels
 text <- list(x=c(90000,200000),y=c(0.15,0.3),labels=c("NORMAL","GAIN"), cex=2)
 plotProfile(res, unit=3, Bkp=TRUE, labels=TRUE, Chromosome=1,
-Smoothing="Smoothing", text=text, main="Chromosome 1")
+Smoothing="Smoothing", text=text, main="Chromosome 1", cytoband = cytoband)
 
 
 
