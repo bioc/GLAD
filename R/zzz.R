@@ -21,5 +21,6 @@
   cat("######################################################################################\n")    
   cat("\n")
   cat("New options are available in daglad: see help for details.")
+  cat("\n")  
     
 }

@@ -204,6 +204,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     if (genomestep)
       {
 
+        
         profileCGH <- dogenomestep(profileCGH, nb.new.fields = nb.new.fields, new.fields = new.fields,
                                    smoothfunc = smoothfunc, lkern = lkern, model = model,
                                    qlambda = qlambda,  bandwidth = bandwidth, sigma = sigma, base = FALSE, round = round,
@@ -213,6 +214,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                                    MinBkpWeight = MinBkpWeight, DelBkpInAmp=DelBkpInAmp, CheckBkpPos = CheckBkpPos, assignGNLOut = assignGNLOut,
                                    breaksFdrQ = breaksFdrQ, haarStartLevel = haarStartLevel, haarEndLevel = haarEndLevel, weights.name = weights.name,
                                    verbose = verbose)
+
         
       } ## fin (if) de l'étape sur le génome
     else
@@ -234,6 +236,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
       } ### fin (else) de l'étape sur le génome
 
 
+    
     FieldOrder <- names(profileCGH$profileValues)
 
     print("Optimization of the Breakpoints and DNA copy number calling")
@@ -320,6 +323,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
     
+    
     if (verbose) print("daglad - step OutliersGNL")
 
     ## ###############################################################################
@@ -383,6 +387,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     ## conversion en data.frame
     profileCGH$profileValues <- as.data.frame(profileCGH$profileValues)
+    
     
     if (is.data.frame(profileCGH$BkpInfo))
       {
@@ -463,6 +468,9 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 
 
     ## ajout des champs nécessaires
+    new.fields <- setdiff(new.fields,"NewPosOrder")
+    nb.new.fields <- length(nb.new.fields)
+    
     if (smoothfunc == "haarseg")
       {
         profileCGH$profileValues[new.fields] <- lapply(as.list(rep(profileCGH$NbProbes, nb.new.fields)), numeric)
@@ -471,6 +479,8 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
       {
         profileCGH$profileValues[new.fields] <- 0
       }
+
+    
     
     print("Smoothing over the genome")
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc = smoothfunc, base = FALSE, sigma = sigma,
