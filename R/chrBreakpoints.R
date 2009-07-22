@@ -18,6 +18,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
   {
 
 
+
     if (verbose)
       {
         print("chrBreakpoints: starting function")
@@ -140,6 +141,14 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                   {
                     IQRvalue[i] <- sigma^0.5
                     IQRChr[i] <- labelChr[i]
+                  }
+
+                if(sigma == 0)
+                  {
+                    print("Warnings: sigma equal 0")
+                    print("Number of probes:", length(indexChr))
+                    print("sigma was automatically set to 1")
+                    sigma <- 1
                   }
                 
 
@@ -265,6 +274,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
 
                 nbregion <- nbregion + 1
 
+                
                 l <- length(subsetdata[["Smoothing"]])            
                 putLevel <- .C("putLevel_awsBkp",
                                ## variables pour putLevel
@@ -280,6 +290,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                                Breakpoints = integer(l),                         ## valeur de sortie
                                BkpDetected = integer(1),                         ## valeur de sortie                           
                                PACKAGE="GLAD")
+
 
                 subsetdata[c("Smoothing", "Level", "Region", "OutliersAws", "Breakpoints")] <- putLevel[c("Smoothing", "Level", "regionChr", "OutliersAws", "Breakpoints")]
 
