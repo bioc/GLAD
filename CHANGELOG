@@ -1,4 +1,10 @@
 ###################################
+### release 2.3.10 (22-07-2009) ###
+###################################
+- bug correction in chrBreakpoint (when there are only two probes IQR = 0 -> sigma has been forced to 1)
+- bu correction in filterBkp
+
+###################################
 ### release 2.3.9 (17-06-2009) ###
 ###################################
 - option for cytoband data in plotProfile
