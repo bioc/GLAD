@@ -1,4 +1,9 @@
 ###################################
+### release 2.4.0 (23-07-2009) ###
+###################################
+- option region.size has been added in daglad
+
+###################################
 ### release 2.3.10 (22-07-2009) ###
 ###################################
 - bug correction in chrBreakpoint (when there are only two probes IQR = 0 -> sigma has been forced to 1)

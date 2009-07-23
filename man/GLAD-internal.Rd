@@ -45,6 +45,7 @@
 \alias{SegmentByPeaks}
 \alias{selectindex}
 \alias{dogenomestep}
+\alias{DelRegionTooSmall}
 \usage{" "}
 
 \description{Internal functions}

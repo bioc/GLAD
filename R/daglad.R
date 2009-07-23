@@ -17,7 +17,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                               smoothfunc = "lawsglad", lkern = "Exponential", model = "Gaussian",
                               qlambda = 0.999,  bandwidth = 10, sigma = NULL, base = FALSE, round = 2,
                               lambdabreak = 8, lambdaclusterGen = 40, param = c(d = 6), alpha = 0.001, msize = 5,
-                              method = "centroid", nmin = 1, nmax = 8,
+                              method = "centroid", nmin = 1, nmax = 8, region.size = 0,
                               amplicon = 1, deletion = -5, deltaN = 0.10,  forceGL = c(-0.15,0.15), nbsigma = 3,
                               MinBkpWeight = 0.35, DelBkpInAmp=TRUE, CheckBkpPos = TRUE, assignGNLOut = TRUE,
                               breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL,
@@ -239,6 +239,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
     FieldOrder <- names(profileCGH$profileValues)
 
+
+
     print("Optimization of the Breakpoints and DNA copy number calling")
 
     ## choix de la méthode de clustering
@@ -257,6 +259,16 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     sizeChr <- profileCGH$PosOrderRange$MaxPosOrder - profileCGH$PosOrderRange$MinPosOrder + 1
 
 
+
+    ### position des points de cassure absolus (extrémités de chromosomes)
+    profileCGH$AbsoluteBkp <- data.frame(Chromosome = c(0, profileCGH$PosOrderRange$Chromosome),
+                                         PosOrder = c(0, profileCGH$PosOrderRange$MaxPosOrder),
+                                         AbsoluteBkp = 1)
+
+
+    ## suppression des points de cassure qui délimitent une région trop petite
+    profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
+    
     NbChr <- length(startChr)
     l <- profileCGH$NbProbes
 
@@ -426,6 +438,93 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
 
+
+DelRegionTooSmall <- function(profileCGH, region.size = 0)
+{
+
+
+#  print("suis dans la fonction DelRegionTooSmall")
+  
+  if(region.size == 0)
+    return(profileCGH)
+
+
+  
+  RegionSize <- data.frame(BkpInfo(profileCGH)[c("Chromosome", "PosOrder")], AbsoluteBkp = 0)
+  RegionSize <- rbind(profileCGH$AbsoluteBkp, RegionSize)
+  RegionSize <- RegionSize[order(RegionSize$Chromosome, RegionSize$PosOrder),]
+  RegionSize$indice <- 1:length(RegionSize[,1])
+  RegionSize$Size <- c(0,diff(RegionSize$PosOrder))
+
+
+  ## récupération des régions trop petites
+  ind.region <- which((RegionSize$Size <= region.size) & (RegionSize$Chromosome != 0))
+
+  if(length(ind.region) > 0)
+    {
+      RegionWithSmallSize <- RegionSize[ind.region,]
+      
+      
+      BkpToDel <- NULL
+
+      ## breakpoint dans les chromosomes        
+      ind.notabsolute <- which(RegionWithSmallSize$AbsoluteBkp == 0)
+
+      
+      if(length(ind.notabsolute) > 0)
+        {
+          BkpToDel <- RegionWithSmallSize$indice
+        }
+
+      ## breakpoint aux extrémités des chromosomes
+      ind.absolute <- which(RegionWithSmallSize$AbsoluteBkp == 1)
+
+      
+      if(length(ind.absolute) > 0)
+        {
+          BkpToDel <- c(BkpToDel, RegionWithSmallSize$indice + 1)
+        }
+
+      if(length(BkpToDel) > 0)
+        {
+          PosOrderToDel <- RegionSize$PosOrder[BkpToDel]
+        }
+
+      
+      ind.bkp <- which(profileCGH$profileValues[["PosOrder"]] %in% PosOrderToDel)
+
+
+      profileCGH$profileValues$Breakpoints[ind.bkp] <- -1
+
+
+
+      l <- length(profileCGH$profileValues[[1]])
+      res <- .C("updateLevel",
+                as.integer(profileCGH$profileValues[["Chromosome"]]),
+                as.integer(profileCGH$profileValues[["Breakpoints"]]),
+                Level = as.integer(profileCGH$profileValues[["Level"]]),
+                as.integer(profileCGH$profileValues[["PosOrder"]]),
+                NextLogRatio = as.double(profileCGH$profileValues[["NextLogRatio"]]),
+                as.double(profileCGH$profileValues[["LogRatio"]]),                                
+                as.integer(max(profileCGH$profileValues[["Level"]])),
+                as.integer(l),
+                PACKAGE = "GLAD")
+
+
+      profileCGH$profileValues[c("Level", "NextLogRatio")] <- res[c("Level", "NextLogRatio")]
+
+      
+      
+    }
+
+  
+
+  return(profileCGH)
+
+}
+
+
+
 dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
                          smoothfunc = "lawsglad", lkern = "Exponential", model = "Gaussian",
                          qlambda = 0.999,  bandwidth = 10, sigma = NULL, base = FALSE, round = 2,
@@ -490,7 +589,8 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 
     ## estimation de l'écart-type sur l'ensemble du génome    
     profileCGH$SigmaG <- profileCGH$Sigma
-    profileCGH$Sigma <- NULL        
+    profileCGH$Sigma <- NULL
+    profileCGH$AbsoluteBkp <- NULL
 
 
     ## réinitialisation de BkpDetected aux valeurs détéctées chromosome par chromosome
