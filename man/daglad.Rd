@@ -17,7 +17,7 @@
 	model="Gaussian", qlambda=0.999, bandwidth=10, 
 	sigma=NULL, base=FALSE, round=2,
 	lambdabreak=8, lambdaclusterGen=40, param=c(d=6), 
-	alpha=0.001, msize=5, method="centroid", nmin=1, nmax=8, region.size=0,
+	alpha=0.001, msize=5, method="centroid", nmin=1, nmax=8, region.size=2,
 	amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), 
 	nbsigma=3, MinBkpWeight=0.35, DelBkpInAmp=TRUE,
 	CheckBkpPos=TRUE, assignGNLOut=TRUE,
