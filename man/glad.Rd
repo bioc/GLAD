@@ -29,35 +29,35 @@
   
   \item{smoothfunc}{Type of algorithm used to smooth \code{LogRatio} by a
     piecewise constant function. Choose either \code{lawsglad},
-    \code{haarseg}, \code{\link[aws]{aws}} or
-    \code{\link[aws]{laws}}.}
+    \code{haarseg}, \code{aws} or
+    \code{laws} in aws package.}
 
   
   \item{bandwidth}{Set the maximal bandwidth \code{hmax} in the
-    \code{\link[aws]{aws}} or  \code{\link[aws]{laws}} function. For
+    \code{aws} or  \code{laws} functions in aws package. For
     example, if \code{bandwidth=10} then the \code{hmax} value is set
     to 10*\eqn{X_N} where \eqn{X_N} is the position of the last clone.}
 
   \item{round}{The smoothing results are rounded or not depending on
     the \code{round} argument. The \code{round} value is passed to the
-    argument \code{digits} of the \code{\link[base]{round}} function.}
+    argument \code{digits} of the \code{round} function.}
 
   \item{model}{Determines the distribution type of the LogRatio. Keep
-    always the model as "Gaussian" (see \code{\link[aws]{laws}}).}
+    always the model as "Gaussian" (see \code{laws} in aws package).}
 
-  \item{lkern}{Determines the location kernel to be used (see \code{\link[aws]{aws}} or
-    \code{\link[aws]{laws}}).}
+  \item{lkern}{Determines the location kernel to be used (see \code{aws} or
+    \code{laws} in aws package).}
 
   \item{qlambda}{Determines the scale parameter for the
-    stochastic penalty (see \code{\link[aws]{aws}} or
-    \code{\link[aws]{laws}})}
+    stochastic penalty (see \code{aws} or
+    \code{laws} in aws package)}
   
   \item{base}{If \code{TRUE}, the position of clone is the physical position on
     the chromosome, otherwise the rank position is used.}
   
   \item{sigma}{Value to be passed to either argument \code{sigma2}   
-    of\code{ \link[aws]{aws}} function or \code{shape} of
-    \code{\link[aws]{laws}}. If \code{NULL}, sigma is calculated from
+    of\code{aws} function or \code{shape} of
+    \code{laws} (see aws package). If \code{NULL}, sigma is calculated from
     the data.}
   
   

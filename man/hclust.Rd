@@ -133,9 +133,9 @@ hclustglad(d, method = "complete", members=NULL)
   The \code{hclustglad} function is based an Algorithm
   contributed to STATLIB by F. Murtagh.
 }
-\seealso{
-  \code{\link[mva]{hclustglad}} \code{\link[mva]{kmeans}}.
-}
+% \seealso{
+%   \code{\link[mva]{hclustglad}} \code{\link[mva]{kmeans}}.
+% }
 \examples{
 data(USArrests)
 hc <- hclustglad(dist(USArrests), "ave")

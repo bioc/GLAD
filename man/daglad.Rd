@@ -48,36 +48,36 @@
 
   \item{smoothfunc}{Type of algorithm used to smooth \code{LogRatio} by a
     piecewise constant function. Choose either \code{lawsglad},
-    \code{haarseg}, \code{\link[aws]{aws}} or
-    \code{\link[aws]{laws}}.}
+    \code{haarseg}, \code{aws} or
+    \code{laws} (aws package).}
 
   \item{lkern}{lkern determines the location kernel to be used
-    (see \code{\link[aws]{laws}} for details).}
+    (see \code{laws} in aws package for details).}
 
   \item{model}{model determines the distribution type of LogRatio
-    (see \code{\link[aws]{laws}} for details).}
+    (see \code{laws} in aws package for details).}
 
   \item{qlambda}{qlambda determines the scale parameter qlambda for the
-    stochastic penalty (see \code{\link[aws]{laws}} for details).}
+    stochastic penalty (see \code{laws} in aws package for details).}
   
   \item{base}{If TRUE, the position of clone is the physical position onto
     the chromosome, otherwise the rank position is used.}
   
   \item{sigma}{Value to be passed to either argument \code{sigma2}   
-    of \code{\link[aws]{aws}} function or \code{shape} of
-    \code{\link[aws]{laws}}. If \code{NULL}, sigma is calculated from
+    of \code{aws} (see aws package) function or \code{shape} of
+    \code{laws} (see aws package). If \code{NULL}, sigma is calculated from
     the data.}
 
   
   \item{bandwidth}{Set the maximal bandwidth \code{hmax} in the
-    \code{\link[aws]{aws}} or  \code{\link[aws]{laws}} function. For
+    \code{aws} or  \code{laws} functions in aws package. For
     example, if \code{bandwidth=10} then the \code{hmax} value is set
     to 10*\eqn{X_N} where \eqn{X_N} is the position of the last clone.}
 
-  \item{round}{The smoothing results of either \code{\link[aws]{aws}}
-    or \code{\link[aws]{laws}} function are rounded or not depending on
+  \item{round}{The smoothing results of either \code{aws}
+    or \code{laws} functions (in aws package) are rounded or not depending on
     the \code{round} argument. The \code{round} value is passed to the
-    argument \code{digits} of the \code{\link[base]{round}} function.}
+    argument \code{digits} of the \code{round} function.}
 
   
   \item{lambdabreak}{Penalty term (\eqn{\lambda'}) used during the 
