@@ -43,6 +43,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$lambdabreak <- lambdabreak
     profileCGH$param <- param
     profileCGH$NbProbes <- length(profileCGH$profileValues[["PosOrder"]])
+    profileCGH$TooSmall <- FALSE    
 
     ## ############################################################################
     ## Préparation des données
@@ -266,8 +267,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                                          AbsoluteBkp = 1)
 
 
-    ## suppression des points de cassure qui délimitent une région trop petite
-    profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
     
     NbChr <- length(startChr)
     l <- profileCGH$NbProbes
@@ -322,7 +321,68 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$profileValues[fields.replaced] <- resLoopChr[fields.replaced]
 
     profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
-    
+
+    ## suppression des points de cassure qui délimitent une région trop petite
+    profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
+
+    ## #########################################
+    ## On optimise à nouveau les points de cassure si des petites régions ont été supprimées
+    ## #########################################
+
+    if(profileCGH$TooSmall)
+      {
+        resLoopChr <- .C("daglad_OptmisationBreakpoints_findCluster",
+                         as.integer(profileCGH$profileValues[["Chromosome"]]),
+                         Smoothing = double(l), ## valeur de sortie
+                         NormalRange = integer(l),
+                         as.double(profileCGH$NormalRef),
+                         as.double(deltaN),
+                         as.double(profileCGH$profileValues[["LogRatio"]]),
+                         NextLogRatio = as.double(profileCGH$profileValues[["NextLogRatio"]]),   ## valeur de sortie
+                         as.integer(profileCGH$profileValues[["PosOrder"]]),
+                         Level = as.integer(profileCGH$profileValues[["Level"]]),                ## valeur de sortie
+                         OutliersAws = as.integer(profileCGH$profileValues[["OutliersAws"]]),    ## valeur de sortie
+                         OutliersMad = as.integer(profileCGH$profileValues[["OutliersMad"]]),    ## valeur de sortie
+                         OutliersTot = as.integer(profileCGH$profileValues[["OutliersTot"]]),    ## valeur de sortie
+                         Breakpoints = as.integer(profileCGH$profileValues[["Breakpoints"]]),    ## valeur de sortie
+                         as.integer(msize),
+                         as.double(qnorm(1-alpha/2)),
+                         as.double(lambdabreak),
+                         as.double(param["d"]),
+                         as.double(profileCGH$SigmaC$Value),
+                         as.integer(NbChr),   ## Nombre de chromosome a analyser
+                         as.integer(sizeChr), ## taille de chaque chromosome
+                         as.integer(startChr),## position pour le debut des valeurs de chaque chromosome
+                         as.integer(profileCGH$BkpDetected$BkpDetected),
+                         ## paramètres pour findCluster
+                         as.integer(method),
+                         as.double(profileCGH$findClusterSigma),
+                         as.double(lambdaclusterGen),
+                         as.integer(nmin),
+                         as.integer(nmax),
+                         ZoneGen = integer(l),  ## valeur de sortie
+                         nbclasses = integer(1),
+                         ## paramètres pour le calcul du GNL
+                         ZoneGNL = integer(l),
+                         as.double(forceGL[1]),
+                         as.double(forceGL[2]),
+                         as.double(profileCGH$NormalRef),
+                         as.double(amplicon),
+                         as.double(deletion),                                                                                                         
+                         as.integer(l), ## nombre total de sondes
+                         PACKAGE = "GLAD")
+        
+
+        ## #########################################
+        ## Récupération des résultats
+        ## #########################################
+        
+        fields.replaced <- c("Smoothing", "NextLogRatio","Level", "OutliersAws", "OutliersMad", "OutliersTot", "Breakpoints", "NormalRange", "ZoneGen", "ZoneGNL")
+        profileCGH$profileValues[fields.replaced] <- resLoopChr[fields.replaced]
+
+        profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
+        
+      }
 
     ## Calcul d'un poids pour les Breakpoints
     ## Attention: comme on calcul une variable GNLchange
@@ -354,7 +414,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ## ###############################################################################        
 
     
-    if (verbose) print("daglad - step filterBkpStep")
+    if (verbose) print("daglad - step filterBkpStep (pass 1)")
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)
 
 
@@ -368,6 +428,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         profileCGH <- MoveBkpStep(profileCGH, assignGNLOut=assignGNLOut)
       }
 
+
+
+    if (verbose) print("daglad - step filterBkpStep (pass 2)")    
+    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)    
 
     print("Results Preparation")
     
@@ -437,6 +501,115 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
   }
 
 
+## DelRegionTooSmall <- function(profileCGH, region.size = 0)
+## {
+
+
+## #  print("suis dans la fonction DelRegionTooSmall")
+  
+##   if(region.size == 0)
+##     return(profileCGH)
+
+
+
+##   RegionSize <- data.frame(BkpInfo(profileCGH)[c("Chromosome", "PosOrder","PosBase")], AbsoluteBkp = 0)
+##   ## à supprimer
+##   profileCGH$AbsoluteBkp$PosBase <- NA
+##   RegionSize <- rbind(profileCGH$AbsoluteBkp, RegionSize)
+##   RegionSize <- RegionSize[order(RegionSize$Chromosome, RegionSize$PosOrder),]
+##   RegionSize$indice <- 1:length(RegionSize[,1])
+##   RegionSize$Size <- c(0,diff(RegionSize$PosOrder))
+##   RegionSize$contig <- 0
+##   RegionSize$contig.first <- 0
+##   RegionSize$contig.last <- 0    
+
+##   print("taille de toutes les regions")
+##   print(RegionSize[,-c(2:3)])
+
+##   ## récupération des régions trop petites
+##   ind.region <- which((RegionSize$Size <= region.size) & (RegionSize$Chromosome != 0))
+
+##   if(length(ind.region) > 0)
+##     {
+##       RegionWithSmallSize <- RegionSize[ind.region,]
+      
+##       RegionWithSmallSize <- RegionWithSmallSize[order(RegionWithSmallSize$Chromosome, RegionWithSmallSize$PosOrder),]     
+##       print("taille de petites regions")
+##       print(RegionWithSmallSize[,-c(2:3)])
+
+
+##       ### a-t-on des régions contigues
+##       print("regions contigues")
+##       ind.contig <- which(diff(RegionWithSmallSize$indice) == 1)
+##       print(ind.contig)
+##       RegionWithSmallSize$contig[ind.contig] <- 1
+##       ind.contig.first <- which(diff(RegionWithSmallSize$contig) == 1)
+##       ind.contig.last <- which(diff(RegionWithSmallSize$contig) == -1)      
+##       RegionWithSmallSize$contig.first[1+ind.contig.first] <- 1
+##       RegionWithSmallSize$contig.last[ind.contig.last] <- 1            
+##       print(RegionWithSmallSize[,-c(2:3)])      
+      
+##       BkpToDel <- NULL
+
+##       ## breakpoint dans les chromosomes        
+## #      ind.notabsolute <- which((RegionWithSmallSize$AbsoluteBkp == 0) & (RegionWithSmallSize$contig.first != 1) & (RegionWithSmallSize$contig.last != 1) & (RegionWithSmallSize$contig != 1))
+##       ind.notabsolute <- which((RegionWithSmallSize$AbsoluteBkp == 0) )
+
+## #      ind.notabsolute <- which((RegionWithSmallSize$AbsoluteBkp == 0))
+
+##       print("liste supprime")
+##       print(RegionWithSmallSize[ind.notabsolute,-c(2:3)])
+      
+##       if(length(ind.notabsolute) > 0)
+##         {
+##           BkpToDel <- RegionWithSmallSize$indice[ind.notabsolute]
+##         }
+
+##       ## breakpoint aux extrémités des chromosomes
+##       ind.absolute <- which(RegionWithSmallSize$AbsoluteBkp == 1)
+
+      
+##       if(length(ind.absolute) > 0)
+##         {
+##           BkpToDel <- c(BkpToDel, RegionWithSmallSize$indice + 1)
+##         }
+
+##       if(length(BkpToDel) > 0)
+##         {
+##           PosOrderToDel <- RegionSize$PosOrder[BkpToDel]
+##         }
+
+      
+##       ind.bkp <- which(profileCGH$profileValues[["PosOrder"]] %in% PosOrderToDel)
+
+
+##       profileCGH$profileValues$Breakpoints[ind.bkp] <- -1
+
+
+
+##       l <- length(profileCGH$profileValues[[1]])
+##       res <- .C("updateLevel",
+##                 as.integer(profileCGH$profileValues[["Chromosome"]]),
+##                 as.integer(profileCGH$profileValues[["Breakpoints"]]),
+##                 Level = as.integer(profileCGH$profileValues[["Level"]]),
+##                 as.integer(profileCGH$profileValues[["PosOrder"]]),
+##                 NextLogRatio = as.double(profileCGH$profileValues[["NextLogRatio"]]),
+##                 as.double(profileCGH$profileValues[["LogRatio"]]),                                
+##                 as.integer(max(profileCGH$profileValues[["Level"]])),
+##                 as.integer(l),
+##                 PACKAGE = "GLAD")
+
+##       profileCGH$TooSmall <- TRUE
+      
+##     }
+
+  
+
+##   return(profileCGH)
+
+## }
+
+
 
 
 DelRegionTooSmall <- function(profileCGH, region.size = 0)
@@ -455,6 +628,10 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0)
   RegionSize <- RegionSize[order(RegionSize$Chromosome, RegionSize$PosOrder),]
   RegionSize$indice <- 1:length(RegionSize[,1])
   RegionSize$Size <- c(0,diff(RegionSize$PosOrder))
+  RegionSize$contig <- 0
+  RegionSize$contig.first <- 0
+  RegionSize$contig.last <- 0    
+
 
 
   ## récupération des régions trop petites
@@ -464,16 +641,34 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0)
     {
       RegionWithSmallSize <- RegionSize[ind.region,]
       
+
+      ## a-t-on des régions contigues      
+#      print("regions contigues")
+      RegionWithSmallSize <- RegionWithSmallSize[order(RegionWithSmallSize$Chromosome, RegionWithSmallSize$PosOrder),]     
+##       print("taille de petites regions")
+##       print(RegionWithSmallSize[,-c(2:3)])      
+      ind.contig <- which(diff(RegionWithSmallSize$indice) == 1)
+#      print(ind.contig)
+      RegionWithSmallSize$contig[ind.contig] <- 1
+      ind.contig.first <- which(diff(RegionWithSmallSize$contig) == 1)
+      ind.contig.last <- which(diff(RegionWithSmallSize$contig) == -1)      
+      RegionWithSmallSize$contig.first[1+ind.contig.first] <- 1
+      RegionWithSmallSize$contig.last[ind.contig.last] <- 1            
+#      print(RegionWithSmallSize[,-c(2:3)])      
       
       BkpToDel <- NULL
 
       ## breakpoint dans les chromosomes        
-      ind.notabsolute <- which(RegionWithSmallSize$AbsoluteBkp == 0)
+ #      ind.notabsolute <- which((RegionWithSmallSize$AbsoluteBkp == 0) & (RegionWithSmallSize$contig.first != 1) & (RegionWithSmallSize$contig.last != 1) & (RegionWithSmallSize$contig != 1))
+      ind.notabsolute <- which((RegionWithSmallSize$AbsoluteBkp == 0) & (RegionWithSmallSize$contig.first != 1) & (RegionWithSmallSize$contig.last != 1) )
+
+
+#      ind.notabsolute <- which(RegionWithSmallSize$AbsoluteBkp == 0)
 
       
       if(length(ind.notabsolute) > 0)
         {
-          BkpToDel <- RegionWithSmallSize$indice
+          BkpToDel <- RegionWithSmallSize$indice[ind.notabsolute]
         }
 
       ## breakpoint aux extrémités des chromosomes
@@ -482,7 +677,7 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0)
       
       if(length(ind.absolute) > 0)
         {
-          BkpToDel <- c(BkpToDel, RegionWithSmallSize$indice + 1)
+          BkpToDel <- c(BkpToDel, RegionWithSmallSize$indice[ind.absolute] + 1)
         }
 
       if(length(BkpToDel) > 0)
@@ -513,12 +708,11 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0)
 
       profileCGH$profileValues[c("Level", "NextLogRatio")] <- res[c("Level", "NextLogRatio")]
 
-      
+      profileCGH$TooSmall <- TRUE      
       
     }
 
   
-
   return(profileCGH)
 
 }

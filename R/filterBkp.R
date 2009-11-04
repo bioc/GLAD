@@ -78,6 +78,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
         if (verbose) print("filterBkp: delete breakpoints with small weight")
 
+        
         ## a-t-on ecore des Bkp?
         if(is.data.frame(profileCGH$BkpInfo))
           {
@@ -87,6 +88,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
                 indexWeightToSmall <- which(profileCGH$BkpInfo["Weight"] < MinBkpWeight &
                                             profileCGH$BkpInfo["GNLchange"] == 0 &
                                             profileCGH$BkpInfo["ZoneGNL"] != 2)
+
 
                 if (length(indexWeightToSmall) > 0)
                   {
