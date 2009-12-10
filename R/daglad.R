@@ -323,7 +323,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
 
     ## suppression des points de cassure qui délimitent une région trop petite
-    profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
+    if(!is.na(BkpInfo(profileCGH)))
+    	profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
 
     ## #########################################
     ## On optimise à nouveau les points de cassure si des petites régions ont été supprimées
