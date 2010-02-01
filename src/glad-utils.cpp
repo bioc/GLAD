@@ -326,14 +326,14 @@ extern "C"
     map<int, int > agg_data;
 
     // construction de la map pour les données aggrégées
-    for(i=0;i<*length_src;i++)
+    for(i = 0; i < *length_src; i++)
       {
-	agg_data[index_src[i]]=value_src[i];
+	agg_data[index_src[i]] = value_src[i];
       }
 
-    for (i=0;i<*length_dest;i++)
+    for (i = 0; i < *length_dest; i++)
       {
-	value_dest[i]=agg_data[index_dest[i]];
+	value_dest[i] = agg_data[index_dest[i]];
       }
 
   }
@@ -349,7 +349,8 @@ extern "C"
 			    const double *forceGL2Value,
 			    const double *NormalRefValue,
 			    const double *ampliconValue,
-			    const double *deletionValue)
+			    const double *deletionValue,
+			    const double *deltaNValue)
   {
     int i;
     int *ZoneGNL = value_dest;
@@ -358,9 +359,12 @@ extern "C"
     const double NormalRef = *NormalRefValue;
     const double amplicon = *ampliconValue;
     const double deletion = *deletionValue;
+    const double deltaN = *deltaNValue;
     double Smoothing_moins_NormalRef;
 
     map<int, int > agg_data;
+
+
 
     // construction de la map pour les données aggrégées
     for(i = 0; i < *length_src; i++)
@@ -371,6 +375,7 @@ extern "C"
     for (i = 0; i < *length_dest; i++)
       {
 	value_dest[i] = agg_data[index_dest[i]];
+
 
 	if(NormalRef!=0)
 	  {
@@ -384,10 +389,12 @@ extern "C"
 	// Gain et Amplicon
 	if(Smoothing_moins_NormalRef >= forceGL2)
 	  {
+	    //Amplicon
 	    if(Smoothing_moins_NormalRef >= amplicon)
 	      {
 		ZoneGNL[i] = 2;
 	      }
+	    // Gain
 	    else
 	      {
 		ZoneGNL[i] = 1;
@@ -395,15 +402,55 @@ extern "C"
 	  }
 	else
 	  {
+	    // Perte et Deletion
 	    if(Smoothing_moins_NormalRef <= forceGL1)
 	      {
+		// Deletion
 		if(Smoothing_moins_NormalRef <= deletion)
 		  {
 		    ZoneGNL[i] = -10;
 		  }
+		// Perte
 		else
 		  {
 		    ZoneGNL[i] = -1;
+		  }
+	      }
+	    else
+	      {
+		if(Smoothing_moins_NormalRef > deltaN)
+		  {
+		    if(ZoneGNL[i] < 0)
+		      {
+			//			printf("Alerte GNL - PERTE ETRANGE !!!!!!!!!!!!!!!!!!!!!!!!\n");
+			if(Smoothing_moins_NormalRef > deltaN + 0.5*(forceGL2 - deltaN))
+			  {
+			    ZoneGNL[i] = 1;
+			  }
+			else
+			  {
+			    ZoneGNL[i] = 0;
+			  }
+		      }
+		  }
+		else
+		  {
+		    if(Smoothing_moins_NormalRef > deltaN)
+		      {
+			if(ZoneGNL[i] > 0)
+			  {
+			    //			    printf("Alerte GNL - GAIN ETRANGE !!!!!!!!!!!!!!!!!!!!!!!!\n");
+			    if(Smoothing_moins_NormalRef < -deltaN + 0.5*(forceGL1 - deltaN))
+			      {
+				ZoneGNL[i] = -1;
+			      }
+			    else
+			      {
+				ZoneGNL[i] = 0;
+			      }
+
+			  }
+		      }
 		  }
 	      }
 	  }
@@ -768,6 +815,7 @@ extern "C"
 				      const double *NormalRefValue,
 				      const double *ampliconValue,
 				      const double *deletionValue,
+				      const double *deltaNValue,
 				      //variables pour calcul la médiane par cluster
 				      const double *LogRatio,
 				      const int *NormalRange)
@@ -795,6 +843,7 @@ extern "C"
     for (i = 0; i < nb; i++)
       {
 	agg_LogRatio[ZoneGen[i]].push_back(LogRatio[i]);
+
 
 	// le cluster correspondant au normal est celui qui comprend
 	// le NormalRange 0
@@ -854,7 +903,8 @@ extern "C"
 			 forceGL2Value,
 			 NormalRefValue,
 			 ampliconValue,
-			 deletionValue);
+			 deletionValue,
+			 deltaNValue);
 
 
     free(MedianCluster_ZoneGen);

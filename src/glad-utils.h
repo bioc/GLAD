@@ -70,7 +70,8 @@ extern "C"
 			    const double *forceGL2Value,
 			    const double *NormalRefValue,
 			    const double *ampliconValue,
-			    const double *deletionValue);
+			    const double *deletionValue,
+			    const double *deltaNValue);
 
 
   void my_merge_int(const int *index_dest,
@@ -99,6 +100,7 @@ extern "C"
 				      const double *NormalRefValue,
 				      const double *ampliconValue,
 				      const double *deletionValue,
+				      const double *deltaNValue,
 				      //variables pour calcul la médiane par cluster
 				      const double *LogRatio,
 				      const int *NormalRange);

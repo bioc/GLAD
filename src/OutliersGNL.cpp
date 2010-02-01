@@ -141,6 +141,13 @@ extern "C"
     // Et vérifier la cohérence des valeurs
     ////////////////////////////////////////////////////////////////////
 
+    // printf("maxNormal = %f\n", maxNormal);
+    // printf("maxLost = %f\n", maxLost);
+
+    // printf("minNormal = %f\n", minNormal);
+    // printf("minGain = %f\n", minGain);
+
+
     for(i=0;i<nb;i++)
       {
 	//////////////////////////

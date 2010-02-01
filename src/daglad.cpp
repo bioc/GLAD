@@ -4,6 +4,8 @@
 /* Contact: glad@curie.fr                                                    */
 /*****************************************************************************/
 
+#include <stdio.h>
+
 #include "loopRemove.h"
 #include "findCluster.h"
 #include "glad-utils.h"
@@ -102,6 +104,7 @@ extern "C"
 				   NormalRefValue,
 				   ampliconValue,
 				   deletionValue,
+				   deltaN,
 				   //variables pour calcul la médiane par cluster
 				   LogRatio,
 				   NormalRange);

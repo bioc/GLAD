@@ -93,6 +93,7 @@ extern "C"
 				   NormalRefValue,
 				   ampliconValue,
 				   deletionValue,
+				   deltaN,
 				   //variables pour calcul la médiane par cluster
 				   LogRatio,
 				   NormalRange);

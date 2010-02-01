@@ -69,10 +69,14 @@ extern "C"
     for(i = 0; i < nb; i++)
       {
 	//	printf("%i ", Region[i]);
+
+
 	if(OutliersTot[i] == 0)
 	  {
 	    map_Region_LogRatio[Region[i]].push_back(LogRatio[i]);
+
 	  }
+
       }
 
 
@@ -105,6 +109,7 @@ extern "C"
 	    members[i] = (double)map_clusterRegion[it_map_Region_LogRatio->first].Card;
 	    map_clusterRegion[it_map_Region_LogRatio->first].LabelRegion = it_map_Region_LogRatio->first;
 	    clusterRegion_Region[i] = it_map_Region_LogRatio->first;
+
 
 	    // cas des régions avec un seul élément
 	    if(it_map_Region_LogRatio->second.size() == 1)

@@ -200,6 +200,7 @@ extern "C"
 				   NormalRef,
 				   ampliconValue,
 				   deletionValue,  
+				   deltaN,
 				   // variables pour le calcul de la médiane par cluster
 				   LogRatio,
 				   NormalRange);
@@ -319,6 +320,7 @@ extern "C"
 				   NormalRefValue,
 				   ampliconValue,
 				   deletionValue,
+				   deltaN,
 				   //variables pour calcul la médiane par cluster
 				   LogRatio,
 				   NormalRange);
