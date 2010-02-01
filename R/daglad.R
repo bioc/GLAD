@@ -24,7 +24,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                               verbose = FALSE, ...)
   {
 
-    
     IQRdiff <- function(y) IQR(diff(y))/1.908
     
     ## Récupération des paramètres de la fonction    
@@ -78,19 +77,27 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     inputfields <- names(profileCGH$profileValues)
 
-    if (OnlyOptimCall)
-      {
-        excdudefields <- c("Level", "OutliersAws", "OutliersMad",
-                           "OutliersTot", "Breakpoints",
-                           "NormalRef", "ZoneGNL")
+##     if (OnlyOptimCall)
+##       {
+##         excdudefields <- c("Level", "OutliersAws", "OutliersMad",
+##                            "OutliersTot", "Breakpoints", "Smoothing",
+##                            "NormalRef", "ZoneGNL")
+        
 
-      }
-    else
+##       }
+    if (!OnlyOptimCall)
       {
         
         excdudefields <- c("Level", "OutliersAws", "OutliersMad",
                            "OutliersTot", "Breakpoints", "Smoothing",
                            "NormalRef", "ZoneGNL")
+      }
+    else
+      {
+        excdudefields <- c("Level", "OutliersAws", "OutliersMad",
+                           "OutliersTot", "Breakpoints", "Region",
+                           "NormalRef", "ZoneGNL")
+          
       }
     
     fieldstodel <- intersect(inputfields, excdudefields)
@@ -118,7 +125,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                         "NextLogRatio", "NormalRange",
                         "ZoneGen", "ZoneGNL")
 
-        ## on force la force à haarseg de telle sorte que daglad définisse les points de cassure
+        ## on force à haarseg de telle sorte que daglad définisse les points de cassure
         ## et les régions
         smoothfunc <- "haarseg"
       }
@@ -323,8 +330,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
 
     ## suppression des points de cassure qui délimitent une région trop petite
-    if(!is.na(BkpInfo(profileCGH)))
-    	profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
+    profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
 
     ## #########################################
     ## On optimise à nouveau les points de cassure si des petites régions ont été supprimées
@@ -399,6 +405,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
     if (verbose) print("daglad - step OutliersGNL")
 
+
     ## ###############################################################################
     ##  GNL des Outliers
     ## ###############################################################################        
@@ -409,7 +416,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
 
-    
+
     ## ###############################################################################
     ##  Bkp filter
     ## ###############################################################################        
@@ -434,6 +441,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     if (verbose) print("daglad - step filterBkpStep (pass 2)")    
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)    
 
+  
+    
     print("Results Preparation")
     
 
@@ -622,9 +631,12 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0)
   if(region.size == 0)
     return(profileCGH)
 
-
   
-  RegionSize <- data.frame(BkpInfo(profileCGH)[c("Chromosome", "PosOrder")], AbsoluteBkp = 0)
+  BkpInfoTmp <- BkpInfo(profileCGH)
+  if(!is.data.frame(BkpInfoTmp))
+    return(profileCGH)    
+  
+  RegionSize <- data.frame(BkpInfoTmp[c("Chromosome", "PosOrder")], AbsoluteBkp = 0)
   RegionSize <- rbind(profileCGH$AbsoluteBkp, RegionSize)
   RegionSize <- RegionSize[order(RegionSize$Chromosome, RegionSize$PosOrder),]
   RegionSize$indice <- 1:length(RegionSize[,1])

@@ -156,6 +156,7 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
                       as.integer(length(profileCGH$profileValues[["Smoothing"]])),
                       PACKAGE = "GLAD")
 
+
   profileCGH$profileValues[c("OutliersTot", "ZoneGNL")] <- myOutliersGNL[c("OutliersTot", "ZoneGNL")]
   
   
