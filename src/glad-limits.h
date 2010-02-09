@@ -1,6 +1,6 @@
 #ifdef IS_MAC_OS
 #include <limits.h>
-#else
+#elif !defined WIN64
 #include <values.h>
 #endif
 
