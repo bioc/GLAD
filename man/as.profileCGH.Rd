@@ -15,7 +15,7 @@ as.profileCGH(object,...)
   then NAs are put instead.}
 \item{value}{replace Inf by \code{value} if \code{infaction} is
   "value".}
-\item{...}{}
+\item{...}{...}
 }
 
 \value{

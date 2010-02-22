@@ -49,7 +49,7 @@
   \item{cytoband}{cytodand data. For human, cytoband data are avaibale using data(cytoband).}
   \item{main}{title of the plot.}
   \item{ylim}{range of the y-axis}
-  \item{...}{}
+  \item{...}{...}
 
 
   }

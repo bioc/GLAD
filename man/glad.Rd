@@ -102,7 +102,7 @@
 
   \item{verbose}{If \code{TRUE} some information are printed}  
   
-  \item{...}{}
+  \item{...}{...}
 }
 
 
