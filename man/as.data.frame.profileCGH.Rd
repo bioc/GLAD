@@ -12,7 +12,7 @@
   \item{optional}{logical. If 'TRUE', setting row names and converting column
     names (to syntactic names) is optional.}
 
-  \item{...}{ }
+  \item{...}{...}
 
 
 }
