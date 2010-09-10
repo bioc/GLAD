@@ -1,7 +1,8 @@
-#ifdef IS_MAC_OS
+#if !defined WIN64
 #include <limits.h>
-#elif !defined WIN64
+#ifndef IS_MAC_OS
 #include <values.h>
+#endif
 #endif
 
 #ifndef MAXDOUBLE
