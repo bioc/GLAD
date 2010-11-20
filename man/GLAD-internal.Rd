@@ -46,6 +46,8 @@
 \alias{selectindex}
 \alias{dogenomestep}
 \alias{DelRegionTooSmall}
+\alias{prepare.output.daglad}
+\alias{RecomputeGNL}
 \usage{" "}
 
 \description{Internal functions}

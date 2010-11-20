@@ -16,7 +16,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                               OnlySmoothing = FALSE, OnlyOptimCall = FALSE, 
                               smoothfunc = "lawsglad", lkern = "Exponential", model = "Gaussian",
                               qlambda = 0.999,  bandwidth = 10, sigma = NULL, base = FALSE, round = 2,
-                              lambdabreak = 8, lambdaclusterGen = 40, param = c(d = 6), alpha = 0.001, msize = 5,
+                              lambdabreak = 8, lambdaclusterGen = 40, param = c(d = 6), alpha = 0.001, msize = 2,
                               method = "centroid", nmin = 1, nmax = 8, region.size = 2,
                               amplicon = 1, deletion = -5, deltaN = 0.10,  forceGL = c(-0.15,0.15), nbsigma = 3,
                               MinBkpWeight = 0.35, DelBkpInAmp=TRUE, CheckBkpPos = TRUE, assignGNLOut = TRUE,
@@ -61,6 +61,12 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
           }
       }
 
+    if((msize > region.size) & (region.size != 0))
+      stop("Error in daglad: msize must be lower than region.size")
+
+### cette condition a été ajouté pour les cas ou par exemple une régions de 3 clones comporte un outliers
+### compte-tenu du fait que le clustering se fait sur des moyennes et non pas sur des médianes
+### il peut y avoir une forte différence entre les deux valeurs ce qui peut conduire à une incohérence sur le GNL
     
     if(smoothfunc == "lawsglad" & model != "Gaussian")
       stop("Error in daglad: for lawsglad, only Gaussian model is available")
@@ -77,14 +83,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     inputfields <- names(profileCGH$profileValues)
 
-##     if (OnlyOptimCall)
-##       {
-##         excdudefields <- c("Level", "OutliersAws", "OutliersMad",
-##                            "OutliersTot", "Breakpoints", "Smoothing",
-##                            "NormalRef", "ZoneGNL")
-        
-
-##       }
     if (!OnlyOptimCall)
       {
         
@@ -315,7 +313,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                      as.double(forceGL[2]),
                      as.double(profileCGH$NormalRef),
                      as.double(amplicon),
-                     as.double(deletion),                                                                                                         
+                     as.double(deletion),                             
                      as.integer(l), ## nombre total de sondes
                      PACKAGE = "GLAD")
     
@@ -329,8 +327,15 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
 
+
+
+ 
+    
     ## suppression des points de cassure qui délimitent une région trop petite
     profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size)
+
+             
+    
 
     ## #########################################
     ## On optimise à nouveau les points de cassure si des petites régions ont été supprimées
@@ -338,6 +343,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     if(profileCGH$TooSmall)
       {
+        if (verbose)
+          print("daglad - Small regions detected")
+
+        
         resLoopChr <- .C("daglad_OptmisationBreakpoints_findCluster",
                          as.integer(profileCGH$profileValues[["Chromosome"]]),
                          Smoothing = double(l), ## valeur de sortie
@@ -375,9 +384,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                          as.double(forceGL[2]),
                          as.double(profileCGH$NormalRef),
                          as.double(amplicon),
-                         as.double(deletion),                                                                                                         
+                         as.double(deletion),                               
                          as.integer(l), ## nombre total de sondes
                          PACKAGE = "GLAD")
+
         
 
         ## #########################################
@@ -388,8 +398,12 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         profileCGH$profileValues[fields.replaced] <- resLoopChr[fields.replaced]
 
         profileCGH$NbClusterOpt <- resLoopChr[["nbclasses"]]
+
+
         
       }
+
+ 
 
     ## Calcul d'un poids pour les Breakpoints
     ## Attention: comme on calcul une variable GNLchange
@@ -402,7 +416,6 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
     
-    
     if (verbose) print("daglad - step OutliersGNL")
 
 
@@ -410,22 +423,29 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ##  GNL des Outliers
     ## ###############################################################################        
 
+
+        
+    
     ## on peut récupérer directement les paramètre passés à OutliersGNL depuis l'objet profileCGH
     profileCGH <- OutliersGNL(profileCGH, alpha = alpha, sigma = profileCGH$SigmaG$Value[1], NormalRef = profileCGH$NormalRef,
                               amplicon = amplicon, deletion = deletion, assignGNLOut = assignGNLOut)
 
 
+    
 
 
     ## ###############################################################################
     ##  Bkp filter
     ## ###############################################################################        
 
+
+    
     
     if (verbose) print("daglad - step filterBkpStep (pass 1)")
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)
 
 
+    
     ## ###############################################################################
     ##  Déplacement des Bkp
     ## ###############################################################################    
@@ -446,9 +466,22 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     print("Results Preparation")
     
 
+    ###################################
     ## suppression des champs inutiles
+    ###################################
+
+    profileCGH <- prepare.output.daglad(profileCGH = profileCGH, genomestep = genomestep, normalrefcenter = normalrefcenter, inputfields = inputfields)    
+    
+    return (profileCGH)
+    
+    
+  }
 
 
+prepare.output.daglad <- function(profileCGH = NULL, genomestep = NULL, normalrefcenter = NULL, inputfields = NULL)
+  {
+
+    
     if (genomestep)
       {
         profileCGH$profileValues[["NormalRef"]] <- profileCGH$profileValues[["ZoneGNLGen"]]
@@ -504,11 +537,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     class(profileCGH) <- "profileCGH"
     
 
-    
-    return (profileCGH)
-    
+    return(profileCGH)
     
   }
+
 
 
 ## DelRegionTooSmall <- function(profileCGH, region.size = 0)
@@ -715,11 +747,13 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0)
                 NextLogRatio = as.double(profileCGH$profileValues[["NextLogRatio"]]),
                 as.double(profileCGH$profileValues[["LogRatio"]]),                                
                 as.integer(max(profileCGH$profileValues[["Level"]])),
+#                Smoothing = as.double(profileCGH$profileValues[["Smoothing"]]),
                 as.integer(l),
                 PACKAGE = "GLAD")
 
 
-      profileCGH$profileValues[c("Level", "NextLogRatio")] <- res[c("Level", "NextLogRatio")]
+#      profileCGH$profileValues[c("Level", "NextLogRatio", "Smoothing")] <- res[c("Level", "NextLogRatio", "Smoothing")]
+      profileCGH$profileValues[c("Level", "NextLogRatio")] <- res[c("Level", "NextLogRatio")]      
 
       profileCGH$TooSmall <- TRUE      
       
@@ -1042,4 +1076,24 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 ###################    
 ### FIN SUPPRESSION    
 ###################    
+
+
+  ## ## ajout phupe
+  ## print("ajout phupe")
+  ## calc.range <- function(profileCGH = NULL)
+  ## {
+  ##   ind <- which(profileCGH$profileValues[["OutliersTot"]] == 0 )
+  ##   LogRatio <- profileCGH$profileValues[["Smoothing"]][ind]
+  ##   ZoneGNL <- profileCGH$profileValues[["ZoneGNL"]][ind]
+
+  ##   print("max")
+  ##   print(aggregate(LogRatio, by=list("GNL"=ZoneGNL), max))
+
+  ##   print("min")
+  ##   print(aggregate(LogRatio, by=list("GNL"=ZoneGNL), min))    
+    
+  ##   return(profileCGH)
+  ## }
+
+  ##   ## fin ajout phupe
 

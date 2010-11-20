@@ -143,6 +143,8 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
   seuilsup <- NormalRef + sigma*qnorm(1-alpha/2)
   seuilinf <- NormalRef - sigma*qnorm(1-alpha/2)
 
+
+  
   myOutliersGNL <- .C("OutliersGNL",
                       OutliersTot = as.integer(profileCGH$profileValues[["OutliersTot"]]),
                       ZoneGNL = as.integer(profileCGH$profileValues[["ZoneGNL"]]),

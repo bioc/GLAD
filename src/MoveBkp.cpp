@@ -116,6 +116,7 @@ extern "C"
 
     zone = (int *)malloc(*l * sizeof(int));
 
+
     MoveBkp_Step1(subBkpInfo_MoveBkp,
 		  subBkpInfo_PosOrder,
 		  LogRatio,
@@ -135,6 +136,7 @@ extern "C"
 		  deltaN,
 		  lensubBkp,
 		  l);
+
 
 
     // on fait le clustering sur NormalRange
@@ -427,6 +429,7 @@ extern "C"
     double *maxDel;
     int i;
     const int nb=*l;
+
 
     minG=(double *)malloc(1 * sizeof(double));
     maxL=(double *)malloc(1 * sizeof(double));

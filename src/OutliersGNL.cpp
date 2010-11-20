@@ -12,7 +12,7 @@ extern "C"
   void OutliersGNL(int * OutliersTot,
 		   int *ZoneGNL,
 		   const double *LogRatio,
-		   const double * Smoothing,
+		   const double *Smoothing,
 		   const double *seuilsupValue,
 		   const double *seuilinfValue,
 		   const double *ampliconValue,
@@ -23,46 +23,46 @@ extern "C"
     int i;
     const int nb=*l;
 
-    const double seuilsup=*seuilsupValue;
-    const double seuilinf=*seuilinfValue;
-    const double amplicon=*ampliconValue;
-    const double deletion=*deletionValue;
-    const double NormalRef=*NormalRefValue;
+    const double seuilsup = *seuilsupValue;
+    const double seuilinf = *seuilinfValue;
+    const double amplicon = *ampliconValue;
+    const double deletion = *deletionValue;
+    const double NormalRef = *NormalRefValue;
 
-    int checkGain=0;
-    int checkLost=0;
-    int checkNormal=0;
-    int checkAlert=0;
+    int checkGain = 0;
+    int checkLost = 0;
+    int checkNormal = 0;
+    int checkAlert = 0;
 
     double LogRatio_moins_NormalRef;
-    double minNormal=MAXDOUBLE;
-    double maxNormal=-MAXDOUBLE;
-    double minGain=MAXDOUBLE;
-    double maxLost=-MAXDOUBLE;
+    double minNormal = MAXDOUBLE;
+    double maxNormal = -MAXDOUBLE;
+    double minGain = MAXDOUBLE;
+    double maxLost = -MAXDOUBLE;
 
-    /*   printf("seuilsup=%f\n",seuilsup); */
-    /*   printf("seuilinf=%f\n",seuilinf); */
-    /*   printf("amplicon=%f\n",amplicon); */
-    /*   printf("deletion=%f\n",deletion); */
+//     printf("seuilsup=%f\n", seuilsup); 
+//     printf("seuilinf=%f\n", seuilinf); 
+//     printf("amplicon=%f\n", amplicon); 
+//     printf("deletion=%f\n", deletion); 
 
     for (i=0;i<nb;i++)
       {
 	//////////////////////////
 	// On regarde les Outliers
 	//////////////////////////
-	if(OutliersTot[i]!=0)
+	if(OutliersTot[i] != 0)
 	  {
 	    // On met le GNL de tous les Outliers à 0
-	    ZoneGNL[i]=0;
+	    ZoneGNL[i] = 0;
 
 	    // Calcul de la différence entre le LogRatio et NormalRef
-	    if(NormalRef!=0)
+	    if(NormalRef != 0)
 	      {
-		LogRatio_moins_NormalRef=LogRatio[i]-NormalRef;
+		LogRatio_moins_NormalRef = LogRatio[i] - NormalRef;
 	      }
 	    else
 	      {
-		LogRatio_moins_NormalRef=LogRatio[i];
+		LogRatio_moins_NormalRef = LogRatio[i];
 	      }
 
 	    // Gain et Amplicon
@@ -71,28 +71,28 @@ extern "C"
 		// On a un Amplicon
 		if(LogRatio_moins_NormalRef >= amplicon)
 		  {
-		    ZoneGNL[i]=2;
+		    ZoneGNL[i] = 2;
 		  }
 		// On a un Gain
 		else
 		  {
-		    ZoneGNL[i]=1;
+		    ZoneGNL[i] = 1;
 		  }
 	      }
 	    // Perte et Deletion
 	    else
 	      {
-		if(LogRatio_moins_NormalRef<seuilinf)
+		if(LogRatio_moins_NormalRef < seuilinf)
 		  {
 		    // On a une deletion
-		    if(LogRatio_moins_NormalRef<deletion)
+		    if(LogRatio_moins_NormalRef < deletion)
 		      {
-			ZoneGNL[i]=-10;
+			ZoneGNL[i] = -10;
 		      }
 		    // On a une Perte
 		    else
 		      {
-			ZoneGNL[i]=-1;
+			ZoneGNL[i] = -1;
 		      }
 		  }
 	      }
@@ -105,31 +105,31 @@ extern "C"
 	    switch(ZoneGNL[i])
 	      {
 	      case 0:
-		if(Smoothing[i]<minNormal)
+		if(Smoothing[i] < minNormal)
 		  {
-		    minNormal=Smoothing[i];
+		    minNormal = Smoothing[i];
 		  }
-		if(Smoothing[i]>maxNormal)
+		if(Smoothing[i] > maxNormal)
 		  {
-		    maxNormal=Smoothing[i];
+		    maxNormal = Smoothing[i];
 		  }
-		checkNormal=1;
+		checkNormal = 1;
 		break;
 
 	      case 1:
-		if(Smoothing[i]<minGain)
+		if(Smoothing[i] < minGain)
 		  {
-		    minGain=Smoothing[i];
+		    minGain = Smoothing[i];
 		  }
-		checkGain=1;
+		checkGain = 1;
 		break;
 
 	      case -1:
-		if(Smoothing[i]>maxLost)
+		if(Smoothing[i] > maxLost)
 		  {
-		    maxLost=Smoothing[i];
+		    maxLost = Smoothing[i];
 		  }
-		checkLost=1;
+		checkLost = 1;
 		break;
 	      }
 	  }
@@ -141,19 +141,18 @@ extern "C"
     // Et vérifier la cohérence des valeurs
     ////////////////////////////////////////////////////////////////////
 
-    // printf("maxNormal = %f\n", maxNormal);
-    // printf("maxLost = %f\n", maxLost);
+//     printf("maxNormal = %f\n", maxNormal);
+//     printf("maxLost = %f\n", maxLost);
+//     printf("minNormal = %f\n", minNormal);
+//     printf("minGain = %f\n", minGain);
 
-    // printf("minNormal = %f\n", minNormal);
-    // printf("minGain = %f\n", minGain);
 
-
-    for(i=0;i<nb;i++)
+    for(i = 0; i < nb; i++)
       {
 	//////////////////////////
 	// On regarde les Outliers
 	//////////////////////////
-	if(OutliersTot[i]!=0)
+	if(OutliersTot[i] != 0)
 	  {
 	    if(ZoneGNL[i]==0)
 	      {

@@ -1,6 +1,6 @@
-                                        # Copyright (C) 2003 Institut Curie
-                                        # Author(s): Philippe Hupé (Institut Curie) 2003
-                                        # Contact: glad@curie.fr
+### Copyright (C) 2003 Institut Curie
+### Author(s): Philippe Hupé (Institut Curie) 2003
+### Contact: glad@curie.fr
 
 affectationGNL <- function(...)
 {

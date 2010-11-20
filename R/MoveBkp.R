@@ -11,7 +11,7 @@ MoveBkp <- function(profileCGH, ...)
 
 MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...)
   {
-
+    
 
     if (is.data.frame(profileCGH$BkpInfo))
       {
@@ -42,6 +42,8 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                         PACKAGE = "GLAD")
         
 
+
+        
         profileCGH$profileValues[["ZoneGNL"]] <- updateGNL$ZoneGNL
 
 

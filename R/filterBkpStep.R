@@ -18,7 +18,9 @@ filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, DelBkpInAmp=
     if (verbose) print("filterBkpStep: starting function")            
 
     profileCGH <- filterBkp(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)
-     
+
+
+    
     fin <- 0
     maxiter <- 100
     nbiter <- 0

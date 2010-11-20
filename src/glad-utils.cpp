@@ -110,6 +110,33 @@ extern "C"
 
   }
 
+  void updateLevelSmoothing (const int *Chromosome,
+		    const int *Breakpoints,
+		    int *Level,
+		    const int *PosOrder,
+		    double *NextLogRatio,
+		    const double *LogRatio,
+		    const int *maxLevel,
+		    double *Smoothing,
+		    const int *l)
+  {
+    printf("new func\n");
+    updateLevel(Chromosome,
+		Breakpoints,
+		Level,
+		PosOrder,
+		NextLogRatio,
+		LogRatio,
+		maxLevel,
+		l);
+
+    compute_median_smoothing(LogRatio,
+			     Level,
+			     Smoothing,
+			     l);
+
+  }
+
   void updateLevel (const int *Chromosome,
 		    const int *Breakpoints,
 		    int *Level,
@@ -837,6 +864,7 @@ extern "C"
 
     map<int, vector<double> > agg_LogRatio;
     map<int, vector<double> >::iterator it_agg_LogRatio;
+
 
 
     // On récupére les valeurs de LogRatio pour chaque ZoneGen
