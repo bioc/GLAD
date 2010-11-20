@@ -1,8 +1,9 @@
 ###################################
-### release 2.13.2 (20-11-2010) ###
+### release 2.13.3 (20-11-2010) ###
 ###################################
 - a condition has been added such that msize is lower than region.size (this avoid problem in GNL assignment)
 - in filterBkp, RecomputedGNL is done for each different checking or not only at the end of the function (this avoid problem in GNL assignment)
+- Too small region are detected in a two-step process
 
 ###################################
 ### release 2.8.4 (22-02-2010) ###

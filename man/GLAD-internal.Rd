@@ -48,6 +48,7 @@
 \alias{DelRegionTooSmall}
 \alias{prepare.output.daglad}
 \alias{RecomputeGNL}
+\alias{OptimBkpFindCluster}
 \usage{" "}
 
 \description{Internal functions}
