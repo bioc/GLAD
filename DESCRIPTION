@@ -1,5 +1,5 @@
 Package: GLAD
-Version: 2.13.4
+Version: 2.13.5
 Date: 2010-11-20
 Title: Gain and Loss Analysis of DNA
 Depends: R (>= 2.5.0)
@@ -8,6 +8,6 @@ Suggests: aws, tcltk
 Author: Philippe Hupe
 Maintainer: Philippe Hupe <glad@curie.fr>
 Description: Analysis of array CGH data : detection of breakpoints in genomic profiles and assignment of a status (gain, normal or loss) to each chromosomal regions identified.
-License: GPL
+License: GPL-2
 URL: http://bioinfo.curie.fr
 biocViews: Microarray, CopyNumberVariants
