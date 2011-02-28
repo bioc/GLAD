@@ -465,7 +465,8 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0, verbose = FALSE)
       
       if(length(ind.absolute) > 0)
         {
-          BkpToDel <- c(BkpToDel, RegionWithSmallSize$indice[ind.absolute] + 1)
+          ## BkpToDel <- c(BkpToDel, RegionWithSmallSize$indice[ind.absolute] + 1)
+            BkpToDel <- c(BkpToDel, RegionWithSmallSize$indice[ind.absolute] - 1)  ## fix PG
         }
 
       if(length(BkpToDel) > 0)

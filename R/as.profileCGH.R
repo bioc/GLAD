@@ -3,17 +3,21 @@ as.profileCGH <- function(object, ...)
     UseMethod("as.profileCGH")
   }
 
-as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value=20, ...)
+as.profileCGH.data.frame <- function(object, infaction=c("value","empty"), value=20,  keepSmoothing=FALSE,...)
   {
 
     profileCGH <- object
     infaction <- match.arg(infaction)
     
     nomchamp <- c("LogRatio","PosOrder","Chromosome")
-
-    addedfields <- c("ChromosomeChar","Smoothing","Region","Level",
-                     "OutliersAws","Breakpoints","OutliersMad","OutliersTot",
-                     "ZoneChr","ZoneGen","ZoneGNL")
+    if (!keepSmoothing){
+        addedfields <- c("ChromosomeChar", "Smoothing", "Region", 
+                         "Level", "OutliersAws", "Breakpoints", "OutliersMad", 
+                         "OutliersTot", "ZoneChr", "ZoneGen", "ZoneGNL")
+    } else  addedfields <- c("ChromosomeChar",  "Region", 
+                             "Level", "OutliersAws", "Breakpoints", "OutliersMad", 
+                             "OutliersTot", "ZoneChr", "ZoneGen", "ZoneGNL")
+    
     interadded <- intersect(addedfields,names(profileCGH))
 
 

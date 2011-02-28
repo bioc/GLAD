@@ -6,7 +6,8 @@
 \description{Create an object of class profileCGH.}
 \usage{
 as.profileCGH(object,...)
-\method{as.profileCGH}{data.frame}(object, infaction=c("value","empty"), value=20, ...)
+\method{as.profileCGH}{data.frame}(object, infaction=c("value","empty"),
+value=20, keepSmoothing=FALSE, ...)
 }
 \arguments{
   \item{object}{A data.frame to be convert into profileCGH.}
@@ -15,6 +16,7 @@ as.profileCGH(object,...)
   then NAs are put instead.}
 \item{value}{replace Inf by \code{value} if \code{infaction} is
   "value".}
+\item{keepSmoothing}{if TRUE the smoothing value in object is kept}
 \item{...}{...}
 }
 
