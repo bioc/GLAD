@@ -53,7 +53,7 @@ We used the public data set described in \cite{snijders01}. The data corresponds
 \subsection{Bladder cancer data}
 
 
-Bladder cancer data from tumors collected at Henri Mondor Hospital (Créteil, France) \citep{billerey01} have been hybridized on CGH arrays composed of 2464 BACs (Radvanyi, Pinkel et al., unpublished results). In this data, only the log-ratios are provided and no information about clones is available since the data is not yet published. This data allows only some graphical functionalities to be shown and will be used as a support to illustrate some functions for array normalization (not yes available in the current version of the package).
+Bladder cancer data from tumors collected at Henri Mondor Hospital (Cr\'{e}teil, France) \citep{billerey01} have been hybridized on CGH arrays composed of 2464 BACs (Radvanyi, Pinkel et al., unpublished results). In this data, only the log-ratios are provided and no information about clones is available since the data is not yet published. This data allows only some graphical functionalities to be shown and will be used as a support to illustrate some functions for array normalization (not yes available in the current version of the package).
  
 
 
