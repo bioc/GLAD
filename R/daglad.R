@@ -19,7 +19,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                               lambdabreak = 8, lambdaclusterGen = 40, param = c(d = 6), alpha = 0.001, msize = 2,
                               method = "centroid", nmin = 1, nmax = 8, region.size = 2,
                               amplicon = 1, deletion = -5, deltaN = 0.10,  forceGL = c(-0.15,0.15), nbsigma = 3,
-                              MinBkpWeight = 0.35, DelBkpInAmp=TRUE, CheckBkpPos = TRUE, assignGNLOut = TRUE,
+                              MinBkpWeight = 0.35, DelBkpInAmp=TRUE, DelBkpInDel=TRUE, CheckBkpPos = TRUE, assignGNLOut = TRUE,
                               breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL,
                               verbose = FALSE, ...)
   {
@@ -217,7 +217,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                                    lambdabreak = lambdabreak, lambdaclusterGen = lambdaclusterGen, param = param, alpha = alpha, msize = msize,
                                    method = method, nmin = nmin, nmax = nmax,
                                    amplicon = amplicon, deletion = deletion, deltaN = deltaN,  forceGL = forceGL, nbsigma = nbsigma,
-                                   MinBkpWeight = MinBkpWeight, DelBkpInAmp=DelBkpInAmp, CheckBkpPos = CheckBkpPos, assignGNLOut = assignGNLOut,
+                                   MinBkpWeight = MinBkpWeight, DelBkpInAmp=DelBkpInAmp,  DelBkpInDel=DelBkpInDel, CheckBkpPos = CheckBkpPos, assignGNLOut = assignGNLOut,
                                    breaksFdrQ = breaksFdrQ, haarStartLevel = haarStartLevel, haarEndLevel = haarEndLevel, weights.name = weights.name,
                                    verbose = verbose)
 
@@ -256,8 +256,15 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ## Optimization of the Breakpoints and DNA copy number calling
     profileCGH <- OptimBkpFindCluster(profileCGH)
  
+
     
-    ## suppression des points de cassure qui délimitent une région trop petite (il fau faire les deux étapes)
+    ## ajout PG pour retirer bkp dans Amp et Del
+    profileCGH$BkpInfo <- BkpInfo(profileCGH)
+    if (verbose) print("daglad - step filterBkpStep (pass 0)")
+    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, DelBkpInDel=DelBkpInDel, assignGNLOut=assignGNLOut, verbose=verbose)
+    
+    
+    ## suppression des points de cassure qui délimitent une région trop petite (il faut faire les deux étapes)
     profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size) ### STEP 1
     profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size) ### STEP 2
                  
@@ -298,9 +305,9 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
     
     if (verbose) print("daglad - step filterBkpStep (pass 1)")
-    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)
-
-
+    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, DelBkpInDel=DelBkpInDel, assignGNLOut=assignGNLOut, verbose=verbose)
+    
+    
     
     ## ###############################################################################
     ##  Déplacement des Bkp
@@ -315,7 +322,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
 
     if (verbose) print("daglad - step filterBkpStep (pass 2)")    
-    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, assignGNLOut=assignGNLOut, verbose=verbose)    
+    profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp,  DelBkpInDel=DelBkpInDel, assignGNLOut=assignGNLOut, verbose=verbose)    
   
     
     print("Results Preparation")
@@ -531,7 +538,7 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
                          lambdabreak = 8, lambdaclusterGen = 40, param = c(d = 6), alpha = 0.001, msize = 5,
                          method = "centroid", nmin = 1, nmax = 8,
                          amplicon = 1, deletion = -5, deltaN = 0.10,  forceGL = c(-0.15,0.15), nbsigma = 3,
-                         MinBkpWeight = 0.35, DelBkpInAmp=TRUE, CheckBkpPos = TRUE, assignGNLOut = TRUE,
+                         MinBkpWeight = 0.35, DelBkpInAmp=TRUE, DelBkpInDel=TRUE, CheckBkpPos = TRUE, assignGNLOut = TRUE,
                          breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL,
                          verbose = FALSE, ...)
   {

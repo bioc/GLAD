@@ -19,7 +19,7 @@
 	lambdabreak=8, lambdaclusterGen=40, param=c(d=6), 
 	alpha=0.001, msize=2, method="centroid", nmin=1, nmax=8, region.size=2,
 	amplicon=1, deletion=-5, deltaN=0.10,  forceGL=c(-0.15,0.15), 
-	nbsigma=3, MinBkpWeight=0.35, DelBkpInAmp=TRUE,
+	nbsigma=3, MinBkpWeight=0.35, DelBkpInAmp=TRUE, DelBkpInDel=TRUE,
 	CheckBkpPos=TRUE, assignGNLOut=TRUE,
 	breaksFdrQ = 0.0001, haarStartLevel = 1,
 	haarEndLevel = 5, weights.name = NULL,
@@ -137,6 +137,10 @@
     amplicon regions are deleted. For amplicon, the log-ratio values are highly
     variable which lead to identification of false positive breakpoints.}
 
+  \item{DelBkpInDel}{If TRUE, the breakpoints identified inside
+    deletion regions are deleted. For deletion, the log-ratio values are highly
+    variable which lead to identification of false positive breakpoints.}
+  
     \item{CheckBkpPos}{If \code{TRUE}, the accuracy position of each
       breakpoints is checked.}
     

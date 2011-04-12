@@ -7,7 +7,7 @@ filterBkp <- function(...)
     UseMethod("filterBkp")
   }
 
-filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelBkpInAmp, assignGNLOut=TRUE, verbose=FALSE, ...)
+filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelBkpInAmp, DelBkpInDel=DelBkpInDel, assignGNLOut=TRUE, verbose=FALSE, ...)
   {
     
     if (verbose) print("filterBkp: starting function")
@@ -41,7 +41,27 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
                 profileCGH <- RecomputeGNL(profileCGH, verbose = verbose, assignGNLOut = assignGNLOut) ### ajout 19/11/10
               }
           }
+        
 
+        ## ################################################################################
+        ## On supprime les Breakpoints qui sont situés au sein des régions délétées
+        ##  ajout PG
+        ## ################################################################################
+
+        if(DelBkpInDel)
+        {
+            if (verbose) print("filterBkp: Breakpoints in amplified regions are removed")
+            
+            indexBkpToDel <- which(profileCGH$BkpInfo["GNLchange"] == 0 & profileCGH$BkpInfo["ZoneGNL"] == -10)
+            if (length(indexBkpToDel) > 0)
+            {
+                RecomputeGNL <- TRUE
+                profileCGH$profileValues$Breakpoints[profileCGH$BkpInfo$PosOrder[indexBkpToDel]] <- -1
+                profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexBkpToDel,]
+                profileCGH <- RecomputeGNL(profileCGH, verbose = verbose, assignGNLOut = assignGNLOut) ### ajout 19/11/10
+              }
+        }
+        
         
 
         ## ################################################################################
