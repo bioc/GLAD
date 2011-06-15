@@ -1,4 +1,10 @@
 ###################################
+### release 2.15.1 (15-06-2011) ###
+###################################
+- fix a bug in filterBkp : remove unecessary modification of profileCGH$BkpInfo after a call to RecomputeGNL when suppressing breakpoints with a too small weight (JM)
+
+
+###################################
 ### release 2.13.4 (28-02-2011) ###
 ###################################
 - add keepSmoothing in as.profileCGH in order to use daglad with OnlyOptimCall=TRUE (PG)

@@ -3,12 +3,12 @@
 ## Contact: glad@curie.fr
 
 filterBkp <- function(...)
-  {
+{
     UseMethod("filterBkp")
-  }
+}
 
 filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelBkpInAmp, DelBkpInDel=DelBkpInDel, assignGNLOut=TRUE, verbose=FALSE, ...)
-  {
+{
     
     if (verbose) print("filterBkp: starting function")
 
@@ -16,7 +16,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
     
     if (is.data.frame(profileCGH$BkpInfo))
-      {
+    {
         
         
         RecomputeGNL <- FALSE
@@ -29,18 +29,18 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
 
         if(DelBkpInAmp)
-          {
+        {
             if (verbose) print("filterBkp: Breakpoints in amplified regions are removed")
             
             indexBkpToDel <- which(profileCGH$BkpInfo["GNLchange"] == 0 & profileCGH$BkpInfo["ZoneGNL"] == 2)
             if (length(indexBkpToDel) > 0)
-              {
+            {
                 RecomputeGNL <- TRUE
                 profileCGH$profileValues$Breakpoints[profileCGH$BkpInfo$PosOrder[indexBkpToDel]] <- -1
                 profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexBkpToDel,]
                 profileCGH <- RecomputeGNL(profileCGH, verbose = verbose, assignGNLOut = assignGNLOut) ### ajout 19/11/10
-              }
-          }
+            }
+        }
         
 
         ## ################################################################################
@@ -59,7 +59,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
                 profileCGH$profileValues$Breakpoints[profileCGH$BkpInfo$PosOrder[indexBkpToDel]] <- -1
                 profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexBkpToDel,]
                 profileCGH <- RecomputeGNL(profileCGH, verbose = verbose, assignGNLOut = assignGNLOut) ### ajout 19/11/10
-              }
+            }
         }
         
         
@@ -88,16 +88,16 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         
 
         if (moveBkp$RecomputeSmt == 1)
-          {
+        {
             if (verbose)
-              print("filterBkp: Smoothing will be computed again")
+                print("filterBkp: Smoothing will be computed again")
             RecomputeGNL <- TRUE
 
             profileCGH$profileValues[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")] <- moveBkp[c("Level", "Breakpoints", "OutliersTot", "OutliersAws")]
 
             profileCGH <- RecomputeGNL(profileCGH, verbose = verbose, assignGNLOut = assignGNLOut)
             
-          }
+        }
         
 
 
@@ -112,9 +112,9 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         
         ## a-t-on ecore des Bkp?
         if(is.data.frame(profileCGH$BkpInfo))
-          {
+        {
             if(dim(profileCGH$BkpInfo)[1] != 0)
-              {
+            {
                 
                 indexWeightToSmall <- which(profileCGH$BkpInfo["Weight"] < MinBkpWeight &
                                             profileCGH$BkpInfo["GNLchange"] == 0 &
@@ -122,23 +122,14 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
 
                 if (length(indexWeightToSmall) > 0)
-                  {
+                {
                     RecomputeGNL <- TRUE
                     indexPos <- profileCGH$BkpInfo[,"PosOrder"][indexWeightToSmall]
                     profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1
                     profileCGH <- RecomputeGNL(profileCGH, verbose = verbose, assignGNLOut = assignGNLOut) ### ajout 19/11/10                    
-                    if (length(indexWeightToSmall) == length(profileCGH$BkpInfo[,1]))
-                      {
-                        profileCGH$BkpInfo <- NA
-                      }
-                    else
-                      {
-                        profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexWeightToSmall,]
-
-                      }
-                  }
-              }
-          }
+                }
+            }
+        }
 
 
         
@@ -153,29 +144,20 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
         ## a-t-on ecore des Bkp?
         if(is.data.frame(profileCGH$BkpInfo))
-          {
+        {
             if(dim(profileCGH$BkpInfo)[1] != 0)
-              {
+            {
                 indexWeightZero <- which(profileCGH$BkpInfo["Weight"] == 0 &
                                          profileCGH$BkpInfo["GNLchange"] == 1)
                 if (length(indexWeightZero) > 0)
-                  {
+                {
                     RecomputeGNL <- TRUE
                     indexPos <- profileCGH$BkpInfo$PosOrder[indexWeightZero]
                     profileCGH$profileValues[["Breakpoints"]][indexPos] <- -1
                     profileCGH <- RecomputeGNL(profileCGH, verbose = verbose, assignGNLOut = assignGNLOut) ### ajout 19/11/10                    
-                    
-                    if (length(indexWeightZero) == length(profileCGH$BkpInfo[,1]))
-                      {
-                        profileCGH$BkpInfo <- NA
-                      }
-                    else
-                      {
-                        profileCGH$BkpInfo <- profileCGH$BkpInfo[-indexWeightZero,]
-                      }
-                  }
-              }
-          }
+                }
+            }
+        }
 
 
         ## Quand je vais recalculer les Outliers, il faut le NormalRef
@@ -184,7 +166,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         ## les log-ratios sont centrés sur NormalRef
         
 
-      }
+    }
 
 
     if (verbose) print("filterBkp: ending function")                
@@ -192,11 +174,13 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
     return(profileCGH)
 
     
-  }
+}
+
+
 
 
 RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALSE)
-  {
+{
     if (verbose) print("filterBkp: recomputeGNL")        
 
     ## La détection des Outliers va être faite directement dans la fonction C
@@ -213,9 +197,9 @@ RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALS
 
 
     if (is.na(method)) 
-      stop("invalid clustering method")
+        stop("invalid clustering method")
     if (method == -1) 
-      stop("ambiguous clustering method")
+        stop("ambiguous clustering method")
     
     l <- length(profileCGH$profileValues[[1]])
 
@@ -282,12 +266,12 @@ RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALS
 
     
     if(assignGNLOut)
-      {
+    {
         profileCGH <- OutliersGNL(profileCGH, alpha = profileCGH$alpha,
                                   sigma = profileCGH$SigmaG$Value, NormalRef = profileCGH$NormalRef,
                                   amplicon = profileCGH$amplicon, deletion = profileCGH$deletion)
-      }
+    }
 
 
     return(profileCGH)
-  }
+}
