@@ -65,6 +65,8 @@ The function \code{arrayPersp} creates perspective images of shades of gray or c
 \keyword{hplot}
 
 \examples{
+
+\dontrun{
 data(arrayCGH)
 
 
@@ -76,7 +78,7 @@ class(array) <- "arrayCGH"
 arrayPersp(array,"Log2Rat", main="Perspective image of array CGH",
            box=FALSE, theta=110, phi=40)
 
-
+}
 
 }
 
