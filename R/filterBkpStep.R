@@ -44,7 +44,7 @@ filterBkpStep.profileCGH <- function(profileCGH, MinBkpWeight=0.35, DelBkpInAmp=
           {
             nbiter <- nbiter + 1
 
-            profileCGH <- filterBkp(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, DelBkpInDel=DelBkpInDel)
+            profileCGH <- filterBkp(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, DelBkpInDel=DelBkpInDel, assignGNLOut=assignGNLOut, verbose=verbose)
 
             if (is.data.frame(profileCGH$BkpInfo))
               {
