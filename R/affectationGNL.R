@@ -1,5 +1,5 @@
 ### Copyright (C) 2003 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2003
+### Author(s): Philippe HupÃ© (Institut Curie) 2003
 ### Contact: glad@curie.fr
 
 affectationGNL <- function(...)
@@ -92,14 +92,14 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
           
 
 
-### intervalle de confiance pour les régions normales
+### intervalle de confiance pour les rÃ©gions normales
           seuilinf <- statnormal$Mean - statnormal$std*qnorm(1-alpha/2)
           seuilsup <- statnormal$Mean + statnormal$std*qnorm(1-alpha/2)
 
 
 ###################################################################################
 ###
-###      cas des outliers situés dans les régions gagnées et outlier -1
+###      cas des outliers situÃ©s dans les rÃ©gions gagnÃ©es et outlier -1
 ###
 ###################################################################################
 
@@ -133,7 +133,7 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
 
 
           
-### ceux qui sont outliers mais quand meme gagnés
+### ceux qui sont outliers mais quand meme gagnÃ©s
           indexgainmoins <-  which(ZoneGNLaux == 1 &
                                    CGH[["OutliersTot"]][indexout] == -1 &
                                    CGH[["LogRatio"]][indexout] > seuilsup)
@@ -149,11 +149,11 @@ affectationGNL.profileCGH <- function(profileCGH, alpha=0.001, verbose=FALSE, as
           
 ###################################################################################
 ###
-###     cas des outliers situés dans les régions perdues et outlier +1
+###     cas des outliers situÃ©s dans les rÃ©gions perdues et outlier +1
 ###
 ###################################################################################
 
-### ceux qui sont gagnés
+### ceux qui sont gagnÃ©s
           indexlostplus <-  which(ZoneGNLaux == -1 &
                                   CGH[["OutliersTot"]][indexout] == 1 &
                                   CGH[["LogRatio"]][indexout] > seuilsup)

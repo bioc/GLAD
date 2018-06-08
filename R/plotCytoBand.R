@@ -31,7 +31,7 @@ plotCytoBand.default <- function(cytoband, y=-1, Chromosome=1, labels=TRUE, heig
 
     symbols(CytoPos, y=rep(min(unique(y)),NbCyto), rectangles=SizeCyto, inches=FALSE, bg=as.character(dataChr$ColorName), add=TRUE, ...)
 
-### Ajout de la position du centromère
+### Ajout de la position du centromÃ¨re
     indexCentro <- which(dataChr$Centro==1)
     centroPos <- min(dataChr$End[indexCentro])
 

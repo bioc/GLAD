@@ -1,5 +1,5 @@
 ## Copyright (C) 2005 Institut Curie
-## Author(s): Philippe Hupé (Institut Curie) 2005
+## Author(s): Philippe HupÃ© (Institut Curie) 2005
 ## Contact: glad@curie.fr
 
 filterBkp <- function(...)
@@ -23,7 +23,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
 
         ## ################################################################################
-        ## On supprime les Breakpoints qui sont situés au sein des régions amplifiées
+        ## On supprime les Breakpoints qui sont situÃ©s au sein des rÃ©gions amplifiÃ©es
         ## ################################################################################
         
 
@@ -44,7 +44,7 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         
 
         ## ################################################################################
-        ## On supprime les Breakpoints qui sont situés au sein des régions délétées
+        ## On supprime les Breakpoints qui sont situÃ©s au sein des rÃ©gions dÃ©lÃ©tÃ©es
         ##  ajout PG
         ## ################################################################################
 
@@ -65,9 +65,9 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         
 
         ## ################################################################################
-        ## On Déplace les Bkp qui sont aussi Outliers et dont
-        ## le GNL correspond à celui du BAC d'après
-        ## On déplace également les Bkp après lequel il y a un outlier
+        ## On DÃ©place les Bkp qui sont aussi Outliers et dont
+        ## le GNL correspond Ã  celui du BAC d'aprÃ¨s
+        ## On dÃ©place Ã©galement les Bkp aprÃ¨s lequel il y a un outlier
         ## correspondant au statut du Bkp        
         ## ################################################################################
         
@@ -102,8 +102,8 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
 
         ## ################################################################################
-        ## Suppression des Bkp dont est poids est inférieur à un seuil
-        ## et qui ne correspondent pas à un changement de GNL
+        ## Suppression des Bkp dont est poids est infÃ©rieur Ã  un seuil
+        ## et qui ne correspondent pas Ã  un changement de GNL
         ## ################################################################################        
 
 
@@ -135,9 +135,9 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
         
         ## ################################################################################
         ## Suppression des Bkp dont le poids vaut 0
-        ## et qui correspondent à un changement de GNL
-        ## cette situation peut arriver après élimination des Bkp
-        ## dont le poids est inférieur à un seuil
+        ## et qui correspondent Ã  un changement de GNL
+        ## cette situation peut arriver aprÃ¨s Ã©limination des Bkp
+        ## dont le poids est infÃ©rieur Ã  un seuil
         ## ################################################################################
 
         if (verbose) print("filterBkp: delete breakpoint with null weight")
@@ -161,9 +161,9 @@ filterBkp.profileCGH <- function(profileCGH, MinBkpWeight=0.25, DelBkpInAmp=DelB
 
 
         ## Quand je vais recalculer les Outliers, il faut le NormalRef
-        ## Attention à ce que celui-ci soit bien transmis
+        ## Attention Ã  ce que celui-ci soit bien transmis
         ## Normalement NormalRef vaut 0 puisqu'en sortie de gladLA
-        ## les log-ratios sont centrés sur NormalRef
+        ## les log-ratios sont centrÃ©s sur NormalRef
         
 
     }
@@ -183,14 +183,14 @@ RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALS
 {
     if (verbose) print("filterBkp: recomputeGNL")        
 
-    ## La détection des Outliers va être faite directement dans la fonction C
+    ## La dÃ©tection des Outliers va Ãªtre faite directement dans la fonction C
     alpha <- profileCGH$alpha
     msize <- profileCGH$msize
     if (msize<1) stop("msize must be greater or equal to 1")
     if (alpha>1 || alpha <0)stop("alpha must be setted between 0 and 1")
     alpha <- qnorm(1-alpha/2)            
 
-    ## choix de la méthode de clustering
+    ## choix de la mÃ©thode de clustering
     METHODS <- c("ward", "single", "complete", "average", "mcquitty", 
                  "median", "centroid")
     method <- pmatch(profileCGH$method, METHODS)
@@ -223,7 +223,7 @@ RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALS
                           as.double(profileCGH$NormalRef),
                           as.double(profileCGH$deltaN),
                           NormalRange = integer(l),
-                          ## paramètres pour findCluster
+                          ## paramÃ¨tres pour findCluster
                           ZoneGen = integer(l), ## valeur de sortie
                           as.integer(method),
                           as.double(profileCGH$findClusterSigma),
@@ -232,7 +232,7 @@ RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALS
                           as.integer(min(profileCGH$nmin, profileCGH$NbClusterOpt)),
                           as.integer(profileCGH$NbClusterOpt),
                           nbclasses = integer(1), ## valeur de sortie
-                          ## paramètres pour le calcul du GNL
+                          ## paramÃ¨tres pour le calcul du GNL
                           ZoneGNL = integer(l), ## valeur de sortie
                           as.double(profileCGH$forceGL[1]),
                           as.double(profileCGH$forceGL[2]),
@@ -244,7 +244,7 @@ RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALS
     
 
     ## ########################
-    ## récupération des données
+    ## rÃ©cupÃ©ration des donnÃ©es
     ## ########################
     
     profileCGH$profileValues[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange", "ZoneGen", "ZoneGNL")] <- updateFilterBkp[c("Level", "NextLogRatio", "Breakpoints", "OutliersAws", "Smoothing", "OutliersTot", "OutliersMad", "NormalRange", "ZoneGen", "ZoneGNL")]
@@ -261,7 +261,7 @@ RecomputeGNL <- function(profileCGH = NULL, verbose = FALSE, assignGNLOut = FALS
     profileCGH$BkpInfo <- BkpInfo(profileCGH)
 
     ## ################################
-    ## Mise à jour du GNL des Outliers
+    ## Mise Ã  jour du GNL des Outliers
     ## ################################            
 
     

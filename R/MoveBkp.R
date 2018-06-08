@@ -1,7 +1,7 @@
 ### This function detects chromosomal breakpoints along genome
 
 ### Copyright (C) 2005 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2005
+### Author(s): Philippe HupÃ© (Institut Curie) 2005
 ### Contact: glad@curie.fr
 
 MoveBkp <- function(profileCGH, ...)
@@ -17,7 +17,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
       {
 
         
-        ## choix de la méthode de clustering
+        ## choix de la mÃ©thode de clustering
         METHODS <- c("ward", "single", "complete", "average", "mcquitty", 
                      "median", "centroid")
         method <- pmatch(profileCGH$method, METHODS)
@@ -48,7 +48,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
 
 
         ## ######################################
-        ## Déplacement des Bkp avec MoveBkp != 0
+        ## DÃ©placement des Bkp avec MoveBkp != 0
         ## ######################################
 
         indexMoveBkp <- which(profileCGH$BkpInfo$MoveBkp != 0)
@@ -91,21 +91,21 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
                       as.double(profileCGH$forceGL[2]),
                       as.double(profileCGH$amplicon),
                       as.double(profileCGH$deletion),            
-                      ## paramètres pour findCluster
+                      ## paramÃ¨tres pour findCluster
                       as.integer(method),
                       as.double(profileCGH$findClusterSigma),
                       as.double(profileCGH$param["d"]),
                       as.double(profileCGH$lambdaclusterGen),
                       as.integer(min(profileCGH$nmin, profileCGH$NbClusterOpt)),
                       as.integer(profileCGH$NbClusterOpt),
-                      nbclasses = integer(1), ## valeur à récupérer
+                      nbclasses = integer(1), ## valeur Ã  rÃ©cupÃ©rer
                       as.integer(lensubBkp),
                       as.integer(l),
                       PACKAGE="GLAD")
 
 
             ## ########################
-            ## Récuparation des données 
+            ## RÃ©cuparation des donnÃ©es 
             ## ########################
             profileCGH$profileValues[c("Breakpoints",
                                        "OutliersTot",
@@ -128,7 +128,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             profileCGH$NbClusterOpt <-  res$nbclasses
 
 
-            ## Mise à jour du BkpInfo
+            ## Mise Ã  jour du BkpInfo
             class(profileCGH) <- "profileCGH"
             profileCGH$BkpInfo <- BkpInfo(profileCGH, order=FALSE)
 
@@ -136,7 +136,7 @@ MoveBkp.profileCGH <- function(profileCGH, region="Level", assignGNLOut=TRUE,...
             class(profileCGH) <- "profileChr"
             profileCGH <- detectOutliers(profileCGH, region = region, alpha = profileCGH$alpha, msize = profileCGH$msize)
 
-            ## Mise à jour du GNL des Outliers
+            ## Mise Ã  jour du GNL des Outliers
             class(profileCGH) <- "profileCGH"
             if(assignGNLOut)
               {

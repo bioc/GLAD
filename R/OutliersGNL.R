@@ -1,5 +1,5 @@
 # Copyright (C) 2003 Institut Curie
-# Author(s): Philippe Hupé (Institut Curie) 2003
+# Author(s): Philippe HupÃ© (Institut Curie) 2003
 # Contact: glad@curie.fr
 
 ## OutliersGNL <- function(...)
@@ -17,7 +17,7 @@
 ##       return(profileCGH)
 ##     }
 
-##   ### seuils de détection pour les outliers
+##   ### seuils de dÃ©tection pour les outliers
 ##   seuilsup <- NormalRef + sigma*qnorm(1-alpha/2)
 ##   seuilinf <- NormalRef - sigma*qnorm(1-alpha/2)
   
@@ -55,10 +55,10 @@
 ##     }
 
 
-##   ### Il faut vérifier que des Outliers normaux n'aient pas un logratio supérieur au minimum du smoothing
-##   ### des régions gagnés (même principe pour les pertes)
+##   ### Il faut vÃ©rifier que des Outliers normaux n'aient pas un logratio supÃ©rieur au minimum du smoothing
+##   ### des rÃ©gions gagnÃ©s (mÃªme principe pour les pertes)
 ##   ###GNL <- unique(profileCGH$profileValues$ZoneGNL)
-##   ### A-t-on détecté des gains
+##   ### A-t-on dÃ©tectÃ© des gains
 ##   indexGain <- which(profileCGH$profileValues$ZoneGNL==1 & profileCGH$profileValues$OutliersTot==0)
 ##   if (length(indexGain)>0)
 ##     {
@@ -69,7 +69,7 @@
 ##     }
 
   
-##   ### A-t-on détecté des pertes
+##   ### A-t-on dÃ©tectÃ© des pertes
 ##   indexLost <- which(profileCGH$profileValues$ZoneGNL==-1 & profileCGH$profileValues$OutliersTot==0)
 ##   if (length(indexLost)>0)
 ##     {
@@ -139,7 +139,7 @@ OutliersGNL.profileCGH <- function(profileCGH, alpha=0.001, sigma, NormalRef, am
       return(profileCGH)
     }
 
-  ### seuils de détection pour les outliers
+  ### seuils de dÃ©tection pour les outliers
   seuilsup <- NormalRef + sigma*qnorm(1-alpha/2)
   seuilinf <- NormalRef - sigma*qnorm(1-alpha/2)
 

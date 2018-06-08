@@ -1,7 +1,7 @@
 ### This function detects chromosomal breakpoints along genome
 
 ### Copyright (C) 2005 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2005
+### Author(s): Philippe HupÃ© (Institut Curie) 2005
 ### Contact: glad@curie.fr
 
 
@@ -26,7 +26,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     IQRdiff <- function(y) IQR(diff(y))/1.908
     
-    ## Récupération des paramètres de la fonction    
+    ## RÃ©cupÃ©ration des paramÃ¨tres de la fonction    
     profileCGH$alpha <- alpha
     profileCGH$msize <- msize
     profileCGH$amplicon <- amplicon
@@ -45,10 +45,10 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH$TooSmall <- FALSE    
 
     ## ############################################################################
-    ## Préparation des données
+    ## PrÃ©paration des donnÃ©es
     ## ############################################################################
 
-    ## vérification de l'object donné en entrée
+    ## vÃ©rification de l'object donnÃ© en entrÃ©e
 
     if (verbose) print("daglad - step CheckData")
     CheckData(profileCGH, bandwidth = bandwidth, smoothfunc = smoothfunc, weights.name = weights.name, OnlyOptimCall = OnlyOptimCall)
@@ -64,9 +64,9 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     if((msize > region.size) & (region.size != 0))
       stop("Error in daglad: msize must be lower than region.size")
 
-### cette condition a été ajouté pour les cas ou par exemple une régions de 3 clones comporte un outliers
-### compte-tenu du fait que le clustering se fait sur des moyennes et non pas sur des médianes
-### il peut y avoir une forte différence entre les deux valeurs ce qui peut conduire à une incohérence sur le GNL
+### cette condition a Ã©tÃ© ajoutÃ© pour les cas ou par exemple une rÃ©gions de 3 clones comporte un outliers
+### compte-tenu du fait que le clustering se fait sur des moyennes et non pas sur des mÃ©dianes
+### il peut y avoir une forte diffÃ©rence entre les deux valeurs ce qui peut conduire Ã  une incohÃ©rence sur le GNL
     
     if(smoothfunc == "lawsglad" & model != "Gaussian")
       stop("Error in daglad: for lawsglad, only Gaussian model is available")
@@ -107,11 +107,11 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
       }
     
 
-    ## on trie les données par chromosome et position
+    ## on trie les donnÃ©es par chromosome et position
     profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues[["Chromosome"]], profileCGH$profileValues[["PosOrder"]]),]
     
-    ## ajout des champs nécessaires à la procédure
-    ## et transformation des données en liste
+    ## ajout des champs nÃ©cessaires Ã  la procÃ©dure
+    ## et transformation des donnÃ©es en liste
 
     if (OnlyOptimCall)
       {
@@ -123,8 +123,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                         "NextLogRatio", "NormalRange",
                         "ZoneGen", "ZoneGNL")
 
-        ## on force à haarseg de telle sorte que daglad définisse les points de cassure
-        ## et les régions
+        ## on force Ã  haarseg de telle sorte que daglad dÃ©finisse les points de cassure
+        ## et les rÃ©gions
         smoothfunc <- "haarseg"
       }
     else
@@ -168,7 +168,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     ## ############################################################################
     ##
-    ## Début de l'analyse daglad
+    ## DÃ©but de l'analyse daglad
     ##
     ## ############################################################################
 
@@ -182,7 +182,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                                  round=round, verbose=verbose,
                                  breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel, weights.name = weights.name)
 
-    ## estimation de l'écart-type chromosome par chromosome
+    ## estimation de l'Ã©cart-type chromosome par chromosome
     profileCGH$SigmaC <- profileCGH$Sigma
     profileCGH$Sigma <- NULL
 
@@ -204,7 +204,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
       }
     
     ## #####################################################
-    ##  AWS smoothing sur l'ensemble du génome
+    ##  AWS smoothing sur l'ensemble du gÃ©nome
     ## #####################################################   
 
     if (genomestep)
@@ -222,7 +222,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
                                    verbose = verbose)
 
         
-      } ## fin (if) de l'étape sur le génome
+      } ## fin (if) de l'Ã©tape sur le gÃ©nome
     else
       {
         profileCGH$NormalRef <- 0
@@ -239,13 +239,13 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
         profileCGH$findClusterSigma <- profileCGH$SigmaG$Value[1]
 
 
-      } ### fin (else) de l'étape sur le génome
+      } ### fin (else) de l'Ã©tape sur le gÃ©nome
 
 
     
     FieldOrder <- names(profileCGH$profileValues)
 
-    ## position des points de cassure absolus (extrémités de chromosomes)
+    ## position des points de cassure absolus (extrÃ©mitÃ©s de chromosomes)
     profileCGH$AbsoluteBkp <- data.frame(Chromosome = c(0, profileCGH$PosOrderRange$Chromosome),
                                          PosOrder = c(0, profileCGH$PosOrderRange$MaxPosOrder),
                                          AbsoluteBkp = 1)
@@ -264,7 +264,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     profileCGH <- filterBkpStep(profileCGH, MinBkpWeight=MinBkpWeight, DelBkpInAmp=DelBkpInAmp, DelBkpInDel=DelBkpInDel, assignGNLOut=assignGNLOut, verbose=verbose)
     
     
-    ## suppression des points de cassure qui délimitent une région trop petite (il faut faire les deux étapes)
+    ## suppression des points de cassure qui dÃ©limitent une rÃ©gion trop petite (il faut faire les deux Ã©tapes)
     profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size) ### STEP 1
     profileCGH <- DelRegionTooSmall(profileCGH, region.size = region.size) ### STEP 2
                  
@@ -272,8 +272,8 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
     ## Calcul d'un poids pour les Breakpoints
     ## Attention: comme on calcul une variable GNLchange
-    ## il ne faut pas le statut des outliers pour définir le changement de statut
-    ## car un outlier peut être aussi un breakpoints
+    ## il ne faut pas le statut des outliers pour dÃ©finir le changement de statut
+    ## car un outlier peut Ãªtre aussi un breakpoints
 
     if (verbose) print("daglad - step BkpInfo")
 
@@ -289,7 +289,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     ## ###############################################################################        
         
     
-    ## on peut récupérer directement les paramètre passés à OutliersGNL depuis l'objet profileCGH
+    ## on peut rÃ©cupÃ©rer directement les paramÃ¨tre passÃ©s Ã  OutliersGNL depuis l'objet profileCGH
     profileCGH <- OutliersGNL(profileCGH, alpha = alpha, sigma = profileCGH$SigmaG$Value[1], NormalRef = profileCGH$NormalRef,
                               amplicon = amplicon, deletion = deletion, assignGNLOut = assignGNLOut)
 
@@ -310,7 +310,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
     
     
     ## ###############################################################################
-    ##  Déplacement des Bkp
+    ##  DÃ©placement des Bkp
     ## ###############################################################################    
 
     if (CheckBkpPos)
@@ -429,7 +429,7 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0, verbose = FALSE)
   RegionSize$contig.last <- 0    
 
 
-  ## récupération des régions trop petites
+  ## rÃ©cupÃ©ration des rÃ©gions trop petites
   ind.region <- which((RegionSize$Size <= region.size) & (RegionSize$Chromosome != 0))
 
   if(length(ind.region) > 0)
@@ -437,7 +437,7 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0, verbose = FALSE)
       RegionWithSmallSize <- RegionSize[ind.region,]
       
 
-      ## a-t-on des régions contigues      
+      ## a-t-on des rÃ©gions contigues      
 #      print("regions contigues")
       RegionWithSmallSize <- RegionWithSmallSize[order(RegionWithSmallSize$Chromosome, RegionWithSmallSize$PosOrder),]     
 #      print("taille de petites regions")
@@ -466,7 +466,7 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0, verbose = FALSE)
           BkpToDel <- RegionWithSmallSize$indice[ind.notabsolute]
         }
 
-      ## breakpoint aux extrémités des chromosomes
+      ## breakpoint aux extrÃ©mitÃ©s des chromosomes
       ind.absolute <- which(RegionWithSmallSize$AbsoluteBkp == 1)
 
       
@@ -512,7 +512,7 @@ DelRegionTooSmall <- function(profileCGH, region.size = 0, verbose = FALSE)
 
 
     ## #########################################
-    ## On optimise à nouveau les points de cassure si des petites régions ont été supprimées
+    ## On optimise Ã  nouveau les points de cassure si des petites rÃ©gions ont Ã©tÃ© supprimÃ©es
     ## #########################################
 
     
@@ -542,10 +542,10 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
                          breaksFdrQ = 0.0001, haarStartLevel = 1, haarEndLevel = 5, weights.name = NULL,
                          verbose = FALSE, ...)
   {
-    ## il y a déjà les noms Smoothing Level Region Breakpoints OutliersAws
-    ## ces champs sont renommés pour qu'ils soient spécifiques
-    ## de l'étape chromosome par chromosome:
-    ## ils portent à la fin la lettre C
+    ## il y a dÃ©jÃ  les noms Smoothing Level Region Breakpoints OutliersAws
+    ## ces champs sont renommÃ©s pour qu'ils soient spÃ©cifiques
+    ## de l'Ã©tape chromosome par chromosome:
+    ## ils portent Ã  la fin la lettre C
 
     namesprofile <- names(profileCGH$profileValues)
     namesprofile[which(namesprofile == "Smoothing")] <- "SmoothingC"    
@@ -558,22 +558,22 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
     names(profileCGH$profileValues) <- namesprofile
     
     if (verbose) print("daglad - step genomestep")        
-    ## pour le smoothing sur l'ensemble du génome, il ne faut qu'un seul chromosome
+    ## pour le smoothing sur l'ensemble du gÃ©nome, il ne faut qu'un seul chromosome
     profileCGH$profileValues[["ChromosomeTrue"]] <- profileCGH$profileValues[["Chromosome"]]
     profileCGH$profileValues[["Chromosome"]] <- integer(profileCGH$NbProbes)
 
-    ## Indicateur des Bkp détéctés chromosome par chromosome
+    ## Indicateur des Bkp dÃ©tÃ©ctÃ©s chromosome par chromosome
     BkpDetectedAux <- profileCGH$BkpDetected
 
     ## Range des PosOrder chromosome par chromosome
     PosOrderRangeAux <- profileCGH$PosOrderRange        
 
-    ## AWS smoothing sur l'ensemble du génome
-    ## ici, on impose un qlamba élevé (l'utilisateur n'a pas le choix du paramètre)
-    ## pour dégager la tendance des données
+    ## AWS smoothing sur l'ensemble du gÃ©nome
+    ## ici, on impose un qlamba Ã©levÃ© (l'utilisateur n'a pas le choix du paramÃ¨tre)
+    ## pour dÃ©gager la tendance des donnÃ©es
 
 
-    ## ajout des champs nécessaires
+    ## ajout des champs nÃ©cessaires
     new.fields <- setdiff(new.fields,"NewPosOrder")
     nb.new.fields <- length(nb.new.fields)
     
@@ -594,29 +594,29 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
                                  lkern = lkern, model = model, qlambda = 0.9999999,
                                  breaksFdrQ = breaksFdrQ, haarStartLevel = haarStartLevel , haarEndLevel = haarEndLevel, weights.name = weights.name)
 
-    ## estimation de l'écart-type sur l'ensemble du génome    
+    ## estimation de l'Ã©cart-type sur l'ensemble du gÃ©nome    
     profileCGH$SigmaG <- profileCGH$Sigma
     profileCGH$Sigma <- NULL
     profileCGH$AbsoluteBkp <- NULL
 
 
-    ## réinitialisation de BkpDetected aux valeurs détéctées chromosome par chromosome
+    ## rÃ©initialisation de BkpDetected aux valeurs dÃ©tÃ©ctÃ©es chromosome par chromosome
     profileCGH$BkpDetected <- BkpDetectedAux
 
-    ## réinitialisation de PosOrderRange aux valeurs détéctées chromosome par chromosome        
+    ## rÃ©initialisation de PosOrderRange aux valeurs dÃ©tÃ©ctÃ©es chromosome par chromosome        
     profileCGH$PosOrderRange <- PosOrderRangeAux
     
 
-    ## maintenant, le champ ChromosomeTrue ne sert plus à rien
-    ## on récupère le nom des chromosomes de départ
+    ## maintenant, le champ ChromosomeTrue ne sert plus Ã  rien
+    ## on rÃ©cupÃ¨re le nom des chromosomes de dÃ©part
     profileCGH$profileValues <- profileCGH$profileValues[setdiff(names(profileCGH$profileValues),c("Chromosome"))]        
     namesprofile <- names(profileCGH$profileValues)
     namesprofile[which(namesprofile == "ChromosomeTrue")] <- "Chromosome"
     names(profileCGH$profileValues) <- namesprofile        
     
-    ## les champs Smoothing Level Region Breakpoints MinPosOrder MaxPosOrder sont supprimés
-    ## on conserve le champ Level qui est renommé en LevelG
-    ## on réinitialise les Min et MaxposOrder aux valeurs chromosome par chromosome
+    ## les champs Smoothing Level Region Breakpoints MinPosOrder MaxPosOrder sont supprimÃ©s
+    ## on conserve le champ Level qui est renommÃ© en LevelG
+    ## on rÃ©initialise les Min et MaxposOrder aux valeurs chromosome par chromosome
     fields.kept <- setdiff(names(profileCGH$profileValues),c("Smoothing","Region","Breakpoints","MinPosOrder","MaxPosOrder"))
     profileCGH$profileValues <- profileCGH$profileValues[fields.kept]
 
@@ -628,16 +628,16 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 
     
     ## #####################################################
-    ## on cherche la ligne de base à partir du
-    ## smoothing sur l'ensemble du génome
+    ## on cherche la ligne de base Ã  partir du
+    ## smoothing sur l'ensemble du gÃ©nome
     ## #######################################################
 
     ## l'object doit etre de type profileChr
-    ## à l'avenir, il faudra supprimer cette classe
-    ## (attention à faire les modifs également dans la fonction glad)
+    ## Ã  l'avenir, il faudra supprimer cette classe
+    ## (attention Ã  faire les modifs Ã©galement dans la fonction glad)
     class(profileCGH) <- "profileChr"
 
-    ## détection des outliers
+    ## dÃ©tection des outliers
     profileCGH <- detectOutliers(profileCGH, region="LevelG", alpha=alpha, msize=msize)
 
     
@@ -650,26 +650,26 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 
 
     ## On a besoin d'un champ OutliersAws:
-    ## on ne considère comme Outliers AWS que ceux détectés        
-    ## à l'étape chromosome
+    ## on ne considÃ¨re comme Outliers AWS que ceux dÃ©tectÃ©s        
+    ## Ã  l'Ã©tape chromosome
     profileCGH$profileValues[["OutliersAws"]] <- profileCGH$profileValues[["OutliersAwsC"]]
 
     
     print("Find the Normal Baseline")
-    ## on trouve le normal (ligne de base) à partir de la fonction affectationGNL
+    ## on trouve le normal (ligne de base) Ã  partir de la fonction affectationGNL
     profileCGH <- affectationGNL(profileCGH, verbose=verbose)
 
     
     
-    ## notre niveau de référence pour le normal correspond
-    ## à la médiane des log-ratios correspondant à une ZoneGNLGen de 0
+    ## notre niveau de rÃ©fÃ©rence pour le normal correspond
+    ## Ã  la mÃ©diane des log-ratios correspondant Ã  une ZoneGNLGen de 0
     profileCGH$NormalRef <- median(profileCGH$profileValues[["LogRatio"]][which(profileCGH$profileValues[["ZoneGNL"]] == 0)], na.rm=TRUE)
 
     ## on supprime les champs LevelG et ZoneGNL
     fields.kept <- setdiff(names(profileCGH$profileValues),c("LevelG", "OutliersAws", "ZoneGNL"))
     profileCGH$profileValues <- profileCGH$profileValues[fields.kept]
 
-    ## on récupère les champs calculés chromosome par chromosome
+    ## on rÃ©cupÃ¨re les champs calculÃ©s chromosome par chromosome
     namesprofile <- names(profileCGH$profileValues)
     namesprofile[which(namesprofile == "SmoothingC")] <- "Smoothing"    
     namesprofile[which(namesprofile == "LevelC")] <- "Level"
@@ -679,23 +679,23 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
     names(profileCGH$profileValues) <- namesprofile
 
 
-    ## ajout des champs nécessaires
+    ## ajout des champs nÃ©cessaires
     profileCGH$profileValues[setdiff(new.fields, names(profileCGH$profileValues))] <- 0
 
     return(profileCGH)
     
   }
 
-### 01052009 Suppression de cette étape
-### Les Breakpoints consécutifs ont été supprimés
-### dans les fonctions précédentes
+### 01052009 Suppression de cette Ã©tape
+### Les Breakpoints consÃ©cutifs ont Ã©tÃ© supprimÃ©s
+### dans les fonctions prÃ©cÃ©dentes
 
 #####################        
 ### DEBUT SUPPRESSION
 #####################            
 
 ##     RecomputeGNL <- FALSE
-##     ## Epuration des Breakpoints consécutifs
+##     ## Epuration des Breakpoints consÃ©cutifs
 ##     if (is.data.frame(profileCGH$BkpInfo))
 ##       {
 ##         profileCGH$BkpInfo <- profileCGH$BkpInfo[order(profileCGH$BkpInfo$PosOrder),]
@@ -797,7 +797,7 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 
 ##         profileCGH$profileValues <- profileCGH$profileValues[,setdiff(names(profileCGH$profileValues),c("ZoneGNL","ZoneGen"))]
 
-##         ## on prend comme référence ceux qui sont compris entre certaines valeurs
+##         ## on prend comme rÃ©fÃ©rence ceux qui sont compris entre certaines valeurs
 ##         l <- length(profileCGH$profileValues$NormalRef)
 ##         NormalRange <- .C("compute_NormalRange",
 ##                           as.double(profileCGH$profileValues$Smoothing),
@@ -829,7 +829,7 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 ##                         as.double(profileCGH$NormalRef),
 ##                         as.double(profileCGH$amplicon),
 ##                         as.double(profileCGH$deletion),                                                                                    
-##                         ## variables pour le calcul de la médiane par cluster
+##                         ## variables pour le calcul de la mÃ©diane par cluster
 ##                         as.double(profileCGH$profileValues$LogRatio),
 ##                         as.integer(profileCGH$profileValues$NormalRange),
 ##                         PACKAGE="GLAD")
@@ -867,7 +867,7 @@ dogenomestep <- function(profileCGH, nb.new.fields = NULL, new.fields = NULL,
 OptimBkpFindCluster <- function(profileCGH = NULL)
   {
 
-    ## choix de la méthode de clustering
+    ## choix de la mÃ©thode de clustering
     METHODS <- c("ward", "single", "complete", "average", "mcquitty", 
                  "median", "centroid")
     method <- pmatch(profileCGH$method, METHODS)
@@ -879,7 +879,7 @@ OptimBkpFindCluster <- function(profileCGH = NULL)
       stop("ambiguous clustering method")
     
     
-    startChr <- profileCGH$PosOrderRange$MinPosOrder - 1 ### car on commence à compter à 0
+    startChr <- profileCGH$PosOrderRange$MinPosOrder - 1 ### car on commence Ã  compter Ã  0
     sizeChr <- profileCGH$PosOrderRange$MaxPosOrder - profileCGH$PosOrderRange$MinPosOrder + 1
 
     
@@ -909,7 +909,7 @@ OptimBkpFindCluster <- function(profileCGH = NULL)
                      as.integer(sizeChr), ## taille de chaque chromosome
                      as.integer(startChr),## position pour le debut des valeurs de chaque chromosome
                      as.integer(profileCGH$BkpDetected$BkpDetected),
-                     ## paramètres pour findCluster
+                     ## paramÃ¨tres pour findCluster
                      as.integer(method),
                      as.double(profileCGH$findClusterSigma),
                      as.double(profileCGH$lambdaclusterGen),
@@ -917,7 +917,7 @@ OptimBkpFindCluster <- function(profileCGH = NULL)
                      as.integer(profileCGH$nmax),
                      ZoneGen = integer(l),  ## valeur de sortie
                      nbclasses = integer(1),
-                     ## paramètres pour le calcul du GNL
+                     ## paramÃ¨tres pour le calcul du GNL
                      ZoneGNL = integer(l),
                      as.double(profileCGH$forceGL[1]),
                      as.double(profileCGH$forceGL[2]),
@@ -929,7 +929,7 @@ OptimBkpFindCluster <- function(profileCGH = NULL)
     
 
     ## #########################################
-    ## Récupération des résultats
+    ## RÃ©cupÃ©ration des rÃ©sultats
     ## #########################################
     
     fields.replaced <- c("Smoothing", "NextLogRatio","Level", "OutliersAws", "OutliersMad", "OutliersTot", "Breakpoints", "NormalRange", "ZoneGen", "ZoneGNL")

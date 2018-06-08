@@ -45,8 +45,8 @@ hclustglad <-  function (d, method = "complete", members = NULL)
     if (length(members) != n) 
       stop("Invalid length of members")
 
-    ## Ajout Philippe Hupé
-    ## modification lorsque ward est utilisé
+    ## Ajout Philippe HupÃ©
+    ## modification lorsque ward est utilisÃ©
     if (method == 1)
       {
       	coeff <- matrix(rep(members,n),n,n)

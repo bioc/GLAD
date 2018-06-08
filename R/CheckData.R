@@ -1,5 +1,5 @@
 ### Copyright (C) 2006 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2006
+### Author(s): Philippe HupÃ© (Institut Curie) 2006
 ### Contact: glad@curie.fr
 ### http://bioinfo.curie.fr
 

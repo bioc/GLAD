@@ -1,5 +1,5 @@
 ### Copyright (C) 2005 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2005
+### Author(s): Philippe HupÃ© (Institut Curie) 2005
 ### Contact: glad@curie.fr
 
 

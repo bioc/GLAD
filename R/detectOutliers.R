@@ -1,5 +1,5 @@
 # Copyright (C) 2003 Institut Curie
-# Author(s): Philippe Hupé (Institut Curie) 2003
+# Author(s): Philippe HupÃ© (Institut Curie) 2003
 # Contact: glad@curie.fr
 
 

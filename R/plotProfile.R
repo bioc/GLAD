@@ -1,7 +1,7 @@
 ### This function detects chromosomal breakpoints along genome
 
 ### Copyright (C) 2005 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2005
+### Author(s): Philippe HupÃ© (Institut Curie) 2005
 ### Contact: glad@curie.fr
 
 
@@ -26,7 +26,7 @@ plotProfile.profileCGH <- function(profileCGH, variable="LogRatio", Chromosome=N
         stop("Error: cytoband must be provided")
       }
     
-### il faudrait vérifier si le champ Length existe déjà en entrée de la table, sinon
+### il faudrait vÃ©rifier si le champ Length existe dÃ©jÃ  en entrÃ©e de la table, sinon
 ### pb de jointure
     if (length(intersect(names(profileCGH$profileValues),"PosBase"))<1)
       {

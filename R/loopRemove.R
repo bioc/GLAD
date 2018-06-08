@@ -1,7 +1,7 @@
 ### This function detects chromosomal breakpoints along genome
 
 ### Copyright (C) 2003 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2003
+### Author(s): Philippe HupÃ© (Institut Curie) 2003
 ### Contact: glad@curie.fr
 
 
@@ -111,9 +111,9 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
       }
 
 
-    ## Breakpoints et OutliersAws sont passés ici pour assurer
-    ## la compatibilié avec la fonction R removeBreakpoint
-    ## qui fait aussi appel à loopRemove mais pas à updateBkpRL
+    ## Breakpoints et OutliersAws sont passÃ©s ici pour assurer
+    ## la compatibiliÃ© avec la fonction R removeBreakpoint
+    ## qui fait aussi appel Ã  loopRemove mais pas Ã  updateBkpRL
     l <- length(profileChr$profileValues[,1])
     res <- .C("loopRemove",
               as.double(profileChr$profileValues[["LogRatio"]]),
@@ -138,7 +138,7 @@ removeLevel.profileChr <- function(profileChr, lambda=10, type="tricubic", param
                       Level=as.integer(profileChr$profileValues[["Level"]]),
                       OutliersAws=as.integer(profileChr$profileValues[["OutliersAws"]]),
                       Breakpoints=as.integer(profileChr$profileValues[["Breakpoints"]]),
-                      ## as.integer(profileChr$profileValues$Chromosome), on est forcément sur le même chromosome
+                      ## as.integer(profileChr$profileValues$Chromosome), on est forcÃ©ment sur le mÃªme chromosome
                       as.integer(profileChr$profileValues[["PosOrder"]]),
                       NextLogRatio=as.double(profileChr$profileValues[["NextLogRatio"]]),
                       as.double(profileChr$profileValues[["LogRatio"]]),

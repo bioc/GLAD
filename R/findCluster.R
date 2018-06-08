@@ -1,5 +1,5 @@
 ## Copyright (C) 2003 Institut Curie
-## Author(s): Philippe Hupé (Institut Curie) 2003
+## Author(s): Philippe HupÃ© (Institut Curie) 2003
 ## Contact: glad@curie.fr
 
 findCluster <- function(...)
@@ -16,7 +16,7 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
 
     if (verbose) print("findCluster: starting function")
 
-    ## choix de la méthode de clustering
+    ## choix de la mÃ©thode de clustering
     METHODS <- c("ward", "single", "complete", "average", "mcquitty", 
                  "median", "centroid")
     method <- pmatch(profileChr$method, METHODS)
@@ -36,7 +36,7 @@ findCluster.profileChr <- function(profileChr, region="Region", genome = TRUE,
                  as.integer(profileChr$profileValues[["OutliersTot"]]),
                  zone = integer(l),
                  as.integer(method),
-                 ## paramètres pour clusterglad
+                 ## paramÃ¨tres pour clusterglad
                  as.double(profileChr$findClusterSigma),
                  as.double(param["d"]),
                  as.double(lambda),

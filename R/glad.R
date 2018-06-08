@@ -1,5 +1,5 @@
 ### Copyright (C) 2003 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2003
+### Author(s): Philippe HupÃ© (Institut Curie) 2003
 ### Contact: glad@curie.fr
 ### http://bioinfo.curie.fr
 
@@ -25,11 +25,11 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
     if (verbose) print("daglad - step CheckData")    
 
-    ## vérification de l'object donné en entrée
+    ## vÃ©rification de l'object donnÃ© en entrÃ©e
     CheckData(profileCGH, bandwidth=bandwidth, smoothfunc=smoothfunc)
     
 
-    ## champs tels qu'ils sont en entrée
+    ## champs tels qu'ils sont en entrÃ©e
     fieldinput <- names(profileCGH$profileValues)
     excdudefields <- c("Smoothing", "Region", "Level", "OutliersAws",
       "Breakpoints", "OutliersMad", "OutliersTot",
@@ -69,8 +69,8 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         print(paste("Choose smoothfunc=lawsglad or smoothfunc=haarseg if you want the process runs faster"))
       }
 
-    ## ajout des champs nécessaires à la procédure
-    ## ajout des champs nécessaires à la procédure
+    ## ajout des champs nÃ©cessaires Ã  la procÃ©dure
+    ## ajout des champs nÃ©cessaires Ã  la procÃ©dure
 ##     new.fields <- c("NewPosOrder", "Smoothing",
 ##                     "OutliersAws", "Region",
 ##                     "Level", "Breakpoints",
@@ -86,7 +86,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
     profileCGH$profileValues[, new.fields] <- 0
     
-    ## Méthode d'estimation du sigma
+    ## MÃ©thode d'estimation du sigma
     print("Smoothing for each Chromosome")    
     profileCGH <- chrBreakpoints(profileCGH, smoothfunc=smoothfunc, base=base, sigma=sigma, bandwidth=bandwidth, round=round, verbose=verbose, model=model, lkern=lkern, qlambda=qlambda, breaksFdrQ=breaksFdrQ, haarStartLevel=haarStartLevel , haarEndLevel=haarEndLevel)
 
@@ -133,7 +133,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
         
         #profileChr <- detectOutliers(profileChr, region="Region", alpha=alpha, msize=msize, verbose=verbose)	
 	
-### ça ne doit pas servir : à vérifier
+### Ã§a ne doit pas servir : Ã  vÃ©rifier
         nmin <- 1	
         if (length(which(profileChr$profileValues$Breakpoints==1))>=1)
           {
@@ -194,7 +194,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
       }
 
     ### recalcul du Smoothing:
-    ### on prend la médiane par région
+    ### on prend la mÃ©diane par rÃ©gion
 
     agg <- aggregate(profileCGH$profileValues$LogRatio, list(Region=profileCGH$profileValues$Region), median)
     names(agg) <- c("Region","Smoothing")
@@ -206,7 +206,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
     profileCGH$profileValues <- profileCGH$profileValues[order(profileCGH$profileValues$PosOrder),]
 
     print("Results Preparation")
-### champs ajoutés par glad
+### champs ajoutÃ©s par glad
     fieldglad <- c("Smoothing","Region","Level","OutliersAws","Breakpoints","OutliersMad","OutliersTot","ZoneChr","ZoneGen","ZoneGNL")
 
 ### ordre des champs

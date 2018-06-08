@@ -1,7 +1,7 @@
 ### This function detects chromosomal breakpoints along genome
 
 ### Copyright (C) 2003 Institut Curie
-### Author(s): Philippe Hupé (Institut Curie) 2003
+### Author(s): Philippe HupÃ© (Institut Curie) 2003
 ### Contact: glad@curie.fr
 
 
@@ -54,8 +54,8 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
       }
 
 
-### le round est fait a de nombreux endroits différents: cela peut
-### surement être changé
+### le round est fait a de nombreux endroits diffÃ©rents: cela peut
+### surement Ãªtre changÃ©
 
 
 
@@ -163,7 +163,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                     ## smoothing
                     if (smoothfunc == "laws")
                       {
-                        dim(x) <- c(1,length(x)) #à supprimer dans la nouvelle version du package AWS
+                        dim(x) <- c(1,length(x)) #Ã  supprimer dans la nouvelle version du package AWS
                         awsres <- laws(y=subsetdata[["LogRatio"]], x=x,
                                        hinit=hinit, hmax=hmax, shape=sigma, NN=FALSE,
                                        symmetric=TRUE, model=model, ...)$theta
@@ -199,7 +199,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                 else          
                   {
                     hinit <- 1
-                    hmax <- length(subsetdata[["PosOrder"]])*bandwidth #si on laisse hmax à la valeur de length(data$PosOrder[indexChr]) ce n'est pas assez et les créneaux ne sont pas bien fittés
+                    hmax <- length(subsetdata[["PosOrder"]])*bandwidth #si on laisse hmax Ã  la valeur de length(data$PosOrder[indexChr]) ce n'est pas assez et les crÃ©neaux ne sont pas bien fittÃ©s
 
                     
                     if (smoothfunc == "lawsglad")
@@ -348,11 +348,11 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                   regionChr = integer(l),                                            ## valeur de sortie
                   Breakpoints = integer(l),                                          ## valeur de sortie
                   sizeChr = integer(NbChr), ## taille de chaque chromosome
-                  startChr = integer(NbChr), ## position pour le début des valeurs de chaque chromosome
-                  IQRChr = integer(NbChr), ## numéro du chromosome pour le calcul de l'IQR
+                  startChr = integer(NbChr), ## position pour le dÃ©but des valeurs de chaque chromosome
+                  IQRChr = integer(NbChr), ## numÃ©ro du chromosome pour le calcul de l'IQR
                   IQRValue = double(NbChr), ## valeur de l'IQR
                   BkpDetected = integer(NbChr), ## valeur de sortie
-                  ## paramètres pour Haarseg
+                  ## paramÃ¨tres pour Haarseg
                   as.double(breaksFdrQ),
                   as.integer(haarStartLevel),
                   as.integer(haarEndLevel),
@@ -363,7 +363,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                   PACKAGE = "GLAD")
 
         ## ##############################
-        ## récupération des informations
+        ## rÃ©cupÃ©ration des informations
         ## ##############################        
         
         ## Range de position pour chaque chromosome
