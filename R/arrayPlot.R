@@ -151,7 +151,7 @@ arrayPersp.default<-function(Statistic, Col, Row,
 
   if(bar)
     {
-      layout(matrix(c(1,2),1,2),width=c(9,1))
+      layout(matrix(c(1,2),1,2),widths=c(9,1))
 
       if(names(dev.cur())!="pdf")
         par(mar=c(4,3,5,3)) # settings for graphics device
@@ -160,7 +160,7 @@ arrayPersp.default<-function(Statistic, Col, Row,
         par(mar=c(4,3,5,1)) # settings for writing pdf files
     }
 
-  fcol <- matrix("green", nr=nrow(z), nc=ncol(z))
+  fcol <- matrix("green", nrow=nrow(z), ncol=ncol(z))
   zi <- (z[-1,-1] + z[-1,-ncol(z)] + z[-nrow(z),-1] + z[-nrow(z), -ncol(z)])/4
   breaks <- seq(zlim[1],zlim[2],length=length(col))
   fcol <- col[cut(zi, breaks, include.lowest = TRUE)]
@@ -232,7 +232,7 @@ arrayPersp.arrayCGH<-function(arrayCGH, variable,
 
   if(bar)
     {
-      layout(matrix(c(1,2),1,2),width=c(9,1))
+      layout(matrix(c(1,2),1,2),widths=c(9,1))
 
       if(names(dev.cur())!="pdf")
         par(mar=c(4,3,5,3)) # settings for graphics device
@@ -241,7 +241,7 @@ arrayPersp.arrayCGH<-function(arrayCGH, variable,
         par(mar=c(4,3,5,1)) # settings for writing pdf files
     }
 
-  fcol <- matrix("green", nr=nrow(z), nc=ncol(z))
+  fcol <- matrix("green", nrow=nrow(z), ncol=ncol(z))
   zi <- (z[-1,-1] + z[-1,-ncol(z)] + z[-nrow(z),-1] + z[-nrow(z), -ncol(z)])/4
   breaks <- seq(zlim[1],zlim[2],length=length(col))
   fcol <- col[cut(zi, breaks, include.lowest = TRUE)]
