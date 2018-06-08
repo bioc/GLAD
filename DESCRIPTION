@@ -1,13 +1,13 @@
 Package: GLAD
-Version: 2.45.0
-Date: 2011-12-19
+Version: 2.45.1
+Date: 2018-06-08
 Title: Gain and Loss Analysis of DNA
 Depends: R (>= 2.10)
 SystemRequirements: gsl. Note: users should have GSL installed. Windows
         users: 'consult the README file available in the inst directory
         of the source distribution for necessary configuration
         instructions'.
-Suggests: aws, tcltk
+Imports: aws
 Author: Philippe Hupe
 Maintainer: Philippe Hupe <glad@curie.fr>
 Description: Analysis of array CGH data : detection of breakpoints in
@@ -16,3 +16,4 @@ Description: Analysis of array CGH data : detection of breakpoints in
 License: GPL-2
 URL: http://bioinfo.curie.fr
 biocViews: Microarray, CopyNumberVariation
+RoxygenNote: 6.0.1
