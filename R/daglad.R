@@ -55,7 +55,7 @@ daglad.profileCGH <- function(profileCGH, mediancenter = FALSE, normalrefcenter 
 
     if(base == TRUE)
       {
-        if(!requireNamespace(aws))
+        if(!requireNamespace("aws"))
           {
             stop("Error in daglad: the aws package is required to use these function. The aws package can be installed from http://www.r-project.org")
           }

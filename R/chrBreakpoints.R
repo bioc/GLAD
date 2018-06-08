@@ -164,7 +164,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                     if (smoothfunc == "laws")
                       {
                         dim(x) <- c(1,length(x)) #à supprimer dans la nouvelle version du package AWS
-                        awsres <- laws(y=subsetdata[["LogRatio"]], x=x,
+                        awsres <- aws::laws(y=subsetdata[["LogRatio"]], x=x,
                                        hinit=hinit, hmax=hmax, shape=sigma, NN=FALSE,
                                        symmetric=TRUE, model=model, ...)$theta
 
@@ -181,7 +181,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
 
                     if (smoothfunc == "aws")
                       {
-                        awsres <- aws(y=subsetdata[["LogRatio"]], x=x, hinit=hinit, hmax=hmax, sigma2=sigma, NN=FALSE, symmetric=TRUE, ...)$theta
+                        awsres <- aws::aws(y=subsetdata[["LogRatio"]], x=x, hinit=hinit, hmax=hmax, sigma2=sigma, NN=FALSE, symmetric=TRUE, ...)$theta
 
                         if (is.null(awsres) == FALSE)
                           {
@@ -220,7 +220,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
                     
                     if (smoothfunc == "laws")
                       {
-                        awsres <- laws(y=subsetdata[["LogRatio"]], hinit=hinit,
+                        awsres <- aws::laws(y=subsetdata[["LogRatio"]], hinit=hinit,
                                        hmax=hmax, shape=sigma, symmetric=TRUE, model=model,
                                        ...)$theta
 
@@ -237,7 +237,7 @@ chrBreakpoints.profileCGH <- function(profileCGH, smoothfunc="lawsglad", OnlyOpt
 
                     if (smoothfunc == "aws")
                       {
-                        awsres <- aws(y=subsetdata[["LogRatio"]], hinit=hinit, hmax=hmax, sigma2=sigma, symmetric=TRUE, ...)$theta
+                        awsres <- aws::aws(y=subsetdata[["LogRatio"]], hinit=hinit, hmax=hmax, sigma2=sigma, symmetric=TRUE, ...)$theta
                         
                         if(is.null(awsres)==FALSE)
                           {
