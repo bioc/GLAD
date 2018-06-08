@@ -15,7 +15,8 @@
                        colDAGLAD=c("black","blue","red","green","yellow"),
                        pchSymbol=c(20,13),
                        colCytoBand=c("white","darkblue"),
-                       colCentro="red", text=NULL, cytoband = NULL, main="", ylim=NULL, ...)
+                       colCentro="red", text=NULL,
+                       cytoband = NULL, main="", ylim=NULL, ...)
 
 
 
