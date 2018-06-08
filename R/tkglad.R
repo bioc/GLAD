@@ -5,7 +5,7 @@ tkglad <- function(...)
 
 tkglad.default <- function(list=character(0), ...)
   {
-    require("tcltk") || stop("Package not loaded: tcltk")    
+    requireNamespace("tcltk") || stop("Package not loaded: tcltk")    
 
     frameDaglad <- tktoplevel()
     frameOverall <- tkframe(frameDaglad)

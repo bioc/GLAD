@@ -50,7 +50,7 @@ glad.profileCGH <- function(profileCGH, mediancenter=FALSE,
 
     if(base==TRUE)
       {
-        if(!require(aws))
+        if(!requireNamespace(aws))
           {
             stop("Error in glad: the aws package is required to use these function. The aws package can be installed from http://www.r-project.org")
           }
