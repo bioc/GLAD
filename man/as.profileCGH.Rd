@@ -41,7 +41,7 @@ LogRatio, PosOrder or Chromosome; profileValues contains the remaining rows.}
   visit our web-page \url{http://bioinfo.curie.fr}.}
 
 
-\author{Philippe Hupé, \email{glad@curie.fr}}
+\author{Philippe HupÃ©, \email{glad@curie.fr}}
 
 \seealso{\code{\link{as.data.frame.profileCGH}}}
 

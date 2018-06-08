@@ -110,7 +110,7 @@
 
   The function \code{glad} implements the methodology which
   is described in the article: Analysis of array CGH data: from signal
-  ratio to gain and loss of DNA regions (Hupé et al., Bioinformatics, 2004).
+  ratio to gain and loss of DNA regions (HupÃ© et al., Bioinformatics, 2004).
 
   The principles of the GLAD algorithm:
   First, the detection of breakpoints is based on the estimation of a
@@ -221,7 +221,7 @@
 
 \references{
 \itemize{
-  \item{Hupé et al. (Bioinformatics, 2004)}{ Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.}
+  \item{HupÃ© et al. (Bioinformatics, 2004)}{ Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.}
   \item{Polzehl and Spokoiny (WIAS-Preprint 787, 2002)}{Local likelihood modelling by adaptive weights smoothing.}
   \item{Ben-Yaacov and Eldar (Bioinformatics, 2008)}{A fast and flexible method for the segmentation of aCGH data.}
 }
@@ -230,7 +230,7 @@
 \note{People interested in tools dealing with array CGH analysis can
   visit our web-page \url{http://bioinfo.curie.fr}.}
 
-\author{Philippe Hupé, \email{glad@curie.fr}.}
+\author{Philippe HupÃ©, \email{glad@curie.fr}.}
 
 \seealso{\code{\link{profileCGH}}, \code{\link{as.profileCGH}}, \code{\link{plotProfile}}.}
 
@@ -249,7 +249,7 @@ profileCGH <- as.profileCGH(gm13330)
 
 ###########################################################
 ###
-###  glad function as described in Hupé et al. (2004)
+###  glad function as described in HupÃ© et al. (2004)
 ###
 ###########################################################
 

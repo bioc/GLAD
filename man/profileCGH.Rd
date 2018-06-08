@@ -29,7 +29,7 @@ last object corresponds to data of only one chromosome.
 \note{People interested in tools dealing with array CGH analysis can
   visit our web-page \url{http://bioinfo.curie.fr}.}
 
-\author{Philippe Hupé, \email{glad@curie.fr}.}
+\author{Philippe HupÃ©, \email{glad@curie.fr}.}
 
 \seealso{\code{\link{glad}}, \code{\link{as.profileCGH}}.}
 

@@ -32,7 +32,7 @@ Description of the object \code{arrayCGH}.
   visit our web-page \url{http://bioinfo.curie.fr}.}
 
   
-\author{Philippe Hupé, \email{glad@curie.fr}.}
+\author{Philippe HupÃ©, \email{glad@curie.fr}.}
 
 
 \seealso{\code{\link{glad}}.}

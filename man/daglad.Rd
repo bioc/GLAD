@@ -166,7 +166,7 @@
 
 \details{The function \code{daglad} implements a slightly modified
   version of the methodology described in the article : Analysis of array CGH data: from signal
-  ratio to gain and loss of DNA regions (Hupé et al., Bioinformatics,
+  ratio to gain and loss of DNA regions (HupÃ© et al., Bioinformatics,
   2004). For smoothing, it is possible
   to use either the AWS algorithm (Polzehl and Spokoiny, 2002) or the HaarSeg algorithm (Ben-Yaacov and Eldar, Bioinformatics, 2008).
   The \code{daglad} function allows to choose some threshold to help the algorithm to identify the status of the genomic regions. The threshodls are given in the following parameters:
@@ -262,7 +262,7 @@
 
 
 \references{
-  Hupé et al. (Bioinformatics, 2004): Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.
+  HupÃ© et al. (Bioinformatics, 2004): Analysis of array CGH data: from signal ratio to gain and loss of DNA  regions.
 
   Polzehl and Spokoiny (WIAS-Preprint 787, 2002): Local likelihood modelling by adaptive weights smoothing.
 
@@ -273,7 +273,7 @@
 \note{People interested in tools dealing with array CGH analysis can
   visit our web-page \url{http://bioinfo.curie.fr}.}
 
-\author{Philippe Hupé, \email{glad@curie.fr}.}
+\author{Philippe HupÃ©, \email{glad@curie.fr}.}
 
 \seealso{\code{\link{glad}}.}
 

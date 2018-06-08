@@ -58,7 +58,7 @@ The function \code{arrayPersp} creates perspective images of shades of gray or c
 \note{People interested in tools dealing with array CGH analysis can
   visit our web-page \url{http://bioinfo.curie.fr}.}
 
-\author{Philippe Hupé, \email{glad@curie.fr}.}
+\author{Philippe HupÃ©, \email{glad@curie.fr}.}
 
 \seealso{\code{persp}, \code{\link{arrayPlot}}, \code{\link{myPalette}}.}
 

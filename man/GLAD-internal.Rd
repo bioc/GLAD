@@ -55,7 +55,7 @@
 
 \value{" "}
 
-\author{Philippe Hupé, \url{glad@curie.fr}.}
+\author{Philippe HupÃ©, \url{glad@curie.fr}.}
 
 \seealso{" "}
 

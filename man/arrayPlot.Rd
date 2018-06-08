@@ -69,7 +69,7 @@ The function \code{arrayPlot} creates spatial images of shades of gray or colors
 \note{People interested in tools dealing with array CGH analysis can
   visit our web-page \url{http://bioinfo.curie.fr}.}
 
-\author{Philippe Hupé, \email{glad@curie.fr}.}
+\author{Philippe HupÃ©, \email{glad@curie.fr}.}
 
 \seealso{\code{image}, \code{contour}, \code{\link{arrayPersp}}, \code{\link{myPalette}}.}
 
