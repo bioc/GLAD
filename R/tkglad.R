@@ -1,9 +1,9 @@
-tkglad <- function(...)
-  {
-    UseMethod("tkglad")
-  }
+## tkglad <- function(...)
+##   {
+##     UseMethod("tkglad")
+##   }
 
-tkglad.default <- function(list=character(0), ...)
+tkglad <- function(list=character(0), ...)
   {
     requireNamespace("tcltk") || stop("Package not loaded: tcltk")    
 
