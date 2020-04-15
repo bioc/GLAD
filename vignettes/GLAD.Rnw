@@ -5,6 +5,8 @@
 
 \documentclass[11pt]{article}
 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsmath}
 \usepackage[authoryear,round]{natbib}
 \usepackage{hyperref}
